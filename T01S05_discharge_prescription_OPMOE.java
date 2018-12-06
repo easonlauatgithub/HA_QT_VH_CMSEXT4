@@ -62,16 +62,14 @@ public class T01S05_discharge_prescription_OPMOE {
 		cmsMainPage.selectPatientByCaseNum(moe_case_no);
 		cmsMainPage.selectSpecialty(specialty, subspecialty);
 		psf.closeExistingAlertReminderWindow();
+		if(dp.isExistSavePMSDataFailed()){dp.clickOKBtnForSavePMSDataFailed();}
 		if(dp.isExistFailToRetrievePMSInformation()){
 			shared_functions.do_screen_capture_with_filename(driver, "T01S05 - PMS unavailabitlity");
 			shared_functions.reporter_ReportEvent("micFail", "QAG_failure", "Unable to retrieve PMS information");
 			cmsMainPage.fnNextPatient();
 		}
 		if(dp.isExistFutureAppointmentDate()){dp.closeFutureAppointmentDate();}
-		if(dp.isExistPreviousPrescription()){
-			dp.clickCancelBtn();
-		}
-		
+		if(dp.isExistPreviousPrescription()){dp.clickCancelBtn();}
 		System.out.println("open_moe_function - END");
 	}
 	public void close_opmoe_without_save() throws InterruptedException {
@@ -396,7 +394,23 @@ public class T01S05_discharge_prescription_OPMOE {
 			}
 			return b;
 		}
-		
+		public Boolean isExistSavePMSDataFailed(){
+			switchToIframe();
+			String xp = "//textarea[contains(text(),'Save pmsData failed')]";
+			List<WebElement> li = driver.findElements(By.xpath(xp));
+			Boolean b = li.size()>0;
+			System.out.println("isExistSavePMSDataFailed:"+b);
+			return b;
+		}
+		public void clickOKBtnForSavePMSDataFailed(){
+			switchToIframe();
+			String xp = "//span[contains(text(),'K')]/u[contains(text(),'O')]";
+			List<WebElement> li = driver.findElements(By.xpath(xp));
+			if(li.size()>0){
+				System.out.println("clickOKBtnForSavePMSDataFailed");
+				li.get(0).click();				
+			}
+		}
 		public void closeFutureAppointmentDate(){
 			switchToIframe();
 			String xp = "//table[@id='faApplyBtn']";
@@ -512,29 +526,61 @@ public class T01S05_discharge_prescription_OPMOE {
 			}
 		}
 		public void inputDuration(String str){
-			System.out.println("inputDuration size:");
+			System.out.print("inputDuration:");
 			switchToIframe();
 			String css = "div.moe-durationPanel input[class*='moe-ui-textfield']";
 			List<WebElement> li = driver.findElements(By.cssSelector(css));
 			System.out.println(li.size());
 			if(li.size()>0){
-				shared_functions.clickAndType(li.get(0),dict.get("update_moe_duration"));
+				shared_functions.clickAndType(li.get(0),str);
+				/*
+				WebElement e = li.get(0);
+				System.out.println("e:"+e);
+				e.clear();
+				System.out.println("e clear");
+				e.click();
+				System.out.println("e click");
+				e.sendKeys(str);
+				System.out.println("e sendKeys:"+str);
+				e.sendKeys(Keys.TAB);
+				System.out.println("e sendKeys ENTER");
+				*/
+				//WebElement e = li.get(0);
+				//System.out.println("e:"+e);
+				//e.clear();
+				//System.out.println("e clear");
+				//e.sendKeys(str);
+				//System.out.println("e sendKeys:"+str);				
 			}			
 		}
 		public void inputSpecialInstruction(String str){
-			System.out.println("inputSpecialInstruction size:");
+			System.out.print("inputSpecialInstruction:");
 			switchToIframe();
 			String css = "textarea#moe-edit-lower-specInstruct";
 			List<WebElement> li = driver.findElements(By.cssSelector(css));
 			System.out.println(li.size());
 			if(li.size()>0){
-				shared_functions.clickAndType(li.get(0),dict.get("update_moe_instruction"));
+				shared_functions.clickAndType(li.get(0),str);
+				/*
+				WebElement e = li.get(0);
+				System.out.println("e:"+e);
+				e.clear();
+				System.out.println("e clear");
+				e.click();
+				System.out.println("e click");
+				e.sendKeys(str);
+				System.out.println("e sendKeys:"+str);
+				e.sendKeys(Keys.ENTER);
+				System.out.println("e sendKeys ENTER");
+				*/
 			}
 		}
 		public void clickAcceptBtn() throws InterruptedException{
+			System.out.println("clickAcceptBtn size:");
 			switchToIframe();
 			String xp = "//span[contains(text(),'ccept')]//u[contains(text(),'A')]";
 			List<WebElement> li = driver.findElements(By.xpath(xp));
+			System.out.println(li.size());
 			if(li.size()>0){
 				li.get(0).click();
 			}

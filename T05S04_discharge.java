@@ -322,10 +322,24 @@ public class T05S04_discharge {
 			}
 			return hosp_code;
 		}
-		
-		public void switchToIframeLastOfficeForm(){
+		/*public void switchToIframeLastOfficeForm_toBeDelete(){
 			driver.switchTo().defaultContent();
 			driver.switchTo().frame(8);
+		}*/
+		public void switchToIframeLastOfficeForm(){
+			driver.switchTo().defaultContent();
+			int numOfIFrame = driver.findElements(By.cssSelector("iframe")).size();
+			//for(int i=numOfIFrame-1; i>=0; i--){
+			for(int i=0; i<numOfIFrame; i++){
+				System.out.println("switchToIframeLastOfficeForm["+i+"]");
+				driver.switchTo().frame(i);
+				String str = "#bn_dod_retrieve-btnInnerEl";
+				Boolean isCorrectIframe = driver.findElements(By.cssSelector(str)).size()>0;
+				if(isCorrectIframe){
+					System.out.println("correct-switchToIframeLastOfficeForm["+i+"]");
+					break;
+				}
+			}
 		}
 		public WebElement getLastOfficeFormRetrieveBtn() {
 			switchToIframeLastOfficeForm();
@@ -334,13 +348,11 @@ public class T05S04_discharge {
 			return e;
 		}
 		public WebElement getLastOfficeFormSaveNPrintBtn() {
-			switchToIframeLastOfficeForm();
 			String str = "#btnSaveAndPrint-btnInnerEl";
 			WebElement e = driver.findElement(By.cssSelector(str));
 			return e;			
 		}
 		public WebElement getLastOfficeFormCancelBtn() {
-			switchToIframeLastOfficeForm();
 			String str = "#btnClose-btnInnerEl";
 			WebElement e = driver.findElement(By.cssSelector(str));
 			return e;			

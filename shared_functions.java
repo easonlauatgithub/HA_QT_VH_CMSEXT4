@@ -574,18 +574,13 @@ public class shared_functions {
 	}
 	public static String getTableText(WebElement eTable, int rowNum, int colNum){
 		System.out.println("-- getTableText --");
-		System.out.println("eTable:"+eTable);
-		System.out.println("rowNum:"+rowNum);
-		System.out.println("colNum:"+colNum);
+		String str = null;
 		List<WebElement> li1 = eTable.findElements(By.tagName("tr"));
-		System.out.println("li1:"+li1);
 		WebElement e1 = li1.get(rowNum);
-		System.out.println("e1:"+e1);
 		List<WebElement> li2 = e1.findElements(By.tagName("td"));
-		System.out.println("li2:"+li2);
 		WebElement e2 = li2.get(colNum);
-		System.out.println("e2:"+e2);
-		return e2.getText();
+		str = e2.getText();
+		return str;
 	}
 	public static void showTableText(WebElement eTable){
 		List<WebElement> liRows = eTable.findElements(By.tagName("tr"));

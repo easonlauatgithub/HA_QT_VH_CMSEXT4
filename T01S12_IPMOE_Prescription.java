@@ -1,24 +1,17 @@
 package suite;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 
-import suite.T01S05_discharge_prescription_OPMOE.PAGE_PatientDetailPage_DischargePrescription;
 
 public class T01S12_IPMOE_Prescription {
 	WebDriver driver = null;
@@ -101,15 +94,6 @@ public class T01S12_IPMOE_Prescription {
 			System.out.println("driver.quit()");
 			shared_functions.exit_test_iteration();
 		}
-		System.out.println("ip.isExistNowLoading()"+ip.isExistNowLoading());
-		if(ip.isExistNowLoading()){
-			ip.waitToLoad();
-			if(ip.isExistNowLoading()){
-				shared_functions.reporter_ReportEvent("micFail", "QAG_failure", "the [Now loading ...] dialogue still exists, after 60seconds");
-				cmsMainPage.fnNextPatient();
-				shared_functions.exit_test_iteration();				
-			}
-		}
 		System.out.println("ip.isExistFailToRetrievePMSInfo()"+ip.isExistFailToRetrievePMSInfo());
 		if(ip.isExistFailToRetrievePMSInfo()){
 			shared_functions.do_screen_capture_with_filename(driver, "T01S12 PMS not available");
@@ -130,6 +114,15 @@ public class T01S12_IPMOE_Prescription {
 			shared_functions.reporter_ReportEvent("micFail", "QAG_failure", "Unable to retrieve CMS information");
 			cmsMainPage.fnNextPatient();
 			shared_functions.exit_test_iteration();
+		}
+		System.out.println("ip.isExistNowLoading()"+ip.isExistNowLoading());
+		if(ip.isExistNowLoading()){
+			ip.waitToLoad();
+			if(ip.isExistNowLoading()){
+				shared_functions.reporter_ReportEvent("micFail", "QAG_failure", "the [Now loading ...] dialogue still exists, after 60seconds");
+				cmsMainPage.fnNextPatient();
+				shared_functions.exit_test_iteration();				
+			}
 		}
 		System.out.println("open_ipmoe_function - END");
 	}
@@ -190,7 +183,7 @@ public class T01S12_IPMOE_Prescription {
 		System.out.println("test_modify_drug_item - START");
 		WebElement drug_to_modify = ip.select_today_drug_in_mar(dict.get("new_ipmoe_mar_check_d" + dict.get("modify_ipmoe_drug_index")));
 		//Paracetamol tabletoral: 500 mg Q4H PRN
-		shared_functions.right_click(drug_to_modify, 50, 5);
+		shared_functions.right_click(drug_to_modify, 10, 0);
 		ip.selectByTagNText("span", "Modify");
 		String xp = "//div[contains(@id,'oral-orderDetailRowCt-')]//div[contains(@class,'ipmoe ipmoe-ipEditWin-dosageRow')]//table[contains(@class,'x-table-layout')]//input";
 		List<WebElement> li = driver.findElements(By.xpath(xp));
@@ -211,7 +204,6 @@ public class T01S12_IPMOE_Prescription {
 	}
 	public void test_remove_drug_item() throws Exception {
 		System.out.println("test_remove_drug_item - START");
-		shared_functions.sleepForAWhile(5000);//wait for pharmacy to process
 		int number_of_drugs = Integer.parseInt(dict.get("new_ipmoe_drugs_num"));
 		int start_num = 1;
 		if(test_drug_num > 0){
@@ -221,14 +213,28 @@ public class T01S12_IPMOE_Prescription {
 		//remove drugs
 		for(int i=start_num;i<=number_of_drugs;i++){
 			String suffix = "_d" + i;
-			WebElement drug_to_remove = ip.select_today_drug_in_mar(dict.get("remove_ipmoe_drug_check" + suffix));
-			if(drug_to_remove!=null){
-				shared_functions.right_click(drug_to_remove, 50, 5);
-				ip.selectDeleteFromList();
-				String str = "Are you sure you want to delete " + dict.get("remove_drug_check" + suffix) + " from patient";
-				ip.confirmDelete(str);
-			}else{
-				System.out.println("cannot remove drug:"+dict.get("remove_ipmoe_drug_check" + suffix));
+			try{
+				WebElement drug_to_remove = ip.select_today_drug_in_mar(dict.get("remove_ipmoe_drug_check" + suffix));
+				if(drug_to_remove!=null){
+					Boolean isBeingProcessedByPharmacy = true;
+					while(isBeingProcessedByPharmacy){
+							System.out.println("BEFORE isBeingProcessedByPharmacy:"+isBeingProcessedByPharmacy);
+							shared_functions.right_click(drug_to_remove, 0, 10);
+							ip.selectDeleteFromList();				
+							isBeingProcessedByPharmacy = ip.checkIfBeingProcessedByPharmacy();
+							if(isBeingProcessedByPharmacy){
+								ip.cannotDelete();
+							}
+							System.out.println("AFTER isBeingProcessedByPharmacy:"+isBeingProcessedByPharmacy);						
+					}//loop again, delete
+					String str = "Are you sure you want to delete " + dict.get("remove_drug_check" + suffix) + " from patient";
+					ip.confirmDelete(str);	
+				}else{
+					System.out.println("cannot remove drug:"+dict.get("remove_ipmoe_drug_check" + suffix));
+				}
+			}catch(Exception e){
+				System.out.println("test_remove_drug_item["+dict.get("remove_ipmoe_drug_check" + suffix)+"] - StaleElementReferenceException");
+				e.printStackTrace();
 			}
 		}
 		//check existing drugs is null
@@ -477,6 +483,7 @@ public class T01S12_IPMOE_Prescription {
 			}	
 		}
 		public void selectDeleteFromList() throws InterruptedException{
+			System.out.println("selectDeleteFromList");
 			String xp = "//span[contains(text(),'Delete') and contains(@class,'x-menu-item-text x-menu-item-indent')]";
 			List<WebElement> li = driver.findElements(By.xpath(xp));
 			if(li.size()>0){
@@ -484,7 +491,28 @@ public class T01S12_IPMOE_Prescription {
 				waitToLoad();
 			}
 		}
-		public void confirmDelete(String strDrugToRemove) throws InterruptedException{			
+		public Boolean checkIfBeingProcessedByPharmacy() {
+			System.out.println("checkIfBeingProcessedByPharmacy");
+			Boolean bProcessing = true;
+			String xp2 = "//textarea[contains(text(),'The order is being processed by pharmacy. It cannot be deleted.')]";
+			List<WebElement> li2 = driver.findElements(By.xpath(xp2));
+			if(li2.size()>0){
+				bProcessing = true;
+			}else{
+				bProcessing = false;
+			}
+			return bProcessing;
+		}
+		public void cannotDelete(){
+			System.out.println("cannotDelete");
+			String xp3 = "//span[contains(text(),'K')]/u[contains(text(),'O')]";
+			List<WebElement> li3 = driver.findElements(By.xpath(xp3));
+			if(li3.size()>0){
+				li3.get(0).click();
+			}			
+		}
+		public void confirmDelete(String strDrugToRemove) throws InterruptedException{
+			System.out.println("confirmDelete:"+strDrugToRemove);
 			strDrugToRemove = strDrugToRemove.replace("\\", "");
 			String xp = "//textarea[contains(text(),'"+strDrugToRemove+"')]";
 			List<WebElement> li = driver.findElements(By.xpath(xp));
@@ -503,21 +531,27 @@ public class T01S12_IPMOE_Prescription {
 		public WebElement select_today_drug_in_mar(String mar_description){
 			ip.switchToIframe();
 			WebElement retval = null;
-			String xp = "//table[contains(@id,'gridview-') and contains(@id,'-table')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			int idxTable = 1;
-			WebElement all_drugs_table = li.get(idxTable);
-			int sizeOfTr = all_drugs_table.findElements(By.tagName("tr")).size();
-			for(int d=0; d<sizeOfTr; d++){
-				String strDateInCMS = shared_functions.getTableText(all_drugs_table,d,1);
-				Boolean b1 = (strDateInCMS.indexOf(today_ddMMM)!=-1);
-				String strDrugInCMS = shared_functions.getTableText(all_drugs_table,d,2).replace("\n", "");
-				Boolean b2 = (strDrugInCMS.indexOf(mar_description)!=-1);
-				if(b1&&b2){
-					all_drugs_table.findElements(By.tagName("tr")).get(d).findElements(By.tagName("td")).get(2).click();
-					retval = all_drugs_table.findElements(By.tagName("tr")).get(d).findElements(By.tagName("td")).get(2);
+			try{
+				String xp = "//table[contains(@id,'gridview-') and contains(@id,'-table')]";
+				List<WebElement> li = driver.findElements(By.xpath(xp));
+				int idxTable = 1;
+				WebElement all_drugs_table = li.get(idxTable);
+				int sizeOfTr = all_drugs_table.findElements(By.tagName("tr")).size();
+				for(int d=0; d<sizeOfTr; d++){
+					String strDateInCMS = shared_functions.getTableText(all_drugs_table,d,1);
+					String strDrugInCMS = shared_functions.getTableText(all_drugs_table,d,2).replace("\n", "");
+					Boolean b1 = (strDateInCMS.indexOf(today_ddMMM)!=-1);
+					Boolean b2 = (strDrugInCMS.indexOf(mar_description)!=-1);
+					if(b1&&b2){
+						retval = all_drugs_table.findElements(By.tagName("tr")).get(d).findElements(By.tagName("td")).get(2);
+						retval.click();
+					}
 				}
-			}
+			}catch(Exception e){ //handle StaleElementReferenceException
+				e.printStackTrace();
+				System.out.println("select_today_drug_in_mar["+mar_description+"] - StaleElementReferenceException");
+				return select_today_drug_in_mar(mar_description);
+			}			
 			shared_functions.reporter_ReportEvent("micDone", "select_today_drug_in_mar", "selected " + mar_description);
 			return retval;
 		}

@@ -90,7 +90,16 @@ public class T01S03_corp_allergy {
 		String strForVerify = dict.get("existing_adv_drug_check").toString();
 		driver.switchTo().defaultContent();
 		driver.switchTo().frame("alertWinPanelModalIFrame");
-		List<WebElement> liAlertItem = driver.findElements(By.cssSelector( "div#divAllergyId table table td:nth-child(2)" ));
+		List<WebElement> liAlertItem = null;
+		Boolean bToGetAllAlertItem = true;
+		while(bToGetAllAlertItem){
+			try{				
+				liAlertItem = driver.findElements(By.cssSelector("div#divAllergyId table table td:nth-child(2)"));
+				bToGetAllAlertItem=false;
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
 		Iterator<WebElement> itrAlertItem = liAlertItem.iterator();
 		while( itrAlertItem.hasNext() ) {
 			String strAlertItem = itrAlertItem.next().getText();
@@ -882,7 +891,6 @@ public class T01S03_corp_allergy {
 		public void editAlert() {
 			driver.switchTo().frame("cAllergyIFrameFnWin");
 			WebElement eAdditionalInformation = driver.findElement(By.cssSelector( param_AdditionalInformationTextArea_Alert ));
-			
 			eAdditionalInformation.sendKeys( param_AdditionalInformation_Alert );
 			WebElement eSaveBtn = driver.findElement(By.cssSelector( param_saveBtn_Alert ));
 			eSaveBtn.click();

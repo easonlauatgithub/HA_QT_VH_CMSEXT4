@@ -50,7 +50,7 @@ public class T02S01A_ix_request_laboratory {
 	}
 	public void open_ix_request() throws InterruptedException{
 		cmsMainPage.fnPMI();
-		cmsMainPage.selectPatientByCaseNum(dict.get("case_no"));
+		cmsMainPage.selectPatientByCaseNum(dict.get("case_no")); //HN080000340 MALLON,HEALTHY
 		psf.closeExistingAlertReminderWindow();
 		reopen_ix_request();
 	}

@@ -40,6 +40,7 @@ public class T03S01_PMI_enquiry {
 		check_function();		
 		cmsMainPage.fnNextPatient();
 		shared_functions.countTestPassed(steps_passed, total_steps);
+		//driver.quit();
 	}
 	public void open_function() throws InterruptedException{
 		System.out.println("open_function() - START");

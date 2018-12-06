@@ -1,6 +1,7 @@
 package suite;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,12 +9,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class T00S01_WebLogin_2S4F {
 	Map<String, String> dict = new HashMap<>();
@@ -31,20 +35,20 @@ public class T00S01_WebLogin_2S4F {
 		Boolean isExistInformation1_6_0_W_010 = handleIfExistAlertInformation1_6_0_W_010();
 		selectUserSpecialty();
 		inputPurposeForITDLogin(isExistInformation1_6_0_W_010);
-		cancelListOfPrescriptionsModifiedByPharmacy();
-	}
-	public void cancelListOfPrescriptionsModifiedByPharmacy(){
-		driver.switchTo().defaultContent();
-		driver.switchTo().frame("230ModalIFrame");
-		driver.findElement(By.id("pRmkUserCancelBtn")).click();
+		//cancelListOfPrescriptionsModifiedByPharmacy();
 	}
 	public void quitDriverIfExist() throws InterruptedException, IOException{
+		System.out.println("quitDriverIfExist");
 		driver = shared_functions.driver;
 		if(driver!=null){
+			shared_functions.driver=null;
+			System.out.println("quitDriverIfExist - quit");
 			driver.quit();
+			shared_functions.sleepForAWhile(30000);
 		}
 	}
 	public void initDriver() throws IOException, InterruptedException{
+		System.out.println("initDriver");
 		Runtime.getRuntime().exec("taskkill /F /IM iexplore.exe");
 		Runtime.getRuntime().exec("taskkill /F /IM IEDriverServer.exe");
 		Runtime.getRuntime().exec("taskkill /F /IM IEDriver32Server.exe");
@@ -61,11 +65,15 @@ public class T00S01_WebLogin_2S4F {
 		shared_functions.driver = driver;
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 	}
-	public InternetExplorerDriver newIEDriverInLoop(InternetExplorerOptions options) throws InterruptedException, IOException{
+	public RemoteWebDriver newIEDriverInLoop(InternetExplorerOptions options) throws InterruptedException, IOException{
 		Runtime.getRuntime().exec("taskkill /F /IM iexplore.exe");
+		URL url = new URL("http://160.77.18.138:4444/wd/hub");
         try {
-        	return new InternetExplorerDriver(options);
-        } catch (WebDriverException e) {
+        	//return new InternetExplorerDriver(options);
+        	return new RemoteWebDriver(url, options);
+        //} catch (WebDriverException e) {
+        } catch (Exception e) {
+        	e.printStackTrace();
         	shared_functions.sleepForAWhile(500);
             return newIEDriverInLoop(options);
         }
@@ -146,6 +154,41 @@ public class T00S01_WebLogin_2S4F {
 				eOkBtn=liBtn.get(0);				
 			}
 			eOkBtn.click();
+		}
+	}
+	public void cancelListOfPrescriptionsModifiedByPharmacy(){
+		driver.switchTo().defaultContent();
+		driver.switchTo().frame("230ModalIFrame");
+		driver.findElement(By.id("pRmkUserCancelBtn")).click();
+	}
+	public void loop() throws Exception {
+		String ieDriverServerFilePath = "C:\\eclipse_neon\\workspace\\lib\\selenium\\3.14\\";
+		String browser = "firefox";
+		switch(browser){
+			case "ie":
+				System.setProperty("webdriver.ie.driver",ieDriverServerFilePath+"IEDriver32Server.exe");
+				driver = new InternetExplorerDriver();
+				driver.get("https://www.google.com");
+				Thread.sleep(1000);
+				shared_functions.loginToProxyServerRobot(driver, "lys678", "Ha$5638~0");
+				break;
+			case "firefox":
+				System.setProperty("webdriver.gecko.driver",ieDriverServerFilePath+"geckodriver64.exe");
+				driver = new FirefoxDriver();
+				Thread.sleep(3000);
+				shared_functions.loginToProxyServerRobot(driver, "lys678", "Ha$5638~0");
+				break;
+			default:
+				break;
+		}
+		int i = 0;
+		while(i<999){
+			System.out.println(i);
+			driver.get("https://www.google.com");
+			driver.findElement(By.cssSelector("input[name=q]")).sendKeys(i+"");
+			Thread.sleep(500);
+			driver.findElement(By.cssSelector("input[name=btnK]")).click();
+			i++;
 		}
 	}
 }
