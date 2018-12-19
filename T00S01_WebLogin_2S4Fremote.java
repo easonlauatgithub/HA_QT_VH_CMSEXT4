@@ -15,7 +15,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-public class T00S01_WebLogin_2S4F {
+public class T00S01_WebLogin_2S4Fremote {
 	Map<String, String> dict = new HashMap<>();
 	WebDriver driver = null;
 	@Test
@@ -66,8 +66,8 @@ public class T00S01_WebLogin_2S4F {
 		Runtime.getRuntime().exec("taskkill /F /IM iexplore.exe");
 		URL url = new URL("http://160.77.18.138:4444/wd/hub");
         try {
-        	return new InternetExplorerDriver(options);
-        	//return new RemoteWebDriver(url, options);
+        	//return new InternetExplorerDriver(options);
+        	return new RemoteWebDriver(url, options);
         //} catch (WebDriverException e) {
         } catch (Exception e) {
         	e.printStackTrace();
@@ -151,6 +151,36 @@ public class T00S01_WebLogin_2S4F {
 				eOkBtn=liBtn.get(0);				
 			}
 			eOkBtn.click();
+		}
+	}
+	public void loop() throws Exception {
+		String ieDriverServerFilePath = "C:\\eclipse_neon\\workspace\\lib\\selenium\\3.14\\";
+		String browser = "firefox";
+		switch(browser){
+			case "ie":
+				System.setProperty("webdriver.ie.driver",ieDriverServerFilePath+"IEDriver32Server.exe");
+				driver = new InternetExplorerDriver();
+				driver.get("https://www.google.com");
+				Thread.sleep(1000);
+				shared_functions.loginToProxyServerRobot(driver, "lys678", "Ha$5638~0");
+				break;
+			case "firefox":
+				System.setProperty("webdriver.gecko.driver",ieDriverServerFilePath+"geckodriver64.exe");
+				driver = new FirefoxDriver();
+				Thread.sleep(3000);
+				shared_functions.loginToProxyServerRobot(driver, "lys678", "Ha$5638~0");
+				break;
+			default:
+				break;
+		}
+		int i = 0;
+		while(i<999){
+			System.out.println(i);
+			driver.get("https://www.google.com");
+			driver.findElement(By.cssSelector("input[name=q]")).sendKeys(i+"");
+			Thread.sleep(500);
+			driver.findElement(By.cssSelector("input[name=btnK]")).click();
+			i++;
 		}
 	}
 }

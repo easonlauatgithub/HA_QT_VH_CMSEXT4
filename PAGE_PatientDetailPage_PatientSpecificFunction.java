@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -20,73 +21,26 @@ public class PAGE_PatientDetailPage_PatientSpecificFunction {
 		this.driver = driver;
 	}
 	public void closeExistingAlertReminderWindow() throws InterruptedException {
-System.out.println("PSF-closeExistingAlertReminderWindow-START");
-		driver.switchTo().defaultContent();
-		Boolean isExistAlertReminderWindow = driver.findElements(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")).size()>0;
-		System.out.println("PSF-closeExistingAlertReminderWindow-isExistAlertReminderWindow:"+isExistAlertReminderWindow);
-		//exist, Clickkkkkk until close
-		while(isExistAlertReminderWindow){
-System.out.println("PSF-closeExistingAlertReminderWindow-alert window exist");			
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			//Get Close Button
-			List<WebElement> liCloseBtn = null;
-			try {
-				liCloseBtn = driver.findElements(By.cssSelector("#btnCorpAllergyClose"));				
-			}catch(JavascriptException e) {
-System.out.println("PSF-closeExistingAlertReminderWindow-JavascriptException, sleep");
-				shared_functions.sleepForAWhile(5000);
-				liCloseBtn = driver.findElements(By.cssSelector("#btnCorpAllergyClose"));
-			}
-			//click Close
-			if(liCloseBtn.size()>0){
-				System.out.println("PSF-closeExistingAlertReminderWindow-closeBtn click:"+liCloseBtn.size());
-				liCloseBtn.get(0).click();
-				shared_functions.sleepForAWhile(500);
-			}
-			//Check closed or not
+		Boolean isExistAlertReminderWindow = true;
+		while(isExistAlertReminderWindow){//exist, Clickkkkkk until close
 			driver.switchTo().defaultContent();
+			//shared_functions.sleepForAWhile(500);
 			isExistAlertReminderWindow = driver.findElements(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")).size()>0;
-System.out.println("PSF-closeExistingAlertReminderWindow-after click close, still exist:"+isExistAlertReminderWindow);				
-		}
-System.out.println("PSF-closeExistingAlertReminderWindow-END");
-	}
-	/*
-	public void closeExistingAlertReminderWindow() throws InterruptedException {
-		driver.switchTo().defaultContent();
-		Boolean isExistAlertReminderWindow = driver.findElements(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")).size()>0;
-		if(isExistAlertReminderWindow) {
-			System.out.print("PSF-closeExistingAlertReminderWindow, ");
-			shared_functions.sleepForAWhile(5000);
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			shared_functions.clickBtnByCssWithException("#btnCorpAllergyClose");
-		}
-	}
-	*/
-	/* origin
-	public void closeExistingAlertReminderWindow() throws InterruptedException {
-		driver.switchTo().defaultContent();
-		if(driver.findElements(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")).size()!=0) {
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			try {
-				System.out.println("PAGE - PSF - closeExistingAlertReminderWindow : "+driver.findElements(By.cssSelector("#btnCorpAllergyClose")).size());				
-			}catch(JavascriptException e) {
-				System.out.println("PAGE - PSF - JavascriptException exist, sleep 5s");
+System.out.println("PSF-closeExistingAlertReminderWindow-isExistAlertReminderWindow:"+isExistAlertReminderWindow);
+			if(isExistAlertReminderWindow){
 				try {
-					shared_functions.sleepForAWhile(5000);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
+					driver.switchTo().frame("alertWinPanelModalIFrame");
+					//Get Close Button
+					List<WebElement> liCloseBtn = driver.findElements(By.cssSelector("#btnCorpAllergyClose"));				
+					if(liCloseBtn.size()>0){
+						liCloseBtn.get(0).click();//click Close
+					}
+				}catch(Exception e){
+					e.printStackTrace();
 				}
-				System.out.println("PAGE - PSF - after sleep closeExistingAlertReminderWindow : "+driver.findElements(By.cssSelector("#btnCorpAllergyClose")).size());
-			}
-			shared_functions.sleepForAWhile(5000);
-			if( driver.findElements(By.cssSelector("#btnCorpAllergyClose")).size()!=0 ) {
-				System.out.println("PAGE - PSF - closeExistingAlertReminderWindow - close");
-				WebElement eCloseAlertReminderWindow = driver.findElement(By.cssSelector("#btnCorpAllergyClose"));
-				eCloseAlertReminderWindow.click();
 			}
 		}
 	}
-	*/
 	public void closeDeadWarning() {
 		driver.switchTo().defaultContent();
 		String xpDesc = "//textarea[contains(text(), 'Patient has already been recorded dead on')]";

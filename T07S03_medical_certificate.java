@@ -252,9 +252,11 @@ public class T07S03_medical_certificate {
 			}
 		}
 		public void selectFirstRecord(){
+			System.out.println("selectFirstRecord");
 			String xp = "//td[contains(@class,'x-grid-rowwrap')]//table[contains(@class,'x-gridview-')]";			
 			List<WebElement> li = driver.findElements(By.xpath(xp));
 			if(li.size()>0){
+				System.out.println("selectFirstRecord clicked");
 				li.get(0).click();
 			}
 		}
@@ -338,11 +340,12 @@ public class T07S03_medical_certificate {
 				li.get(0).click();
 			}
 		}
-		public void clickSaveBtn(){
+		public void clickSaveBtn() throws InterruptedException{
 			String xp = "//span[@id='btnSave-btnInnerEl']";
 			List<WebElement> li = driver.findElements(By.xpath(xp));
 			if(li.size()>0){
 				li.get(0).click();
+				waitForSaving();
 			}
 		}
 		public void waitForSaving() throws InterruptedException{

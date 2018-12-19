@@ -517,10 +517,15 @@ public class shared_functions {
 	}
 
 	public static void clickAndType(WebElement e, String str){
-		e.clear();
-		e.click();
-		e.sendKeys(str);
-		e.sendKeys(Keys.ENTER);
+		try{
+			e.clear();
+			e.click();
+			e.sendKeys(str);
+			e.sendKeys(Keys.ENTER);			
+		}catch(Exception ex){
+			ex.printStackTrace();
+			clickAndType(e, str);
+		}
 	}
 	public static void clearAndSend(WebElement e, String str){
 		e.click();
@@ -573,13 +578,15 @@ public class shared_functions {
 		return base64decodedString;
 	}
 	public static String getTableText(WebElement eTable, int rowNum, int colNum){
-		System.out.println("-- getTableText --");
+		System.out.print("--getTableText:");
 		String str = null;
 		List<WebElement> li1 = eTable.findElements(By.tagName("tr"));
 		WebElement e1 = li1.get(rowNum);
 		List<WebElement> li2 = e1.findElements(By.tagName("td"));
 		WebElement e2 = li2.get(colNum);
 		str = e2.getText();
+		System.out.print(str);
+		System.out.println("--");
 		return str;
 	}
 	public static void showTableText(WebElement eTable){
@@ -597,7 +604,7 @@ public class shared_functions {
 	}
 	public static void exit_test_iteration() {
 		System.exit(1);
-		driver.quit();
+		//driver.quit();
 	}
 	public static void right_click(WebElement elm, int x, int y){
 		Actions action= new Actions(driver);
@@ -607,14 +614,14 @@ public class shared_functions {
 		Boolean bBtnIsClicked = false;
 		while(!bBtnIsClicked){
 			try {
+				System.out.println("clickBtnByCssWithException:"+strCss);
 				List<WebElement> liBtn = driver.findElements(By.cssSelector(strCss));
 				if(liBtn.size()>0){
 					WebElement eBtn = liBtn.get(0);
 					eBtn.click();
 					bBtnIsClicked = true;
-				}else{System.out.println("clickBtnByCssWithException - no button metch");}
+				}
 			}catch(Exception e) {
-				System.out.println("clickBtnByCssWithException - see below");
 				e.printStackTrace();
 				bBtnIsClicked = false;
 			}

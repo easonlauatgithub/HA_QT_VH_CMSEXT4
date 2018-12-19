@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchFrameException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -327,17 +328,21 @@ public class T05S04_discharge {
 			driver.switchTo().frame(8);
 		}*/
 		public void switchToIframeLastOfficeForm(){
+			System.out.println("switchToIframeLastOfficeForm");
 			driver.switchTo().defaultContent();
 			int numOfIFrame = driver.findElements(By.cssSelector("iframe")).size();
-			//for(int i=numOfIFrame-1; i>=0; i--){
-			for(int i=0; i<numOfIFrame; i++){
+			for(int i=numOfIFrame-1; i>=0; i--){
+			//for(int i=0; i<numOfIFrame; i++){
 				System.out.println("switchToIframeLastOfficeForm["+i+"]");
-				driver.switchTo().frame(i);
+				driver.switchTo().frame(i);					
 				String str = "#bn_dod_retrieve-btnInnerEl";
 				Boolean isCorrectIframe = driver.findElements(By.cssSelector(str)).size()>0;
 				if(isCorrectIframe){
-					System.out.println("correct-switchToIframeLastOfficeForm["+i+"]");
+					System.out.println("switchToIframeLastOfficeForm["+i+"] is correct iframe");
 					break;
+				}else{
+					System.out.println("switchToIframeLastOfficeForm["+i+"] is not correct iframe");
+					driver.switchTo().defaultContent();
 				}
 			}
 		}

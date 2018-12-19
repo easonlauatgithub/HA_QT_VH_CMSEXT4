@@ -151,7 +151,8 @@ public class T05S02_transfer {
 			switchToIframe();
 			WebElement e = null;
 			String css = "#ext-comp-"+id+"-inputEl";//ext-comp-{id}-inputEl
-			List<WebElement> li = driver.findElements(By.cssSelector( css ));
+			List<WebElement> li = driver.findElements(By.cssSelector( css )); 
+			//org.openqa.selenium.WebDriverException: java.net.ConnectException: Connection refused: connect
 			//if(driver.findElements(By.cssSelector(css)).size()>0) {
 				//e = driver.findElements(By.cssSelector(css)).get(0);
 			if(li.size()>0) {

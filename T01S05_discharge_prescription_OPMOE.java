@@ -62,6 +62,11 @@ public class T01S05_discharge_prescription_OPMOE {
 		cmsMainPage.selectPatientByCaseNum(moe_case_no);
 		cmsMainPage.selectSpecialty(specialty, subspecialty);
 		psf.closeExistingAlertReminderWindow();
+		if(dp.isExistPrescription()){
+			dp.clickOkBtn();
+			dp.clickDeleteOrderBtn();
+			dp.confirmDelete();
+		}
 		if(dp.isExistSavePMSDataFailed()){dp.clickOKBtnForSavePMSDataFailed();}
 		if(dp.isExistFailToRetrievePMSInformation()){
 			shared_functions.do_screen_capture_with_filename(driver, "T01S05 - PMS unavailabitlity");
@@ -345,6 +350,13 @@ public class T01S05_discharge_prescription_OPMOE {
 			driver.switchTo().defaultContent();
 			driver.switchTo().frame("226Panel");			
 		}
+		//Check exist
+		public Boolean isExistPrescription(){
+			switchToIframe();
+			String xp = "//label[contains(text(),'A prescription already exists for this patient.')]";
+			List<WebElement> li = driver.findElements(By.xpath(xp));
+			return li.size()>0;
+		}
 		public Boolean isExistFailToRetrievePMSInformation(){
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'Fail to retrieve PMS information')]";
@@ -402,6 +414,7 @@ public class T01S05_discharge_prescription_OPMOE {
 			System.out.println("isExistSavePMSDataFailed:"+b);
 			return b;
 		}
+		//Click
 		public void clickOKBtnForSavePMSDataFailed(){
 			switchToIframe();
 			String xp = "//span[contains(text(),'K')]/u[contains(text(),'O')]";
@@ -420,13 +433,18 @@ public class T01S05_discharge_prescription_OPMOE {
 			}
 		}
 		public void clickCancelBtn() throws InterruptedException{
+			System.out.println("clickCancelBtn");
 			switchToIframe();
-			String xp = "//div[@id='cancelBtn']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
+			String css = "div#cancelBtn";
+			List<WebElement> li = driver.findElements(By.cssSelector(css));
 			if(li.size()>0){
 				li.get(0).click();
 			}
-			waitToLoad();
+			waitForCancelBtnHide();
+		}
+		public void waitForCancelBtnHide() throws InterruptedException{
+			String css = "div#cancelBtn";
+			waitForCssHide(css);
 		}
 		public void clickHistoryBtn() throws InterruptedException{
 			switchToIframe();
@@ -435,15 +453,19 @@ public class T01S05_discharge_prescription_OPMOE {
 			if(li.size()>0){
 				li.get(0).click();
 			}
-			waitToLoad();
+			waitForCancelBtn();
 		}
 		public void clickAddBtn() throws InterruptedException{
-			String xp = "//table[@id='moe-drugSearchBottomButton-table']//span[contains(text(),'Add')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
+			String css = "table#moe-drugSearchBottomButton-table div#Addbutton";
+			List<WebElement> li = driver.findElements(By.cssSelector(css));
 			if(li.size()>0){
 				li.get(0).click();
 			}
-			waitToLoad();
+			waitForAddBtnHide();
+		}
+		public void waitForAddBtnHide() throws InterruptedException{
+			String css = "div#Addbutton";
+			waitForCssHide(css);
 		}
 		public void clickSaveBtn() throws InterruptedException{
 			String xp = "//span[contains(text(),'Save and')]//u[contains(text(),'P')]";
@@ -451,7 +473,19 @@ public class T01S05_discharge_prescription_OPMOE {
 			if(li.size()>0){
 				li.get(0).click();
 			}
-			waitToLoad();
+			waitForSaveNPrintBtnDisable();
+		}
+		public void waitForSaveNPrintBtnDisable() throws InterruptedException{
+			String css = "div#PIsapBtn>div";
+			waitForCssDisable(css);
+		}
+		public void clickOkBtn(){
+			switchToIframe();
+			String xp = "//span[contains(text(),'K')]/u[contains(text(),'O')]";
+			List<WebElement> li = driver.findElements(By.xpath(xp));
+			if(li.size()>0){
+				li.get(0).click();
+			}
 		}
 		public void clickDeleteOrderBtn() throws InterruptedException{
 			switchToIframe();
@@ -469,8 +503,9 @@ public class T01S05_discharge_prescription_OPMOE {
 					li2.get(0).click();
 				}
 			}
-			waitToLoad();
-			while(dp.getIframe226Panel().size()!=0){dp.waitToLoad();} //wait for loading
+			while(dp.getIframe226Panel().size()!=0){
+				System.out.println("Still in Iframe226Panel");
+			} 
 		}
 		public void inputStartDateDuration(String str){
 			switchToIframe();
@@ -481,6 +516,7 @@ public class T01S05_discharge_prescription_OPMOE {
 			}
 		}
 		public void inputDrugKeyword(String str){
+			System.out.println("inputDrugKeyword:"+str);
 			switchToIframe();
 			String css = "input#moeDrugSearchTriggerText";
 			List<WebElement> li = driver.findElements(By.cssSelector(css));
@@ -517,13 +553,7 @@ public class T01S05_discharge_prescription_OPMOE {
 			if(li.size()>0){
 				li.get(0).click();
 			}
-			waitForEditPage();
-		}
-		public void waitForEditPage() throws InterruptedException{
-			String css = "div.moe-durationPanel input[class*='moe-ui-textfield']";
-			while(driver.findElements(By.cssSelector(css)).size()==0){
-				waitToLoad();
-			}
+			waitForAcceptBtnDisplay();
 		}
 		public void inputDuration(String str){
 			System.out.print("inputDuration:");
@@ -551,7 +581,7 @@ public class T01S05_discharge_prescription_OPMOE {
 				//System.out.println("e clear");
 				//e.sendKeys(str);
 				//System.out.println("e sendKeys:"+str);				
-			}			
+			}
 		}
 		public void inputSpecialInstruction(String str){
 			System.out.print("inputSpecialInstruction:");
@@ -576,15 +606,17 @@ public class T01S05_discharge_prescription_OPMOE {
 			}
 		}
 		public void clickAcceptBtn() throws InterruptedException{
-			System.out.println("clickAcceptBtn size:");
+			System.out.print("clickAcceptBtn size:");
 			switchToIframe();
 			String xp = "//span[contains(text(),'ccept')]//u[contains(text(),'A')]";
 			List<WebElement> li = driver.findElements(By.xpath(xp));
 			System.out.println(li.size());
 			if(li.size()>0){
-				li.get(0).click();
+				WebElement e = li.get(0);
+				e.click();
+				System.out.print("clickAcceptBtn-clicked:"+e);
 			}
-			waitToLoad();
+			waitForHistoryBtnEnable();
 		}
 		public void clickRemoveBtn(){		
 			String xp = "//span[contains(text(),'emove')]//u[contains(text(),'R')]";
@@ -619,8 +651,9 @@ public class T01S05_discharge_prescription_OPMOE {
 			if(li.size()>0){
 				li.get(0).click();
 			}
-			waitToLoad();
-		}	
+			waitForDrugSetCancelBtnEnable();
+			waitForDrugSetInputEnable();
+		}
 		public void inputDrugSet(String str) throws InterruptedException{
 			switchToIframe();
 			//String str = dict.get("drugset_keywoard");
@@ -652,7 +685,7 @@ public class T01S05_discharge_prescription_OPMOE {
 			if(li.size()>0){
 				li.get(0).click();
 			}
-			waitToLoad();
+			waitForHistoryBtnEnable();
 		}
 		public void clickStandardRegimenBtn() throws InterruptedException{
 			switchToIframe();
@@ -662,7 +695,8 @@ public class T01S05_discharge_prescription_OPMOE {
 			if(li.size()>0){
 				li.get(0).click();
 			}
-			waitToLoad();
+			waitForDrugSetCancelBtnEnable();
+			waitForStandardRegimenInputEnable();
 		}
 		public void inputStandardRegimen(String str) throws InterruptedException{
 			switchToIframe();
@@ -699,10 +733,95 @@ public class T01S05_discharge_prescription_OPMOE {
 			List<WebElement> li = driver.findElements(By.xpath(xp));
 			return li;
 		}
-		
-		public void waitToLoad() throws InterruptedException{
-			shared_functions.sleepForAWhile(5000);
+		//wait
+		public void waitForHistoryBtnDisplay() throws InterruptedException{
+			String css = "td#historyBtnTD div#moeHistoryBtn";
+			waitForCssDisplay(css);
 		}
+		public void waitForCancelBtn() throws InterruptedException{
+			String css = "div#cancelBtn div#historyClose";
+			waitForCssDisplay(css);
+		}
+		public void waitForHistoryBtnEnable() throws InterruptedException{
+			String css = "td#historyBtnTD div#moeHistoryBtn";
+			waitForCssEnable(css);
+		}
+		public void waitForSaveNPrintBtnDisplay() throws InterruptedException{
+			String css = "div#PIsapBtn>div";
+			waitForCssDisplay(css);
+		}
+
+		public void waitForAcceptBtnDisplay() throws InterruptedException{
+			String css = "td#moeEditAcceptBtnTd";
+			waitForCssDisplay(css);
+		}
+		public void waitForDrugSetCancelBtnEnable() throws InterruptedException{
+			String css = "div#drugsetCancelBtn div#dsCancelBtn";
+			waitForCssEnable(css);
+		}
+		public void waitForDrugSetInputEnable() throws InterruptedException{
+			String css = "div#drugsetTextDiv input";
+			waitForCssEnable(css);
+		}
+		public void waitForStandardRegimenInputEnable() throws InterruptedException{
+			String css = "div#drugsetTextDiv input";
+			waitForCssEnable(css);
+		}
+		public void waitToLoad() throws InterruptedException{
+			System.out.print("waitToLoad, ");
+			shared_functions.sleepForAWhile(500);
+		}
+		public void waitForCssHide(String css){
+			Boolean bHide = false;
+			while(!bHide){
+				List<WebElement> li = driver.findElements(By.cssSelector(css));
+				if(li.size()>0){
+					bHide = !li.get(0).isDisplayed(); //display, break loop
+				}else{
+					bHide = false;
+				}
+				System.out.println("wait for css["+css+"] to hide:"+bHide);
+			}
+		}
+		public void waitForCssDisplay(String css){
+			Boolean bDisplay = false;
+			while(!bDisplay){
+				List<WebElement> li = driver.findElements(By.cssSelector(css));
+				if(li.size()>0){
+					bDisplay = li.get(0).isDisplayed(); //display, break loop
+				}else{
+					bDisplay = false;
+				}
+				System.out.println("wait for css["+css+"] to display:"+bDisplay);
+			}
+		}
+		public void waitForCssEnable(String css){
+			Boolean bEnable = false;
+			while(!bEnable){
+				List<WebElement> li = driver.findElements(By.cssSelector(css));
+				if(li.size()>0){
+					bEnable = li.get(0).isEnabled(); //enable, break loop
+				}else{
+					bEnable = false;
+				}
+				System.out.println("wait for css["+css+"] to enable:"+bEnable);
+			}
+		}
+		public void waitForCssDisable(String css){
+			Boolean bDisable = false;
+			while(!bDisable){//disable, break loop
+				List<WebElement> li = driver.findElements(By.cssSelector(css));
+				if(li.size()>0){
+					if(li.get(0).getAttribute("disabled") != null){
+						bDisable = li.get(0).getAttribute("disabled").equals("true");
+					}
+				}else{
+					bDisable = false;
+				}
+				System.out.println("wait for css["+css+"] to disable:"+bDisable);
+			}
+		}
+
 	}
 	
 }

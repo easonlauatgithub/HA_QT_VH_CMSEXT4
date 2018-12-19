@@ -145,8 +145,9 @@ public class T01S06_Discharge_Summary {
 		eTxtAreaPlain.clear();
 		patientDetailPageDS.clickTmpl();
 		PAGE_NoteTemplate noteTemplate = new PAGE_NoteTemplate(driver);
-		noteTemplate.searchFor( dict.get("add_tmpl_header") ); //QAG_TMPL
-		noteTemplate.selectTemplate(0); 
+		noteTemplate.waitUntilTemplateListFinishedLoading();
+		noteTemplate.searchFor(dict.get("add_tmpl_header"));//QAG_TMPL
+		noteTemplate.selectTemplate(0);
 		patientDetailPageDS.clickSave();
 		System.out.println("test_add_ds_from_tmpl() - verify zoomtext from template");
 		shared_functions.do_screen_capture_with_filename(driver, "T01S06_3");
@@ -280,6 +281,19 @@ public class T01S06_Discharge_Summary {
 			eSearch.clear();
 			eSearch.sendKeys( str );
 			eSearch.sendKeys(Keys.ENTER);
+		}
+		public void waitUntilTemplateListFinishedLoading(){
+			switchToIframe_Left();
+			Boolean bLoading = true;
+			while(bLoading){
+				List<WebElement> li = driver.findElements(By.cssSelector("#tmplListGrid"));
+				if(li.size()>0){
+					System.out.println("Template list is finished loading");
+					bLoading=false;
+				}else{
+					System.out.println("Template list is loading");
+				}
+			}
 		}
 		public void selectTemplate(int idx) {
 			switchToIframe_Left();

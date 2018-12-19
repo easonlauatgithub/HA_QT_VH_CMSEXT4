@@ -182,7 +182,7 @@ public class T01S12_IPMOE_Prescription {
 	public void test_modify_drug_item() throws Exception{
 		System.out.println("test_modify_drug_item - START");
 		WebElement drug_to_modify = ip.select_today_drug_in_mar(dict.get("new_ipmoe_mar_check_d" + dict.get("modify_ipmoe_drug_index")));
-		//Paracetamol tabletoral: 500 mg Q4H PRN
+		//Paracetamol Alcohol Free suspensionoral: 500 mg Q4H PRN
 		shared_functions.right_click(drug_to_modify, 10, 0);
 		ip.selectByTagNText("span", "Modify");
 		String xp = "//div[contains(@id,'oral-orderDetailRowCt-')]//div[contains(@class,'ipmoe ipmoe-ipEditWin-dosageRow')]//table[contains(@class,'x-table-layout')]//input";
@@ -193,7 +193,8 @@ public class T01S12_IPMOE_Prescription {
 		dict.put("modified_mar_panel_description", ip.get_new_drug_panel_description());
 		ip.selectByTagNText("span", "Accept Change");
 		shared_functions.do_screen_capture_with_filename(driver, "T01S12_2");
-		if(ip.select_today_drug_in_mar(dict.get("modify_ipmoe_mar_check"))!=null){ //Paracetamol tabletoral: 500 mg Q6H for 1 day(s)
+		if(ip.select_today_drug_in_mar(dict.get("modify_ipmoe_mar_check"))!=null){ 
+			//Paracetamol Alcohol Free suspensionoral: 500 mg Q6H for 1 day(s)
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_2", "modify ipmoe drug, modified item matched expected");
 			steps_passed = steps_passed + 1;
 			dict.put("new_ipmoe_mar_check_d" + dict.get("modify_ipmoe_drug_index"), dict.get("modify_ipmoe_mar_check"));
@@ -213,29 +214,7 @@ public class T01S12_IPMOE_Prescription {
 		//remove drugs
 		for(int i=start_num;i<=number_of_drugs;i++){
 			String suffix = "_d" + i;
-			try{
-				WebElement drug_to_remove = ip.select_today_drug_in_mar(dict.get("remove_ipmoe_drug_check" + suffix));
-				if(drug_to_remove!=null){
-					Boolean isBeingProcessedByPharmacy = true;
-					while(isBeingProcessedByPharmacy){
-							System.out.println("BEFORE isBeingProcessedByPharmacy:"+isBeingProcessedByPharmacy);
-							shared_functions.right_click(drug_to_remove, 0, 10);
-							ip.selectDeleteFromList();				
-							isBeingProcessedByPharmacy = ip.checkIfBeingProcessedByPharmacy();
-							if(isBeingProcessedByPharmacy){
-								ip.cannotDelete();
-							}
-							System.out.println("AFTER isBeingProcessedByPharmacy:"+isBeingProcessedByPharmacy);						
-					}//loop again, delete
-					String str = "Are you sure you want to delete " + dict.get("remove_drug_check" + suffix) + " from patient";
-					ip.confirmDelete(str);	
-				}else{
-					System.out.println("cannot remove drug:"+dict.get("remove_ipmoe_drug_check" + suffix));
-				}
-			}catch(Exception e){
-				System.out.println("test_remove_drug_item["+dict.get("remove_ipmoe_drug_check" + suffix)+"] - StaleElementReferenceException");
-				e.printStackTrace();
-			}
+			ip.removeDrug(dict.get("remove_ipmoe_drug_check" + suffix), dict.get("remove_drug_check" + suffix));
 		}
 		//check existing drugs is null
 		String xp = "//table[contains(@id,'gridview-') and contains(@id,'-table')]//tr";
@@ -445,7 +424,6 @@ public class T01S12_IPMOE_Prescription {
 				//PRN
 				if(prn!=null){
 					if(prn.equals("N")){
-						System.out.println("click PRN");
 						li.get(3).click();
 					}
 				}
@@ -529,6 +507,7 @@ public class T01S12_IPMOE_Prescription {
 			}			
 		}
 		public WebElement select_today_drug_in_mar(String mar_description){
+			System.out.println("select_today_drug_in_mar");
 			ip.switchToIframe();
 			WebElement retval = null;
 			try{
@@ -542,16 +521,23 @@ public class T01S12_IPMOE_Prescription {
 					String strDrugInCMS = shared_functions.getTableText(all_drugs_table,d,2).replace("\n", "");
 					Boolean b1 = (strDateInCMS.indexOf(today_ddMMM)!=-1);
 					Boolean b2 = (strDrugInCMS.indexOf(mar_description)!=-1);
+					System.out.println("select_today_drug_in_mar today_ddMMM:"+today_ddMMM);
+					System.out.println("select_today_drug_in_mar strDateInCMS:"+strDateInCMS);
+					System.out.println("select_today_drug_in_mar b1:"+b1);
+					System.out.println("select_today_drug_in_mar strDrugInCMS:"+strDrugInCMS);
+					System.out.println("select_today_drug_in_mar mar_description:"+mar_description);
+					System.out.println("select_today_drug_in_mar b2:"+b2);
 					if(b1&&b2){
 						retval = all_drugs_table.findElements(By.tagName("tr")).get(d).findElements(By.tagName("td")).get(2);
+						System.out.println("select_today_drug_in_mar retval:"+retval);
 						retval.click();
 					}
 				}
 			}catch(Exception e){ //handle StaleElementReferenceException
-				e.printStackTrace();
 				System.out.println("select_today_drug_in_mar["+mar_description+"] - StaleElementReferenceException");
+				e.printStackTrace();
 				return select_today_drug_in_mar(mar_description);
-			}			
+			}
 			shared_functions.reporter_ReportEvent("micDone", "select_today_drug_in_mar", "selected " + mar_description);
 			return retval;
 		}
@@ -571,6 +557,33 @@ public class T01S12_IPMOE_Prescription {
 				}
 			}
 			return retval;
+		}
+
+		public void removeDrug(String remove_ipmoe_drug_check, String remove_drug_check){
+			try{
+				WebElement drug_to_remove = ip.select_today_drug_in_mar(remove_ipmoe_drug_check);
+				if(drug_to_remove!=null){
+					Boolean isBeingProcessedByPharmacy = true;
+					while(isBeingProcessedByPharmacy){
+							System.out.println("BEFORE isBeingProcessedByPharmacy:"+isBeingProcessedByPharmacy);
+							shared_functions.right_click(drug_to_remove, 0, 10);
+							selectDeleteFromList();				
+							isBeingProcessedByPharmacy = ip.checkIfBeingProcessedByPharmacy();
+							if(isBeingProcessedByPharmacy){
+								ip.cannotDelete();
+							}
+							System.out.println("AFTER isBeingProcessedByPharmacy:"+isBeingProcessedByPharmacy);						
+					}//loop again, delete
+					String str = "Are you sure you want to delete " + remove_drug_check + " from patient";
+					confirmDelete(str);	
+				}else{
+					System.out.println("cannot remove drug:"+remove_ipmoe_drug_check);
+				}
+			}catch(Exception e){ //prevent StaleElementReferenceException
+				System.out.println("test_remove_drug_item["+remove_ipmoe_drug_check+"] - StaleElementReferenceException");
+				e.printStackTrace();
+				removeDrug(remove_ipmoe_drug_check, remove_drug_check);
+			}
 		}
 	}
 }

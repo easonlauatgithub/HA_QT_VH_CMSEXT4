@@ -1,21 +1,12 @@
 package suite;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.PageFactory;
-
-import suite.T01S03_corp_allergy.PAGE_AlertPanel;
-import suite.T02S01A_ix_request_laboratory.PAGE_PatientDetailPage_lxRequest;
 
 public class T03S01_PMI_enquiry {
 	Map<String, String> dict = new HashMap<>();

@@ -32,8 +32,18 @@ public class PAGE_CMSMainPage {
 		WebElement eFile = li_top_menu.get(0);
 		eFile.click();
 		driver.findElement(By.linkText(str)).click();
-		shared_functions.sleepForAWhile(3000);
+		cancelListOfPrescriptionsModifiedByPharmacy();
+		shared_functions.sleepForAWhile(3000);		
 		//if( shared_functions.isAlertPresent(driver) ) {shared_functions.handleAlert(driver, false);}
+	}
+	public void cancelListOfPrescriptionsModifiedByPharmacy(){
+		driver.switchTo().defaultContent();
+		List<WebElement> liFrame = driver.findElements(By.cssSelector("iframe[name=230ModalIFrame]"));
+		if(liFrame.size()>0){
+			System.out.println("cancelListOfPrescriptionsModifiedByPharmacy - switch to iframe 230ModalIFrame");
+			driver.switchTo().frame("230ModalIFrame");
+			driver.findElement(By.cssSelector("#pRmkUserCancelBtn")).click();	
+		}
 	}
 	public void fnClose() throws InterruptedException {
 		String str = "Close";
@@ -289,69 +299,24 @@ public class PAGE_CMSMainPage {
 			
 			liItems.get(idx).click(); //SELECT PATIENT LIST 'Normal Patient List'	
 	}
-	
-	/*public void selectWard1(int idxOfPatientList, String strWard) {
-			System.out.println("PAGE - CMS - Select Ward");
-		    driver.switchTo().defaultContent();
-			driver.switchTo().frame("cmsPSPWinPanelCmp");
-
-			String cssPSP = "#pspSelectionPanel"+idxOfPatientList+" ";
-			String cssDropDownBtn = "table.x-field td.x-form-item-body td.x-trigger-cell.x-unselectable";
-			driver.findElement(By.cssSelector(cssPSP+cssDropDownBtn)).click();
-			
-			String cssListItems = "div.x-boundlist li.x-boundlist-item";
-			List<WebElement> liItems = driver.findElements(By.cssSelector( cssListItems )); 
-
-			//DEBUG System.out.println("liItems:"+liItems.size());
-			//DEBUG for(int i =0; i<liItems.size(); i++ ) {
-				//DEBUG String str = liItems.get(i).getText();
-				//DEBUG System.out.println("List("+i+"):"+str);
-			//DEBUG }
-			
-			int idx = -1;
-			for(int i =0; i<liItems.size(); i++ ) {
-				if( liItems.get(i).getText().equals(strWard)) {
-					idx = i;
-					break;
-				}
-			}
-			
-			if(idx == -1) {
-				shared_functions.reporter_ReportEvent("micWarning", "change_ward - not exists", "ward does not exist");
-			}else {
-				liItems.get(idx).click(); //SELECT WARD LIST '8A'
-				shared_functions.reporter_ReportEvent("micDone", "change_ward - yes", "changed to ward: "+strWard);
-				System.out.println("changed to ward: "+strWard);
-			}
-
-	}
-	public void changeWard(int idxOfPatientList,String strWard) {
-		System.out.println("PAGE - CMS - Change Ward");
-	    driver.switchTo().defaultContent();
-		driver.switchTo().frame("cmsPSPWinPanelCmp");
-		String cssPSP = "#pspSelectionPanel"+idxOfPatientList+" "; //"#cuicombobox-1026-inputEl";
-		String cssWardField = "table.x-field td.x-form-item-body td.x-form-trigger-input-cell input";
-		List<WebElement> liWardField = driver.findElements(By.cssSelector(cssPSP+cssWardField));
-
-		for(int i =0; i<liWardField.size(); i++ ) {
-			WebElement eWardField = liWardField.get(i);
-			if( eWardField.isDisplayed() ) {
-				shared_functions.clearAndSend(eWardField, strWard);
-			}
-		}
-	}*/
-	public void changeWardForNormalPatientList(String strWard) {
+	public void changeWardForNormalPatientList(String strWard) throws InterruptedException {
 		System.out.println("PAGE - CMS - changeWardForNormalPatientList "+strWard);
 	    driver.switchTo().defaultContent();
 		driver.switchTo().frame("cmsPSPWinPanelCmp");
 		String cssWard = "#cuicombobox-1026-inputEl";
 		WebElement e = driver.findElement(By.cssSelector(cssWard));
-		e.click();
-		e.clear();
-		e.click();
-		e.sendKeys(Keys.chord(Keys.BACK_SPACE,Keys.BACK_SPACE,Keys.BACK_SPACE));
-		e.sendKeys(strWard);
-		e.sendKeys(Keys.ENTER);
+		try{
+			e.click();
+			e.clear();
+			e.click();
+			e.sendKeys(Keys.chord(Keys.BACK_SPACE,Keys.BACK_SPACE,Keys.BACK_SPACE));
+			e.sendKeys(strWard);
+			e.sendKeys(Keys.ENTER);
+		}catch(Exception ex){
+			ex.printStackTrace();
+			changeWardForNormalPatientList(strWard);
+		}
+		shared_functions.sleepForAWhile(1000);
 	}
 	public void selectPatient(int idxOfPatient) {
 	    driver.switchTo().defaultContent();
@@ -418,7 +383,6 @@ public class PAGE_CMSMainPage {
 			li3.get(0).click();
 		}				
 	}	
-	
 	/*
 	 	public void closeAlertPanel_toBeDelete() {
 		driver.switchTo().defaultContent();
