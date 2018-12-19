@@ -51,7 +51,7 @@ public class T05S06_modification_of_discharge {
 		shared_functions.clearAndSend(eDischargeCode, dict.get("modified_discharge_code"));
 		WebElement eExistingRemarks = modDischarge.getRemarkTextArea();
 		String modified_remark1 = "[NORMAL]: remarks by QTP;";
-		String modified_remark2 = " modified at "+ shared_functions.getDateInddMMMyyyy();
+		String modified_remark2 = " modified at "+ shared_functions.getDateIn("dd-MMM-yyyy");
 		String modified_remarks = modified_remark1 + modified_remark2; //for verify 
 		//shared_functions.clearAndSend(eExistingRemarks, modified_remarks);
 		eExistingRemarks.clear();
@@ -67,7 +67,7 @@ public class T05S06_modification_of_discharge {
 		cmsMainPage.selectPatientByCaseNum(case_no);
 		psf.closeExistingAlertReminderWindow();
 		shared_functions.do_screen_capture_with_filename(driver, "T05S06_1");
-		String check_today_str = shared_functions.getDateInddMMMyyyy();
+		String check_today_str = shared_functions.getDateIn("dd-MMM-yyyy");
 		String check_case_no = shared_functions.convert_case_no_to_cms_format(case_no);
 		String hosp_code = modDischarge.getHospCode();
 		List<ArrayList<String>> tableEpisode = pmi.getTableEpisodeCaseList();

@@ -410,6 +410,7 @@ public class shared_functions {
 		DateFormat dateFormat = new SimpleDateFormat(dFormat);
 		return dateFormat.format(date);
 	}
+	/*
 	public static String getDateInddMMyyyySlash() {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -427,16 +428,19 @@ public class shared_functions {
 		DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 		return dateFormat.format(date);
 	}
+	
 	public static String getDateInddMMyyyy() {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 		return dateFormat.format(date);
 	}
+	
 	public static String getDateIndMyyyy() {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("d-M-yyyy");
 		return dateFormat.format(date);
 	}
+	*/
 	public static Date addExtraMinute(Date curDate, int minutes) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(curDate);

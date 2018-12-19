@@ -23,7 +23,7 @@ public class T02S01A_ix_request_laboratory {
 	int total_steps = 3;
 	String gcr_case_no = null;
 	String version = "web";
-	String today_str = shared_functions.getDateInddMMyyyySlash();
+	String today_str = shared_functions.getDateIn("dd/MM/yyyy");
 
 	@Test
 	public void test() throws Exception {

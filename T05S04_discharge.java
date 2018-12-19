@@ -101,7 +101,7 @@ public class T05S04_discharge {
 		cmsMainPage.selectPatientByCaseNum( dict.get("discharge_normal_case_no") ); //HN080000251 WONG,MUI
 		psf.closeExistingAlertReminderWindow(); 
 		shared_functions.do_screen_capture_with_filename(driver, "T05S04_3");
-		check_today_str=shared_functions.getDateInddMMMyyyy();
+		check_today_str=shared_functions.getDateIn("dd-MMM-yyyy");
 		check_case_no2=shared_functions.convert_case_no_to_cms_format(dict.get("discharge_normal_case_no"));
 		hosp_code = discharge.getHospCode();
 		List<ArrayList<String>> tableEpisode = pmi.getTableEpisodeCaseList();
@@ -128,7 +128,7 @@ public class T05S04_discharge {
 		eDischargeCodeDrpBx = discharge.getDischargeCodeDrpBx();
 		shared_functions.clearAndSend(eDischargeCodeDrpBx, "1");
 		WebElement eCertifiedDeathDate = discharge.getCertifiedDeathDate();
-		shared_functions.clearAndSend(eCertifiedDeathDate, shared_functions.getDateInddMMMyyyy());		
+		shared_functions.clearAndSend(eCertifiedDeathDate, shared_functions.getDateIn("dd-MMM-yyyy"));		
 		WebElement eCertifiedDeathTime = discharge.getCertifiedDeathTime();
 		eCertifiedDeathTime.clear();
 		eCertifiedDeathTime.sendKeys(Keys.HOME);
@@ -191,7 +191,7 @@ public class T05S04_discharge {
 		cmsMainPage.selectPatientByCaseNum(dict.get("discharge_death_case_no"));
 		psf.closeExistingAlertReminderWindow();
 		shared_functions.do_screen_capture_with_filename(driver, "T05S04_5");
-		String xp = "//textarea[contains(text(),'Patient has already been recorded dead on "+shared_functions.getDateInddMMMyyyy()+".')]";
+		String xp = "//textarea[contains(text(),'Patient has already been recorded dead on "+shared_functions.getDateIn("dd-MMM-yyyy")+".')]";
 		if( driver.findElements(By.xpath(xp)).size()>0 ) {
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_5", "discharge death - 'patient already dead' warning is shown when open function");
 			steps_passed = steps_passed + 1;
@@ -200,7 +200,7 @@ public class T05S04_discharge {
 		}
 		System.out.println("test_discharge_death() - verify PMI, last ward, discharge destination discharge remark");
 		shared_functions.do_screen_capture_with_filename(driver, "T05S04_6");
-		check_today_str = shared_functions.getDateInddMMMyyyy();
+		check_today_str = shared_functions.getDateIn("dd-MMM-yyyy");
 		check_case_no2 = shared_functions.convert_case_no_to_cms_format(dict.get("discharge_death_case_no"));
 		hosp_code = discharge.getHospCode();
 		List<ArrayList<String>> tableEpisodeForDead = pmi.getTableEpisodeCaseList();

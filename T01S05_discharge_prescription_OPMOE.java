@@ -447,6 +447,7 @@ public class T01S05_discharge_prescription_OPMOE {
 			waitForCssHide(css);
 		}
 		public void clickHistoryBtn() throws InterruptedException{
+			System.out.println("clickHistoryBtn");
 			switchToIframe();
 			String xp = "//div[@id='moeHistoryBtn']";
 			List<WebElement> li = driver.findElements(By.xpath(xp));
@@ -454,6 +455,10 @@ public class T01S05_discharge_prescription_OPMOE {
 				li.get(0).click();
 			}
 			waitForCancelBtn();
+		}
+		public void waitForCancelBtn() throws InterruptedException{
+			String css = "div#cancelBtn div#historyClose";
+			waitForCssDisplay(css);
 		}
 		public void clickAddBtn() throws InterruptedException{
 			String css = "table#moe-drugSearchBottomButton-table div#Addbutton";
@@ -736,10 +741,6 @@ public class T01S05_discharge_prescription_OPMOE {
 		//wait
 		public void waitForHistoryBtnDisplay() throws InterruptedException{
 			String css = "td#historyBtnTD div#moeHistoryBtn";
-			waitForCssDisplay(css);
-		}
-		public void waitForCancelBtn() throws InterruptedException{
-			String css = "div#cancelBtn div#historyClose";
 			waitForCssDisplay(css);
 		}
 		public void waitForHistoryBtnEnable() throws InterruptedException{

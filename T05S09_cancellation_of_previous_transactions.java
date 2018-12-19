@@ -52,9 +52,9 @@ public class T05S09_cancellation_of_previous_transactions {
 		//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  HARDCODE END XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		//get check_date
 		if(dict.get("tx_date_to_cancel").equals("today") ) {
-			check_date = shared_functions.getDateInddMMMyyyy();
+			check_date = shared_functions.getDateIn("dd-MMM-yyyy");
 		}else if(dict.get("tx_date_to_cancel").equals("this_month") ) {
-			check_date = shared_functions.getDateInMMMyyyy();
+			check_date = shared_functions.getDateIn("MMM-yyyy");
 		}
 		System.out.println("check_date: "+check_date);
 		if( check_date.equals("") ) {

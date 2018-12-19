@@ -158,7 +158,7 @@ public class T01S03_corp_allergy {
 		WebElement chkBx_NKDA = alertPanel.getChkBoxNKDA();
 		chkBx_NKDA.click();
 		shared_functions.do_screen_capture_with_filename(driver, "T01S03_4");
-		String check_today_str = shared_functions.getDateIndMyyyy();
+		String check_today_str = shared_functions.getDateIn("d-M-yyyy");
 		String strNKDADate = alertPanel.getDateStringNKDA().getText();
 		if( strNKDADate.contains(check_today_str) ) {
 	    	steps_passed = steps_passed + 1;
