@@ -53,31 +53,6 @@ public class T01S03_corp_allergy {
 		test_freetext_classified_alert();
 		shared_functions.countTestPassed(steps_passed, total_steps);		
 		cmsMainPage.fnNextPatient();
-		//gc();
-	}
-	public void gc(){
-		System.out.println("-- Before gc --");
-		System.out.println("dict:"+dict);
-		System.out.println("cmsMainPage:"+cmsMainPage);
-		System.out.println("psf:"+psf);
-		System.out.println("alertPanel:"+alertPanel);
-		System.out.println("apAllergen:"+apAllergen);
-		System.out.println("apADR:"+apADR);
-		System.out.println("apAlert:"+apAlert);
-		dict = null;
-		cmsMainPage = null;
-		psf = null;
-		alertPanel = null;
-		apAllergen = null;
-		apADR = null;
-		apAlert = null;		
-		System.out.println("dict:"+dict);
-		System.out.println("cmsMainPage:"+cmsMainPage);
-		System.out.println("psf:"+psf);
-		System.out.println("alertPanel:"+alertPanel);
-		System.out.println("apAllergen:"+apAllergen);
-		System.out.println("apADR:"+apADR);
-		System.out.println("apAlert:"+apAlert);
 	}
 	//Module
 	public void test_enquiry_previous_record() throws Exception {
