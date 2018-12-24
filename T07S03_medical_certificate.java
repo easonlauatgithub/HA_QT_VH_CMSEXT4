@@ -32,7 +32,7 @@ public class T07S03_medical_certificate {
 		mc = new PAGE_PatientDetailPage_MedicalCertHA37(driver);
 		steps_passed = 0;
 		total_steps = 5;
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		open_medical_cert();
 		create_medical_cert();
 		update_medical_cert();
@@ -160,23 +160,17 @@ public class T07S03_medical_certificate {
 		}
 		public void switchToIframe(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("353Panel");			
+			shared_functions.switchToFrameByString("353Panel");
 		}
 		public void selectMedicalCert(){
 			switchToIframe();
 			String xp = "//label[contains(text(),'edical Certificate ( Sick Leave Form HA37 )')]//u[contains(text(),'M')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickOKBtn(){
 			switchToIframe();
 			String xp = "//span[@id='f9menu_btn_ok-btnInnerEl']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}		
 	}
 	class PAGE_PatientDetailPage_MedicalCertHA37{
@@ -187,122 +181,84 @@ public class T07S03_medical_certificate {
 		}
 		public void switchToIframe(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("353Panel");
-			driver.switchTo().frame("ifLetterDiv");
+			shared_functions.switchToFrameByString("353Panel");
+			shared_functions.switchToFrameByString("ifLetterDiv");
 		}
 		public void switchToIframeHistoryDetail(){
 			switchToIframe();
-			driver.switchTo().frame("ifLetterHist");
+			shared_functions.switchToFrameByString("ifLetterHist");
 		}
 		//New
 		public void inputSufferFrom(String str){
 			switchToIframe();
 			String xp = "//textarea[@id='mle_suffer']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-				li.get(0).sendKeys(str);
-			}
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
+			e.click();
+			e.sendKeys(str);
 		}
 		public void inputRemarks(String str){
 			String xp = "//textarea[@id='mle_remarks']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-				li.get(0).clear();
-				li.get(0).sendKeys(str);
-			}
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
+			e.click();
+			e.clear();
+			e.sendKeys(str);
 		}
 		public void inputFor(String str){
 			String xp = "//img[@id='imgddlb3_med_cert_for']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 			String xp2 = "//td[contains(text(),'"+str+"')]";
-			List<WebElement> li2 = driver.findElements(By.xpath(xp2));
-			if(li2.size()>0){
-				li2.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp2));
 		}
 		public void clickSaveNPrintBtn() throws InterruptedException{
 			String xp = "//span[@id='btnSaveAndPrint-btnInnerEl']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-				waitForSaving();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			waitForSaving();
 		}
 		public void clickCopyBtn() throws InterruptedException{
 			String xp = "//span[@id='btnHistCopyToNew-btnInnerEl']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-				waitForSaving();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			waitForSaving();
 		}
 		//History
 		public void clickHistoryTab() throws InterruptedException{
 			switchToIframe();
 			String xp = "//span[contains(text(),'History')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-				waitForSaving();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			waitForSaving();
 		}
 		public void selectFirstRecord(){
 			System.out.println("selectFirstRecord");
 			String xp = "//td[contains(@class,'x-grid-rowwrap')]//table[contains(@class,'x-gridview-')]";			
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				System.out.println("selectFirstRecord clicked");
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickCancelBtn() throws InterruptedException{
 			switchToIframe();
 			String xp = "//span[@id='btnHistClose-btnInnerEl']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 			waitForSaving();
 		}
 		public void clickAmendBtn() throws InterruptedException{
 			String xp = "//span[contains(text(),'mend')]//u[contains(text(),'A')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 			waitForSaving();
 		}
 		public void clickDeleteBtn(){
 			switchToIframe();
 			String xp = "//span[@id='btnHistDelete-btnInnerEl']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void confirmDeleteBtn() throws InterruptedException{
 			String xp = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 			String xp2 = "//span[contains(text(),'K')]//u[contains(text(),'O')]";
-			List<WebElement> li2 = driver.findElements(By.xpath(xp2));
-			if(li2.size()>0){
-				li2.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp2));
 			waitForSaving();
 		}
 		public Boolean isExistRecord(String str){
 			Boolean isExist = false;
-			String xp = "//table[contains(text(),'"+str+"')]";			
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
+			String xp = "//table[contains(text(),'"+str+"')]";
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
+			if(li!=null){
 				isExist = true;
 			}else{
 				isExist = false;
@@ -311,45 +267,30 @@ public class T07S03_medical_certificate {
 		}
 		public String getActualRemarks(){
 			switchToIframeHistoryDetail();
-			String str="";
 			String xp = "//textarea[@id='mle_remarks']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				str = li.get(0).getText();
-				//System.out.println("getActualRemarks text: "+li.get(0).getText());
-			}
+			WebElement e = shared_functions.getElementWhenVisible(By.xpath(xp));
+			String str = e.getText();
 			return str;
 		}
 		//Edit
 		public void selectTemplate(String str){
 			String xp = "//input[@name='template_code']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 			String xp2 = "//li[contains(text(),'"+str+"')]";
-			List<WebElement> li2 = driver.findElements(By.xpath(xp2));
-			if(li2.size()>0){
-				li2.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp2));
 		}
 		public void clickPasteBtn(){
 			String xp = "//span[@id='btnPaste-btnInnerEl']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickSaveBtn() throws InterruptedException{
 			String xp = "//span[@id='btnSave-btnInnerEl']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-				waitForSaving();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			waitForSaving();
 		}
 		public void waitForSaving() throws InterruptedException{
-			shared_functions.sleepForAWhile(3000);
+			System.out.println("Do not sleep 3s now ...");
+			//shared_functions.sleepForAWhile(3000);
 		}
 	}
 	

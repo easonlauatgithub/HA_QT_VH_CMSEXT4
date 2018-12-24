@@ -21,14 +21,13 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	T00S01_WebLogin_2S4Fremote.class,
-	T07S03_medical_certificate.class,
+	T00S01_WebLogin_2S4F.class,
+	//T00S01_WebLogin_2S4Fremote.class,
 	//T01S05_discharge_prescription_OPMOE.class,
 	T01S12_IPMOE_Prescription.class,
-	T00S01_WebLogin_2S4F.class,
-	T01S05_discharge_prescription_OPMOE.class,
-	T02S01A_ix_request_laboratory.class,
+
 	
+
 /*
 HUB
 cd C:\eclipse_neon

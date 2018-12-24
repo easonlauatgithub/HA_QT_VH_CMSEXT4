@@ -44,7 +44,7 @@ public class T05S02_transfer {
 		psf = new PAGE_PatientDetailPage_PatientSpecificFunction(driver);
 		transfer = new PAGE_PatientDetailPage_Transfer(driver);
 		current_ward = dict.get("ward"); //8A
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		test_transfer_category();
 		test_transfer_specialty();
 		test_transfer_ward();
@@ -138,12 +138,12 @@ public class T05S02_transfer {
 		}
 		public void switchToIframe() {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("78Panel");
+			shared_functions.switchToFrameByString("78Panel");
 		}
 		public void changeFieldById1(String id, String strNewText) {
 			switchToIframe();
 			String css = "#ext-comp-"+id+"-inputEl";//ext-comp-{id}-inputEl
-			List<WebElement> li = driver.findElements(By.cssSelector( css ));
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.cssSelector( css ));
 			WebElement e1 = li.get(0);
 			shared_functions.clearAndSend(e1, strNewText);
 		}
@@ -151,11 +151,11 @@ public class T05S02_transfer {
 			switchToIframe();
 			WebElement e = null;
 			String css = "#ext-comp-"+id+"-inputEl";//ext-comp-{id}-inputEl
-			List<WebElement> li = driver.findElements(By.cssSelector( css )); 
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.cssSelector( css )); 
 			//org.openqa.selenium.WebDriverException: java.net.ConnectException: Connection refused: connect
-			//if(driver.findElements(By.cssSelector(css)).size()>0) {
-				//e = driver.findElements(By.cssSelector(css)).get(0);
-			if(li.size()>0) {
+			//if(shared_functions.getElementsWhenVisible(By.cssSelector(css))!=null) {
+				//e = shared_functions.getElementsWhenVisible(By.cssSelector(css)).get(0);
+			if(li!=null) {
 				e = li.get(0);
 			}
 			return e;
@@ -163,7 +163,9 @@ public class T05S02_transfer {
 		public void clickSaveBtn() {
 			switchToIframe();
 			String cssSave = "a.x-btn span.x-btn-inner";
-			List<WebElement> liSave = driver.findElements(By.cssSelector( cssSave ));
+			//List<WebElement> liSave = shared_functions.getElementsWhenVisible(By.cssSelector(cssSave));
+			List<WebElement> liSave = shared_functions.getElementsWhenPresent(By.cssSelector(cssSave));
+			System.out.println("transfer-clickSaveBtn-size:"+liSave.size());
 			for(int i=0; i<liSave.size(); i++) {
 				if( liSave.get(i).getText().equals("Save") ) {
 					liSave.get(i).click();

@@ -37,7 +37,7 @@ public class T05S05_modification_of_transfer {
 		cmsMainPage = new PAGE_CMSMainPage(driver);
 		psf = new PAGE_PatientDetailPage_PatientSpecificFunction(driver);
 		modOfTransfer = new PAGE_PatientDetailPage_ModificationOfTransfer(driver); 
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		test_modify_category();
 		test_modify_specialty();
 		test_modify_ward();
@@ -140,6 +140,8 @@ public class T05S05_modification_of_transfer {
 		if(cmsMainPage.getPatientIdxByCaseNum(check_case_no3)==-1) {
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_3", "modification of transfer - case no# did not appear in 'previous' ward");
 			steps_passed = steps_passed + 1;
+		}else{
+			shared_functions.reporter_ReportEvent("micFail", "QAG_checkpoint_3", "modification of transfer - case no# still appear in 'previous' ward");
 		}
 		
 		System.out.println("test_modify_ward() - verify case no# appear in 'modified' ward");
@@ -149,6 +151,8 @@ public class T05S05_modification_of_transfer {
 		if(cmsMainPage.getPatientIdxByCaseNum(check_case_no3)> -1) {
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_4", "modification of transfer - case no# found in 'modified' ward");
 			steps_passed = steps_passed + 1;
+		}else{
+			shared_functions.reporter_ReportEvent("micFail", "QAG_checkpoint_4", "modification of transfer - case no# not found in 'modified' ward");
 		}
 		System.out.println("test_modify_ward() - END");
 	}
@@ -161,18 +165,18 @@ public class T05S05_modification_of_transfer {
 		}
 		public void switchToIframe() {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("81Panel");
+			shared_functions.switchToFrameByString("81Panel");
 		}
 		public void changeFieldById(String id, String strNewText) {
 			switchToIframe();
 			String css = "#ext-comp-"+id+"-inputEl";//ext-comp-{id}-inputEl
-			List<WebElement> li = driver.findElements(By.cssSelector( css ));
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.cssSelector( css ));
 			WebElement e = li.get(0);
 			shared_functions.clearAndSend(e, strNewText);
 		}
 		public void handlePopUpWindow() {
 			String str = "Question / Action (1-112-1-Q-003)";
-			Boolean b = driver.findElements(By.xpath("//span[contains(text(),'"+str+"')]")).size()>0;
+			Boolean b = shared_functions.checkAndGetElementsWhenVisible(By.xpath("//span[contains(text(),'"+str+"')]"))!=null;
 			if(b) {
 				System.out.println("PAGE_PatientDetailPage_ModificationOfTransfer PopUpWindow is exist");
 				this.getNoBtn().click();
@@ -183,28 +187,28 @@ public class T05S05_modification_of_transfer {
 		public WebElement getFieldById(String id) {
 			switchToIframe();
 			String css = "#ext-comp-"+id+"-inputEl";//ext-comp-{id}-inputEl
-			List<WebElement> li = driver.findElements(By.cssSelector( css ));
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.cssSelector( css ));
 			WebElement e = li.get(0);
 			return e;
 		}		
 		public WebElement getSaveBtn() {
 			String str = "Save";
-			WebElement e = driver.findElement(By.xpath("//span[contains(text(),'"+str+"')]"));
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath("//span[contains(text(),'"+str+"')]"));
 			return e;			
 		}
 		public WebElement getOKBtn() {
 			String xp = "//span[contains(text(),'K')]//u[contains(text(),'O')]";
-			WebElement e = driver.findElement(By.xpath(xp));
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
 			return e;
 		}
 		public WebElement getYesBtn() {
 			String xp = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
-			WebElement e = driver.findElement(By.xpath(xp));
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
 			return e;
 		}
 		public WebElement getNoBtn() {
 			String xp = "//span[contains(text(),'o')]//u[contains(text(),'N')]";
-			WebElement e = driver.findElement(By.xpath(xp));
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
 			return e;
 		}
 	}

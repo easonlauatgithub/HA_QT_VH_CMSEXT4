@@ -36,7 +36,7 @@ public class T05S03_swap_bed {
 		cmsMainPage = new PAGE_CMSMainPage(driver);
 		psf = new PAGE_PatientDetailPage_PatientSpecificFunction(driver);
 		swapBed = new PAGE_PatientDetailPage_SwapBed(driver);
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		swap_bed_case_no_A = dict.get("swap_bed_case_no_A");
 		swap_bed_case_no_B = dict.get("swap_bed_case_no_B");
 		test_open_function();
@@ -51,9 +51,9 @@ public class T05S03_swap_bed {
 		cmsMainPage.fnSwapBed();
 		shared_functions.do_screen_capture_with_filename(driver, "T05S03_1");
 		driver.switchTo().defaultContent();
-		driver.switchTo().frame("cmsPSPWinPanelCmp");
+		shared_functions.switchToFrameByString("cmsPSPWinPanelCmp");
 		Boolean have_bed_no = true;
-		for(int i=0; i<cmsMainPage.getPSPRowNum(); i++) {
+		for(int i=0; i<cmsMainPage.getNumOfPSPRows(); i++) {
 			String bed_no = cmsMainPage.getPSPLeftColumnElement(i).get(psp_bed_no_col).getText();
 			if(bed_no.length()==0) {
 				have_bed_no = false;
@@ -105,32 +105,32 @@ public class T05S03_swap_bed {
 		}
 		public void switchToIframe() {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("77Panel");
+			shared_functions.switchToFrameByString("77Panel");
 		}
 		public WebElement getBtnSelectPatientB() {
 			this.switchToIframe();
-			return driver.findElement(By.cssSelector("#btnSelectPatientB-frame1Table"));
+			return shared_functions.getElementWhenClickable(By.cssSelector("#btnSelectPatientB-frame1Table"));
 		}
 		public String getBedNumOfPatientA() {
 			this.switchToIframe();
-			return driver.findElement(By.cssSelector("#txtBed_no_A-inputEl")).getAttribute("value");
+			return shared_functions.getElementWhenClickable(By.cssSelector("#txtBed_no_A-inputEl")).getAttribute("value");
 		}
 		public String getBedNumOfPatientB() {
 			this.switchToIframe();
-			return driver.findElement(By.cssSelector("#txtBed_no_B-inputEl")).getAttribute("value");
+			return shared_functions.getElementWhenClickable(By.cssSelector("#txtBed_no_B-inputEl")).getAttribute("value");
 		}
 		public WebElement getBtnSwapBed() {
 			this.switchToIframe();
-			return driver.findElement(By.cssSelector("#btnSwapBed-frame1Table"));
+			return shared_functions.getElementWhenClickable(By.cssSelector("#btnSwapBed-frame1Table"));
 		}
 		public Boolean isBedSwapped() {
 			this.switchToIframe();
-			return driver.findElements(By.xpath("//textarea[contains(text(),'Swap Bed is successful !')]")).size() > 0;
+			return shared_functions.checkAndGetElementsWhenVisible(By.xpath("//textarea[contains(text(),'Swap Bed is successful !')]"))!=null;
 		}
 		public void handleSwapBedPopUpWindow() {
-			List<WebElement> list = driver.findElements(By.xpath("//span[contains(text(),'K')]//u[contains(text(),'O')]"));
-			if(list.size()>0) {
-				list.get(0).click();
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath("//span[contains(text(),'K')]//u[contains(text(),'O')]"));
+			if(li!=null) {
+				li.get(0).click();
 			}
 		}
 

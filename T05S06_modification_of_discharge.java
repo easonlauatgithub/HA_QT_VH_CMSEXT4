@@ -41,7 +41,7 @@ public class T05S06_modification_of_discharge {
 		System.out.println("modification_of_discharge HN080000251 Wong,Mui");
 		String ward = dict.get("ward");
 		String case_no = dict.get("discharge_normal_case_no");
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		cmsMainPage.changeWardForNormalPatientList(ward);
 		cmsMainPage.fnModificationOfDischarge();
 		cmsMainPage.selectPatientByCaseNum(case_no);
@@ -99,7 +99,7 @@ public class T05S06_modification_of_discharge {
 		}
 		public void switchToIframeModDischarge(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("119Panel");			
+			shared_functions.switchToFrameByString("119Panel");			
 		}
 		public String getHospCode(){
 			Boolean b = shared_functions.Parameter.get("hospital_code").equals("VH3");
@@ -114,19 +114,19 @@ public class T05S06_modification_of_discharge {
 		public WebElement getDischargeCodeDrpBx() {
 			switchToIframeModDischarge();
 			String str = "#id_cbx_discharge_code-inputEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;
 		}
 		public WebElement getRemarkTextArea() {
 			switchToIframeModDischarge();
 			String str = "#id_txt_remark-inputEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;			
 		}
 		public WebElement getSaveBtn() {
 			switchToIframeModDischarge();
 			String str = "Save";
-			WebElement e = driver.findElement(By.xpath("//span[contains(text(),'"+str+"')]"));
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath("//span[contains(text(),'"+str+"')]"));
 			return e;			
 		}
 

@@ -10,15 +10,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-//import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,9 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -38,13 +32,14 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class shared_functions {
 	public static String saveFilePath = "C:\\Users\\LYS678\\Desktop\\img\\";
@@ -54,6 +49,7 @@ public class shared_functions {
 	public static Map<String, String> Parameter = new HashMap<>();
 	public static String shell_extjs_version ="";
 	public static WebDriver driver;
+	public static WebDriverWait wait;
 	
 	public static Map<String, String> sam_gor() throws Exception {
 		//------------------------------ Sam Gor Code START ------------------------------
@@ -252,7 +248,7 @@ public class shared_functions {
 	public static <E> void echo(E str) {
 		System.out.println("echo: " +str);
 	}
-	public static void hightlightElement(WebDriver driver, String byType, String typeName) throws InterruptedException {
+	public static void hightlightElement(String byType, String typeName) throws InterruptedException {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		String elementSelected = null;
 		switch(byType) {
@@ -299,42 +295,8 @@ public class shared_functions {
 		}
 		System.out.println("");
 	}
-	public static void showAlert(WebDriver driver) throws InterruptedException {
-		if( isAlertPresent(driver) ) {
-			Alert a = driver.switchTo().alert();
-			System.out.println("ALERT");
-			System.out.println(a);
-		}else {
-			System.out.println("NO ALERT");
-		}		
-	}
-	public static void handleAlert(WebDriver driver, Boolean bConfirm) throws InterruptedException {
-		if( isAlertPresent(driver) ) {
-			Alert a = driver.switchTo().alert();
-			System.out.print("ALERT: ");
-			System.out.println(a);
-			if(bConfirm) {a.accept();}else {a.dismiss();}
-		}else {
-			System.out.println("NO ALERT");
-		}		
-	}
 	/*
-	public static void handleSPIOAlert1(WebDriver driver, Boolean bConfirm) throws InterruptedException {
-		//UnhandledAlertException: Modal dialog present with text:
-		//Unable to call common API to refresh SPIO, 
-		//Unable to get property 'refreshSPIO' of undefined or null reference
-		if( isAlertPresent(driver) ) {
-			Alert a = driver.switchTo().alert();
-			System.out.print("SPIOAlert: ");
-			System.out.println(a);
-			if(bConfirm) {a.accept();}else {a.dismiss();}
-			//sleep 30s
-		}else {
-			System.out.println("No SPIOAlert");
-		}		
-	}
-	*/
-	public static void showIframe(WebDriver driver) {
+	public static void showIframe_TBD(WebDriver driver) {
 		List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
 		System.out.println("iframes size: "+iframes.size());
 		int counter =0;
@@ -345,18 +307,37 @@ public class shared_functions {
 			System.out.println("name: "+iframe.getAttribute("name"));
 			System.out.println("id: "+iframe.getAttribute("id"));
 			//System.out.println("cls: "+iframe.getAttribute("class"));
-	    }		
+	    }
 	}
-    public static boolean isAlertPresent(WebDriver d) throws InterruptedException
+	
+	public static void showAlert_TBD(WebDriver driver) throws InterruptedException {
+		if( checkIfAlertPresent(driver) ) {
+			Alert a = driver.switchTo().alert();
+			System.out.println("ALERT");
+			System.out.println(a);
+		}else {
+			System.out.println("NO ALERT");
+		}
+	}
+	*/
+	public static void checkExistAndHandleAlert(WebDriver driver, Boolean bAcceptOfDismiss) throws InterruptedException {
+		if( checkIfAlertPresent(driver) ) {
+			Alert a = driver.switchTo().alert();
+			System.out.print("ALERT: ");System.out.println(a);
+			if(bAcceptOfDismiss) {a.accept();}else {a.dismiss();}
+		}else {
+			System.out.println("NO ALERT");
+		}
+	}
+    public static boolean checkIfAlertPresent(WebDriver driver) throws InterruptedException
     {
 		try {
-			System.out.print("isAlertPresent, ");
-			sleepForAWhile(3000);
-			d.switchTo().alert(); 
+			System.out.print("isAlertPresent:");
+			wait.until(ExpectedConditions.alertIsPresent());
+			System.out.println("true");
 			return true;
-		}catch (TimeoutException e) { //wait for XXX s but no element
-			return false;
-		}catch (NoAlertPresentException e) { //switch to alert failed
+		}catch (Exception e) {
+			System.out.println("false");
 			return false;
 		}
         //try{d.switchTo().alert(); return true;}catch (NoAlertPresentException e1){return false;}
@@ -546,28 +527,30 @@ public class shared_functions {
 			shared_functions.reporter_ReportEvent("micFail", "test failed", "steps passed/total steps: "+steps_passed+"/"+total_steps);
 		}		
 	}
-	public static Boolean isExistElement(String cssSelector) {
+	/*
+	public static Boolean isExistElement_TBD(String cssSelector) {
 		return driver.findElements(By.cssSelector(cssSelector)).size()>0;
 	}
-	public static Boolean isCorrectText(String cssSelector, String strForCheck) {
+	public static Boolean isCorrectText_TBD(String cssSelector, String strForCheck) {
 		if( isExistElement(cssSelector) ) {
-			Boolean isCorrect = driver.findElement(By.cssSelector(cssSelector)).getText().equals(strForCheck);
-			if(isCorrect) {
-				return true;
-			}
+			WebElement e = getElementWhenVisible(By.cssSelector(cssSelector));
+			String txtOfElement = e.getText();
+			Boolean isCorrect = txtOfElement.equals(strForCheck);
+			if(isCorrect) {return true;}
 		}
 		return false;
 	}
-	public static void printListSize(String css) {
+	public static void printListSize_TBD(String css) {
 		System.out.println(driver.findElements(By.cssSelector( css )).size());
 	}
-	public static void printListText(String css) {
+	public static void printListText_TBD(String css) {
 		List<WebElement> list = driver.findElements(By.cssSelector( css ));
 		System.out.println("list"+list.size());
 		for(int i=0; i<list.size(); i++) {
 			System.out.println("list("+i+"): "+list.get(i).getText());
 		}		
 	}
+		*/
 	public static void clickNonDisplayedElement(WebDriver d, WebElement e) {
 		JavascriptExecutor jse = (JavascriptExecutor)d;
 		jse.executeScript("arguments[0].click();", e);		
@@ -581,19 +564,24 @@ public class shared_functions {
         String base64decodedString = new String(base64decodedBytes, "utf-8");
 		return base64decodedString;
 	}
-	public static String getTableText(WebElement eTable, int rowNum, int colNum){
-		System.out.print("--getTableText:");
-		String str = null;
-		List<WebElement> li1 = eTable.findElements(By.tagName("tr"));
-		WebElement e1 = li1.get(rowNum);
-		List<WebElement> li2 = e1.findElements(By.tagName("td"));
-		WebElement e2 = li2.get(colNum);
-		str = e2.getText();
-		System.out.print(str);
+	public static WebElement getElementFromTable(WebElement eTable, int rowNum, int colNum){
+		System.out.print("--getElementFromTable["+rowNum+","+colNum+"]:");
+		List<WebElement> liRows = getElementsInsideParentWebElementWhenVisible(eTable, By.tagName("tr"));
+		WebElement eRow = liRows.get(rowNum);
+		List<WebElement> liCols = getElementsInsideParentWebElementWhenVisible(eRow, By.tagName("td"));
+		WebElement eCol = liCols.get(colNum);
+		System.out.print(eCol.getText());
 		System.out.println("--");
-		return str;
+		return eCol;
 	}
-	public static void showTableText(WebElement eTable){
+	public static List<WebElement> getRowsFromTable(WebElement eTable){
+		shared_functions.Hardcode(); //cannot use getElementsInsideParentWebElementWhenVisible, getElementsInsideParentWebElementWhenPresent
+		List<WebElement> liRows = eTable.findElements(By.tagName("tr"));
+		//List<WebElement> liRows = getElementsInsideParentWebElementWhenVisible(eTable, By.tagName("tr"));
+		return liRows;
+	}
+	/*
+	public static void showTableText_TBD(WebElement eTable){
 		List<WebElement> liRows = eTable.findElements(By.tagName("tr"));
 		System.out.println("numOfRows:"+liRows.size());
 		for(int i=0; i<liRows.size(); i++){
@@ -606,6 +594,7 @@ public class shared_functions {
 			}
 		}
 	}
+	*/
 	public static void exit_test_iteration() {
 		System.exit(1);
 		//driver.quit();
@@ -619,7 +608,7 @@ public class shared_functions {
 		while(!bBtnIsClicked){
 			try {
 				System.out.println("clickBtnByCssWithException:"+strCss);
-				List<WebElement> liBtn = driver.findElements(By.cssSelector(strCss));
+				List<WebElement> liBtn = getElementsWhenVisible(By.cssSelector(strCss));
 				if(liBtn.size()>0){
 					WebElement eBtn = liBtn.get(0);
 					eBtn.click();
@@ -631,9 +620,104 @@ public class shared_functions {
 			}
 		}
 	}
+	public static WebElement getElementWhenPresent(By locator) {	 
+		WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+		return element;
+	}
+	public static WebElement getElementWhenVisible(By locator) {	 
+		WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+		return element;
+	}
+	public static WebElement getElementWhenClickable(By locator) {	 
+		WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+		return element;
+	}
+	public static void clickElementWhenClickable(By locator) {
+		WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+		element.click();
+	}
+	public static Boolean checkIfElementInvisible(By locator) {
+		return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+	}
+	public static List<WebElement> getElementsWhenPresent(By locator) {
+		List<WebElement> li = null;
+		li = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
+		return li;
+	}
+	public static List<WebElement> getElementsWhenVisible(By locator) {
+		List<WebElement> li = null;
+		li = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(locator));
+		return li;
+	}
+	public static List<WebElement> getElementsInsideParentWebElementWhenPresent(By parentLocator, By childLocator){
+		List<WebElement> liChild = wait.until(ExpectedConditions.presenceOfNestedElementsLocatedBy(parentLocator, childLocator));
+		return liChild;
+	}
+	public static List<WebElement> getElementsInsideParentWebElementWhenVisible(WebElement eParent, By childLocator){
+		List<WebElement> liChild = wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(eParent, childLocator));
+		return liChild;
+	}
+	public static List<WebElement> checkAndGetElementsWhenPresent(By locator) {
+		List<WebElement> li = null;
+		try{
+			li = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));	
+		}catch(TimeoutException e){
+			e.printStackTrace();
+		}
+		return li;
+	}
+	public static List<WebElement> checkAndGetElementsWhenVisible(By locator) {
+		List<WebElement> li = null;
+		try{
+			li = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(locator));	
+		}catch(TimeoutException e){
+			e.printStackTrace();
+		}		
+		return li;
+	}
+	public static List<WebElement> checkAndGetElementsInsideParentWebElementWhenVisible(WebElement eParent, By childLocator){
+		List<WebElement> liChild = null;
+		try{
+			liChild = wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(eParent, childLocator));	
+		}catch(TimeoutException e){
+			e.printStackTrace();
+		}		
+		return liChild;
+	}
+	public static void showAllIframe() {
+		List<WebElement> liIframes = getElementsWhenVisible(By.tagName("iframe"));
+		System.out.println("iframes size: "+liIframes.size());
+		int counter =0;
+		for (WebElement eIframe : liIframes) {
+			counter++;
+			System.out.println("------ iframes("+counter+") -------");
+			System.out.println("iframes: "+eIframe);
+			System.out.println("name: "+eIframe.getAttribute("name"));
+			System.out.println("id: "+eIframe.getAttribute("id"));
+			System.out.println("cls: "+eIframe.getAttribute("class"));
+	    }
+	}
+	public static WebDriver switchToFrameByInt(int frameLocator) {
+		WebDriver d = wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(frameLocator));
+		return d;
+	}			
+	public static WebDriver switchToFrameByString(String frameLocator) {	 
+		WebDriver d = wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(frameLocator));
+		return d;
+	}
+	public static Boolean checkIfTitleIs(String expectedTitle){
+		System.out.println("checkIfTitleIs, driver:"+driver);
+		System.out.println("checkIfTitleIs, driver title:"+driver.getTitle());
+		Boolean b = wait.until(ExpectedConditions.titleIs(expectedTitle));
+		return b;
+	}
+	
 	public static void sleepForAWhile(int s) throws InterruptedException{
-		System.out.println("Thread.sleep:"+s);
-		Thread.sleep(s);
+		System.out.println("Will not Thread.sleep:"+s);
+		//Thread.sleep(s);
+	}
+	public static void Hardcode(){
+		System.out.println("Hardcode");
 	}
 	
 

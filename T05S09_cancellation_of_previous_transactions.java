@@ -31,7 +31,7 @@ public class T05S09_cancellation_of_previous_transactions {
 		cmsMainPage = new PAGE_CMSMainPage(driver);
 		psf = new PAGE_PatientDetailPage_PatientSpecificFunction(driver);
 		cpt = new PAGE_PatientDetailPage_CancelPreviousTransaction(driver);
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		//decide run or not
 		Boolean b_bad_assignment_enable = dict.get("bad_assignment_enable").equals("Y");
 		Boolean b_transfer_enable = dict.get("transfer_enable").equals("Y");
@@ -358,13 +358,13 @@ public class T05S09_cancellation_of_previous_transactions {
 		}
 		public void switchToIframe(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("82Panel");			
+			shared_functions.switchToFrameByString("82Panel");			
 		}
 		public Boolean cancelPreviousTransaction(String tx_type_to_cancel) {
 			switchToIframe();
 			Boolean do_cancel = false;
 			String xp = "//input[ @id='CancelDate-inputEl' and @value='"+check_date+"' ]";
-			Boolean isExistCancelDate = driver.findElements(By.xpath(xp)).size()>0; 
+			Boolean isExistCancelDate = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp))!=null; 
 			if(isExistCancelDate) {
 				do_cancel = true;
 			}else {
@@ -382,7 +382,7 @@ public class T05S09_cancellation_of_previous_transactions {
 				if(tx_type_to_cancel.equals("Trial Discharge Ret.")) {
 					textarea_text_check = "Cancel Return From Trial Discharge";
 				}
-				Boolean isExistWordings = driver.findElements(By.xpath("//textarea[contains(text(),'"+textarea_text_check+"')]")).size()>0;
+				Boolean isExistWordings = shared_functions.checkAndGetElementsWhenVisible(By.xpath("//textarea[contains(text(),'"+textarea_text_check+"')]"))!=null;
 				if(!isExistWordings) {
 					shared_functions.reporter_ReportEvent("micFail", "cancel previous transaction confirmation error", "expected text [Cancel " + tx_type_to_cancel + "] does not appear");
 				}else {
@@ -397,60 +397,60 @@ public class T05S09_cancellation_of_previous_transactions {
 		public String getDataPreviousWard() {
 			String value = null;
 			String css = "#PrevWardCode-inputEl";
-			if( driver.findElements(By.cssSelector(css)).size()>0 ) {
-				value = driver.findElements(By.cssSelector(css)).get(0).getAttribute("value");
+			if( shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(css))!=null ) {
+				value = shared_functions.getElementsWhenVisible(By.cssSelector(css)).get(0).getAttribute("value");
 			}			
 			return value;
 		}
 		public String getDataPrevSpecialty() {
 			String value = null;
 			String css = "#PrevSpecialty-inputEl";
-			if( driver.findElements(By.cssSelector(css)).size()>0 ) {
-				value = driver.findElements(By.cssSelector(css)).get(0).getAttribute("value");
+			if( shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(css))!=null ) {
+				value = shared_functions.getElementsWhenVisible(By.cssSelector(css)).get(0).getAttribute("value");
 			}
 			return value;
 		}
 		public String getPrevBedNo() {
 			String value = null;
 			String css = "#PrevBedNo-inputEl";
-			if( driver.findElements(By.cssSelector(css)).size()>0 ) {
-				value = driver.findElements(By.cssSelector(css)).get(0).getAttribute("value");
+			if( shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(css))!=null ) {
+				value = shared_functions.getElementsWhenVisible(By.cssSelector(css)).get(0).getAttribute("value");
 			}			
 			return value;
 		}
 		public String getPrevClass() {
 			String value = null;
 			String css = "#PrevClass-inputEl";
-			if( driver.findElements(By.cssSelector(css)).size()>0 ) {
-				value = driver.findElements(By.cssSelector(css)).get(0).getAttribute("value");
+			if( shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(css))!=null ) {
+				value = shared_functions.getElementsWhenVisible(By.cssSelector(css)).get(0).getAttribute("value");
 			}			
 			return value;
 		}
 		public String getCancelWardCode() {
 			String value = null;
 			String css = "#CancelWardCode-inputEl";
-			if( driver.findElements(By.cssSelector(css)).size()>0 ) {
-				value = driver.findElements(By.cssSelector(css)).get(0).getAttribute("value");
+			if( shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(css))!=null ) {
+				value = shared_functions.getElementsWhenVisible(By.cssSelector(css)).get(0).getAttribute("value");
 			}
 			return value;
 		}
 
 		public void clickYesBtnInBottomRight() {
 			String css = "#copt-yesbutton-frame1Table";
-			if( driver.findElements(By.cssSelector(css)).size()>0 ) {
-				driver.findElements(By.cssSelector(css)).get(0).click();
+			if( shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(css))!=null ) {
+				shared_functions.getElementsWhenVisible(By.cssSelector(css)).get(0).click();
 			}
 		}
 		public void clickNoBtnInBottomRight() {
 			String css = "#copt-nobutton-frame1Table";
-			if( driver.findElements(By.cssSelector(css)).size()>0 ) {
-				driver.findElements(By.cssSelector(css)).get(0).click();
+			if( shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(css))!=null ) {
+				shared_functions.getElementsWhenVisible(By.cssSelector(css)).get(0).click();
 			}
 		}
 		public void clickYesBtnInPopUpWindow() {
 			String xp = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
-			if( driver.findElements(By.xpath(xp)).size()>0 ) {
-				driver.findElements(By.xpath(xp)).get(0).click();
+			if( shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp))!=null ) {
+				shared_functions.getElementsWhenVisible(By.xpath(xp)).get(0).click();
 			}
 		}
 

@@ -36,7 +36,7 @@ public class T02S01A_ix_request_laboratory {
 		psf = new PAGE_PatientDetailPage_PatientSpecificFunction(driver);
 		lx = new PAGE_PatientDetailPage_lxRequest(driver);
 		gcr_case_no = dict.get("case_no");
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		
 		if( dict.get("order_type").equals("radiology") ) {
 			shared_functions.reporter_ReportEvent("micFail", "QAG_failure_1", "This script not intended to execute radiology ix requests");
@@ -93,11 +93,11 @@ public class T02S01A_ix_request_laboratory {
 	}
 	public void test_repeat_order() throws Exception {
 		System.out.println("test_repeat_order() - START");
-		if( driver.findElements(By.xpath("//table[contains(@id, 'gcrIxReqByHistoryTbl')]")).size()<=0 ){
+		if( shared_functions.checkAndGetElementsWhenPresent(By.xpath("//table[contains(@id, 'gcrIxReqByHistoryTbl')]"))==null ){
 			lx.clickTabHistory();
 		}
 		if( !dict.get("request_by").equals("N") ){
-			if( driver.findElements(By.xpath("//input[contains(@id, 'textBox~~gcr_orderDetail_reqByDD')]")).size()>0 ){
+			if( shared_functions.checkAndGetElementsWhenPresent(By.xpath("//input[contains(@id, 'textBox~~gcr_orderDetail_reqByDD')]"))!=null ){
 				shared_functions.sleepForAWhile(1000);
 				WebElement e = driver.findElement(By.xpath("//input[contains(@id, 'textBox~~gcr_orderDetail_reqByDD')]"));
 				shared_functions.clearAndSend(e, dict.get("request_by"));
@@ -105,7 +105,7 @@ public class T02S01A_ix_request_laboratory {
 			}
 		}
 		String xp_today_date = "//td[contains(text(), '"+today_str+"')]";
-		List<WebElement> today_records_elms = driver.findElements(By.xpath(xp_today_date));
+		List<WebElement> today_records_elms = shared_functions.getElementsWhenVisible(By.xpath(xp_today_date));
 		double rand = Math.random();
 		int selected_record_index = (int) (today_records_elms.size() * rand);
 		int number_of_orders_to_repeat = 1;
@@ -120,23 +120,23 @@ public class T02S01A_ix_request_laboratory {
 			shared_functions.reporter_ReportEvent("micDone", "repeat order "+(j+1), order_number);
 			lx.clickTabHistory();
 			String xp1 = "//td[contains(text(), '"+order_number+"')]";
-			List<WebElement> li1 = driver.findElements(By.xpath(xp1));
+			List<WebElement> li1 = shared_functions.getElementsWhenVisible(By.xpath(xp1));
 			System.out.println("li1.size(): "+li1.size());
 			System.out.println("selected_record_index: "+selected_record_index);
 			li1.get(selected_record_index).click();
 			String xp2 = "//table[contains(@id, 'gcrIxRequestRepeatBtn_tbl')]";
-			List<WebElement> li2 = driver.findElements(By.xpath(xp2));
+			List<WebElement> li2 = shared_functions.getElementsWhenVisible(By.xpath(xp2));
 			li2.get(0).click();
 			
 			String xp_check = "//span[contains(text(), 'New Request Information')]";
-			List<WebElement> li_check = driver.findElements(By.xpath(xp_check));				
+			List<WebElement> li_check = shared_functions.getElementsWhenVisible(By.xpath(xp_check));				
 			if( li_check.get(0).isDisplayed() ){
 				String xp = "//table[contains(@id, 'gcr_orderDetail_okButton_')]";
-				List<WebElement> li = driver.findElements(By.xpath(xp));
+				List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 				li.get(0).click();
 			}
 			funcClickOKForRepeatedItem();
-			today_records_elms = driver.findElements(By.xpath(xp_today_date));
+			today_records_elms = shared_functions.getElementsWhenVisible(By.xpath(xp_today_date));
 			shared_functions.do_screen_capture_with_filename(driver, "T02S01_2");
 			if( today_records_elms.size() == (Integer.parseInt(dict.get("items_to_check")) + number_of_orders_to_repeat) ){
 				steps_passed = steps_passed + 1;
@@ -151,40 +151,40 @@ public class T02S01A_ix_request_laboratory {
 		System.out.println("funcClickOK() - START");
 		System.out.println("bloodbank specific");
         //bloodbank specific
-		if( driver.findElements(By.xpath("//table[contains(@id, 'gcr_bloodBankDetailPanel_okButton_')]")).size()>0 ){
+		if( shared_functions.getElementsWhenVisible(By.xpath("//table[contains(@id, 'gcr_bloodBankDetailPanel_okButton_')]"))!=null ){
 			driver.findElement(By.xpath("//table[contains(@id, 'gcr_bloodBankDetailPanel_okButton_')]")).click();
-		}else if( driver.findElements(By.xpath("//table[contains(@id, 'gcr_bloodBankDetailPanel_okButton_undefined_tbl')]")).size()>0 ){
+		}else if( shared_functions.getElementsWhenVisible(By.xpath("//table[contains(@id, 'gcr_bloodBankDetailPanel_okButton_undefined_tbl')]"))!=null ){
 			driver.findElement(By.xpath("//table[contains(@id, 'gcr_bloodBankDetailPanel_okButton_undefined_tbl')]")).click();
 		}
 		System.out.println("specimen detail");
         //specimen detail
-		if( driver.findElements(By.xpath("//table[contains(@id, 'gcrSpecDtlPopupOkBtn_tbl')]")).size()>0 ){
+		if( shared_functions.getElementsWhenVisible(By.xpath("//table[contains(@id, 'gcrSpecDtlPopupOkBtn_tbl')]"))!=null ){
 			driver.findElement(By.xpath("//table[contains(@id, 'gcrSpecDtlPopupOkBtn_tbl')]")).click();
 		}
 		System.out.println("Radiology orders");
         //Radiology orders
-		if( driver.findElements(By.xpath("//table[contains(@id, 'gcrRad_POPUP_okBtn_tbl')]")).size()>0 ){
+		if( shared_functions.getElementsWhenVisible(By.xpath("//table[contains(@id, 'gcrRad_POPUP_okBtn_tbl')]"))!=null ){
 			driver.findElement(By.xpath("//table[contains(@id, 'gcrRad_POPUP_okBtn_tbl')]")).click();
 		}
-		if( driver.findElements(By.xpath("//table[contains(@id, 'gcrIxInformationEngineMainPanel-xfolder-edit-saveBtn_tbl')]")).size()>0 ){
+		if( shared_functions.getElementsWhenVisible(By.xpath("//table[contains(@id, 'gcrIxInformationEngineMainPanel-xfolder-edit-saveBtn_tbl')]"))!=null ){
 			PAGE_BloodBank bb = new PAGE_BloodBank(driver);
 			bb.auto_fillin_select_options("repeating_orders");
 			driver.findElement(By.xpath("//table[contains(@id, 'gcrIxInformationEngineMainPanel-xfolder-edit-saveBtn_tbl')]")).click();
 		}
 		System.out.println("duplicate ix/service, request");
 		//duplicate ix/service, request
-		if( driver.findElements(By.xpath("//span[contains(text(), 'Duplicated Ix/Service')]")).size()>0 ){
+		if( shared_functions.getElementsWhenVisible(By.xpath("//span[contains(text(), 'Duplicated Ix/Service')]"))!=null ){
 			driver.findElement(By.xpath("//textarea[contains(@id, 'gcrTextField_gcrDupReason')]")).click();
 			driver.findElement(By.xpath("//textarea[contains(@id, 'gcrTextField_gcrDupReason')]")).sendKeys("For QAG testing");
 			driver.findElement(By.xpath("//a[contains(@id, 'maxDupOKBtn_btnTxt')]")).click();
 		}
 		System.out.println("gcr_orderCart_addIxSaveBtn_");
         //ix_frame.Link("html tag:=A","innertext:=Save","visible:=True").Click
-		if( driver.findElements(By.xpath("//table[contains(@id, 'gcr_orderCart_addIxSaveBtn_')]")).size()>0 ){
+		if( shared_functions.getElementsWhenVisible(By.xpath("//table[contains(@id, 'gcr_orderCart_addIxSaveBtn_')]"))!=null ){
 			driver.findElement(By.xpath("//table[contains(@id, 'gcr_orderCart_addIxSaveBtn_')]")).click();			
 		}
         //close any GCR-RIS popup
-		if( driver.findElements(By.xpath("//span[contains(text(), 'GCR-RIS appointment booking')]")).size()>0 ){
+		if( shared_functions.getElementsWhenVisible(By.xpath("//span[contains(text(), 'GCR-RIS appointment booking')]"))!=null ){
 			driver.findElement(By.xpath("//table[contains(text(), 'Skip')]")).click();
 		}
         //cancel_printout_saveas_dialogue()
@@ -207,11 +207,11 @@ public class T02S01A_ix_request_laboratory {
 	}
 	public void test_remove_tests_from_order() throws Exception {
 		System.out.println("test_remove_tests_from_order() - START");
-		if( driver.findElements(By.xpath("//table[contains(@id, 'gcrIxReqByHistoryTbl')]")).size()<=0 ){
+		if( shared_functions.getElementsWhenVisible(By.xpath("//table[contains(@id, 'gcrIxReqByHistoryTbl')]"))==null ){
 			lx.clickTabHistory();
 		}
 		String xp_today_date = "//td[contains(text(), '"+today_str+"')]";
-		List<WebElement> today_records_elms = driver.findElements(By.xpath(xp_today_date));
+		List<WebElement> today_records_elms = shared_functions.getElementsWhenVisible(By.xpath(xp_today_date));
 		String[] order_numbers = new String[today_records_elms.size()];
 		for(int i=0; i<today_records_elms.size(); i++){
 			WebElement r = today_records_elms.get(i);
@@ -221,25 +221,25 @@ public class T02S01A_ix_request_laboratory {
 			String order_number = order_numbers[j];
 			System.out.println("order_number: "+order_number);
 			String xp_order_number = "//td[contains(text(), '"+order_number+"') and @class='scrollContentTableCell']";
-			List<WebElement> li_order_number = driver.findElements(By.xpath(xp_order_number));
+			List<WebElement> li_order_number = shared_functions.getElementsWhenVisible(By.xpath(xp_order_number));
 			System.out.println("li_order_number.size(): "+li_order_number.size());
 			li_order_number.get(0).click();
-			if( driver.findElements(By.xpath( "//b[contains(text(),'Remo')]//u[contains(text(),'v')]" )).size()>0 ){
+			if( shared_functions.getElementsWhenVisible(By.xpath( "//b[contains(text(),'Remo')]//u[contains(text(),'v')]" ))!=null ){
 				driver.findElement(By.xpath( "//b[contains(text(),'Remo')]//u[contains(text(),'v')]" )).click();				
 			}else{
 				System.out.println("else 1");
 			}
-			if( driver.findElements(By.xpath("//td[contains(text(), 'Yes')  and @class='x-btn-center-cui-n' ]")).size()>0 ){
+			if( shared_functions.getElementsWhenVisible(By.xpath("//td[contains(text(), 'Yes')  and @class='x-btn-center-cui-n' ]"))!=null ){
 				driver.findElement(By.xpath("//td[contains(text(), 'Yes')  and @class='x-btn-center-cui-n' ]")).click();
 			}else{
 				System.out.println("else 2");
 			}
-			if( driver.findElements(By.xpath("//span[contains(text(),'es') and @class='x-btn-inner x-btn-inner-center']//u[contains(text(),'Y')]")).size()>0 ){
+			if( shared_functions.getElementsWhenVisible(By.xpath("//span[contains(text(),'es') and @class='x-btn-inner x-btn-inner-center']//u[contains(text(),'Y')]"))!=null ){
 				driver.findElement(By.xpath("//span[contains(text(),'es') and @class='x-btn-inner x-btn-inner-center']//u[contains(text(),'Y')]")).click();
 			}else{
 				System.out.println("else 3");
 			}
-			if( driver.findElements(By.xpath("//textarea[@id='gcrTextField_ixHistoryRemoveComment' ]")).size()>0 ){
+			if( shared_functions.getElementsWhenVisible(By.xpath("//textarea[@id='gcrTextField_ixHistoryRemoveComment' ]"))!=null ){
 				driver.findElement(By.xpath("//textarea[@id='gcrTextField_ixHistoryRemoveComment' ]")).click();
 				driver.findElement(By.xpath("//textarea[@id='gcrTextField_ixHistoryRemoveComment' ]")).sendKeys("qag remove item testing");
 				driver.findElement(By.xpath("//a[contains(text(), 'Save') and @id='gcrSaveRemoveBtn_btnTxt']")).click();
@@ -250,7 +250,7 @@ public class T02S01A_ix_request_laboratory {
 			wait_history_page_loading();
 		}
 		shared_functions.sleepForAWhile(5000);
-		today_records_elms = driver.findElements(By.xpath(xp_today_date));
+		today_records_elms = shared_functions.getElementsWhenVisible(By.xpath(xp_today_date));
 		shared_functions.do_screen_capture_with_filename(driver, "T02S01_3");
 		if( today_records_elms.size() == 0 ){
 			steps_passed = steps_passed + 1;
@@ -284,17 +284,17 @@ public class T02S01A_ix_request_laboratory {
 		lx.selectRdbtn(dict.get("bloodbank_test"));
 		lx.selectRdbtn(dict.get("bloodbank_urgency"));
 		//Date Required
-		List<WebElement> li = driver.findElements(By.xpath("//input[contains(@id,'gcrDateField_gcr_bloodBankDetailPanel_dateRequired')]"));
-		if(li.size()>0) {
+		List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath("//input[contains(@id,'gcrDateField_gcr_bloodBankDetailPanel_dateRequired')]"));
+		if(li!=null) {
 			WebElement e = li.get(0);
 			shared_functions.clearAndSend(e,today_str);
 		}
 		//Request For
 		String xp2 = "//span[contains(text(),'"+dict.get("bloodbank_requestfor")+"')]"; //Plasma
 		System.out.println("xp2: "+xp2);
-		List<WebElement> li2 = driver.findElements(By.xpath(xp2));
+		List<WebElement> li2 = shared_functions.getElementsWhenVisible(By.xpath(xp2));
 		System.out.println("li2.size(): "+li2.size());
-		if(li2.size()>0) {
+		if(li2!=null) {
 			WebElement e = li2.get(0);
 			System.out.println("id: "+e.getAttribute("id"));
 			e.click();
@@ -305,18 +305,18 @@ public class T02S01A_ix_request_laboratory {
 		String id3 = "gcrTextField_gcr_bloodBankDetailPanel_requestUnit_DIV__" + request_for_htmlid_suffix;
 		System.out.println("id3: "+id3);
 		String xp3 = "//*[contains(@id,'"+id3+"')]";
-		List<WebElement> li3 = driver.findElements(By.xpath(xp3));
+		List<WebElement> li3 = shared_functions.getElementsWhenVisible(By.xpath(xp3));
 		System.out.println("li3.size(): "+li3.size());
-		if(li3.size()>0) {
+		if(li3!=null) {
 			WebElement e = li3.get(0);
 			shared_functions.clearAndSend(e, dict.get("bloodbank_requestunit")); //3
 			e.click();
 		}
 		//Irradiated
 		String xp4 = "//span[contains(text(),'"+dict.get("bloodbank_special_req")+"')]"; //Irradiated
-		List<WebElement> li4 = driver.findElements(By.xpath(xp4));
+		List<WebElement> li4 = shared_functions.getElementsWhenVisible(By.xpath(xp4));
 		System.out.println("li4.size(): "+li4.size());
-		if(li4.size()>0) {
+		if(li4!=null) {
 			WebElement e = li4.get(0); 
 			e.click();
 		}
@@ -390,8 +390,8 @@ public class T02S01A_ix_request_laboratory {
 			driver.switchTo().frame("276Panel");			
 		}
 		public void requestBy(String str) throws InterruptedException { 
-			List<WebElement> liRequestBy = driver.findElements(By.xpath("//input[starts-with(@id, 'textBox~~gcr_orderDetail_reqByDD')]"));
-			if(liRequestBy.size()>0) {
+			List<WebElement> liRequestBy = shared_functions.getElementsWhenVisible(By.xpath("//input[starts-with(@id, 'textBox~~gcr_orderDetail_reqByDD')]"));
+			if(liRequestBy!=null) {
 				WebElement eRequestBy = liRequestBy.get(0);
 				while( !(eRequestBy.isEnabled()&&eRequestBy.isDisplayed()) ){
 					System.out.println("requestBy - eRequestBy not enabled, not displayed, continue to loop");
@@ -404,94 +404,94 @@ public class T02S01A_ix_request_laboratory {
 			}			
 		}
 		public void clickTabDiscipline() {
-			List<WebElement> liDiscipline = driver.findElements(By.cssSelector("#gcrIxByDisciplineRightClick"));
-			if(liDiscipline.size()>0) {
+			List<WebElement> liDiscipline = shared_functions.getElementsWhenVisible(By.cssSelector("#gcrIxByDisciplineRightClick"));
+			if(liDiscipline!=null) {
 				WebElement eDiscipline = liDiscipline.get(0);
 				eDiscipline.click();
 			}
 		}
 		public void clickTabHistory() {
-			List<WebElement> liHistory = driver.findElements(By.cssSelector("#gcrIxByHistoryRightClick"));
-			if(liHistory.size()>0) {
+			List<WebElement> liHistory = shared_functions.getElementsWhenVisible(By.cssSelector("#gcrIxByHistoryRightClick"));
+			if(liHistory!=null) {
 				WebElement eHistory = liHistory.get(0);
 				eHistory.click();
 			}
 		}
 		public void selectDiscipline(String str) throws InterruptedException {
-			List<WebElement> li = driver.findElements(By.xpath("//td[contains(text(),'"+str+"')]"));
-			if(li.size()>0) {
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath("//td[contains(text(),'"+str+"')]"));
+			if(li!=null) {
 				WebElement e = li.get(0);
 				e.click();
 			}
 			shared_functions.sleepForAWhile(1000);
 		}
 		public void clickInnerTab(String str) { 
-			List<WebElement> li = driver.findElements(By.xpath("//span[contains(text(),'"+str+"')]"));
-			if(li.size()>0) {
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath("//span[contains(text(),'"+str+"')]"));
+			if(li!=null) {
 				WebElement e = li.get(0);
 				e.click();
 			}			
 		}
 		public void selectChkBox(String str) { 
-			List<WebElement> li = driver.findElements(By.xpath("//span[contains(text(),'"+str+"')]"));
-			if(li.size()>0) {
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath("//span[contains(text(),'"+str+"')]"));
+			if(li!=null) {
 				WebElement e = li.get(0);
 				e.click();
 			}			
 		}
 		public void selectRdbtn(String str) {
-			List<WebElement> li = driver.findElements(By.xpath("//span[contains(text(),'"+str+"')]"));
-			if(li.size()>0) {
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath("//span[contains(text(),'"+str+"')]"));
+			if(li!=null) {
 				WebElement e = li.get(0);
 				System.out.println("selectRdbtn("+str+") e.isDisplayed()"+ e.isDisplayed());
 				e.click();
 			}			
 		}
 		public void inputSpecifiedLocation(String str){ 
-			List<WebElement> liSpecifiedLocation = driver.findElements(By.xpath("//input[contains(@id, 'textBox~~gcrHistoSpecifyLoc_HS_Div')]"));
-			if(liSpecifiedLocation.size()>0) {
+			List<WebElement> liSpecifiedLocation = shared_functions.getElementsWhenVisible(By.xpath("//input[contains(@id, 'textBox~~gcrHistoSpecifyLoc_HS_Div')]"));
+			if(liSpecifiedLocation!=null) {
 				WebElement eSpecifiedLocation = liSpecifiedLocation.get(0);
 				shared_functions.clearAndSend(eSpecifiedLocation, str);
 			}
 		}
 		public void inputTypeOfOperation(String str){
-			List<WebElement> liTypeOfOperation = driver.findElements(By.xpath("//input[contains(@id, 'textBox~~gcrHistoTypeOfOp_HS_Div')]"));
+			List<WebElement> liTypeOfOperation = shared_functions.getElementsWhenVisible(By.xpath("//input[contains(@id, 'textBox~~gcrHistoTypeOfOp_HS_Div')]"));
 			System.out.println("liTypeOfOperation: "+liTypeOfOperation.size());
-			if(liTypeOfOperation.size()>0) {
+			if(liTypeOfOperation!=null) {
 				WebElement eTypeOfOperation = liTypeOfOperation.get(0);
 				shared_functions.clearAndSend(eTypeOfOperation, str);
 			}			
 		}
 		public void inputPreparationRemark(String str){
-			List<WebElement> liPreparationRemark = driver.findElements(By.xpath("//input[contains(@id, 'textBox~~gcrHistoPrepare_HS_Div')]"));
+			List<WebElement> liPreparationRemark = shared_functions.getElementsWhenVisible(By.xpath("//input[contains(@id, 'textBox~~gcrHistoPrepare_HS_Div')]"));
 			System.out.println("liPreparationRemark: "+liPreparationRemark.size());
-			if(liPreparationRemark.size()>0) {
+			if(liPreparationRemark!=null) {
 				WebElement ePreparationRemark = liPreparationRemark.get(0);
 				shared_functions.clearAndSend(ePreparationRemark, str);
 			}			
 		}
 		public void clickAddIxBtn() throws InterruptedException {
-			List<WebElement> liAddIxBtn = driver.findElements(By.xpath("//table[contains(@id, 'gcr_newIx_disc_addIxBtn_')]"));
+			List<WebElement> liAddIxBtn = shared_functions.getElementsWhenVisible(By.xpath("//table[contains(@id, 'gcr_newIx_disc_addIxBtn_')]"));
 			System.out.println("liAddIxBtn: "+liAddIxBtn.size());
-			if(liAddIxBtn.size()>0) {
+			if(liAddIxBtn!=null) {
 				WebElement eAddIxBtn = liAddIxBtn.get(0);
 				eAddIxBtn.click();
 			}
 			shared_functions.sleepForAWhile(3000);
 		}
 		public void clickSaveBtn() throws InterruptedException {
-			List<WebElement> liIxSaveBtn = driver.findElements(By.xpath("//table[contains(@id, 'gcr_orderCart_addIxSaveBtn_')]"));
+			List<WebElement> liIxSaveBtn = shared_functions.getElementsWhenVisible(By.xpath("//table[contains(@id, 'gcr_orderCart_addIxSaveBtn_')]"));
 			System.out.println("liIxSaveBtn: "+liIxSaveBtn.size());
-			if(liIxSaveBtn.size()>0) {
+			if(liIxSaveBtn!=null) {
 				WebElement eIxSaveBtn = liIxSaveBtn.get(0);
 				eIxSaveBtn.click();
 			}
 			shared_functions.sleepForAWhile(3000);
 		}
 		public void handleGcrRisPopup() {
-			List<WebElement> liGcrRisPopUp = driver.findElements(By.xpath("//span[contains(text(), 'GCR-RIS appointment booking')]"));
+			List<WebElement> liGcrRisPopUp = shared_functions.getElementsWhenVisible(By.xpath("//span[contains(text(), 'GCR-RIS appointment booking')]"));
 			System.out.println("liGcrRisPopUp: "+liGcrRisPopUp.size());
-			if(liGcrRisPopUp.size()>0) {
+			if(liGcrRisPopUp!=null) {
 				WebElement eSkip = driver.findElement(By.xpath("//span[contains(text(), 'Skip')]"));
 				eSkip.click();
 			}			
@@ -499,7 +499,7 @@ public class T02S01A_ix_request_laboratory {
 		public Boolean check_history_page_item(String check_text) {
 			Boolean item_found = false;
 			String xPath = "//td[contains(text(), '"+today_str+"')]//following-sibling::td";
-			List<WebElement>li = driver.findElements(By.xpath(xPath));
+			List<WebElement>li = shared_functions.getElementsWhenVisible(By.xpath(xPath));
 			for(int i=0; i<li.size(); i++){
 				String innerText = li.get(i).getText();
 				if(innerText.equals(check_text)){
@@ -542,7 +542,7 @@ public class T02S01A_ix_request_laboratory {
 		}
 		public void auto_fill_dropdown() {
 			String xpDropDown = "//input[contains(@id,'textBox~~gcrInputId_')]";
-			List<WebElement> liDropDown = driver.findElements(By.xpath(xpDropDown));
+			List<WebElement> liDropDown = shared_functions.getElementsWhenVisible(By.xpath(xpDropDown));
 			for(int i=0; i<liDropDown.size(); i++){
 				if(liDropDown.get(i).getAttribute("value").isEmpty()){
 					liDropDown.get(i).click();
@@ -554,12 +554,12 @@ public class T02S01A_ix_request_laboratory {
 		}
 		public void auto_fill_radiobutton() {
 			String xpRadioBtn = "//input[contains(@name,'gcrInputId_')]";
-			List<WebElement> liRadioBtn = driver.findElements(By.xpath(xpRadioBtn));
+			List<WebElement> liRadioBtn = shared_functions.getElementsWhenVisible(By.xpath(xpRadioBtn));
 			liRadioBtn.get(1).click();
 		}
 		public void auto_fill_textarea() {
 			String xpTextArea = "//input[contains(@id,'gcrTextField_gcrInputId_')]";
-			List<WebElement> liTextArea = driver.findElements(By.xpath(xpTextArea));
+			List<WebElement> liTextArea = shared_functions.getElementsWhenVisible(By.xpath(xpTextArea));
 			System.out.println("liTextArea.size(): "+liTextArea.size());
 			for(int k=0; k<liTextArea.size(); k++){
 				System.out.println("liTextArea value: "+liTextArea.get(k).getAttribute("value"));
@@ -572,9 +572,9 @@ public class T02S01A_ix_request_laboratory {
 		}
 		public void save() {
 			String css12 = "#gcrIxInformationEngineMainPanel-xfolder-edit-saveBtn_btnTxt";
-			List<WebElement> li12 = driver.findElements(By.cssSelector(css12));
+			List<WebElement> li12 = shared_functions.getElementsWhenVisible(By.cssSelector(css12));
 			System.out.println("li12.size() Save: "+li12.size());
-			if(li12.size()>0) {
+			if(li12!=null) {
 				WebElement e = li12.get(0);
 				e.click();
 			}			

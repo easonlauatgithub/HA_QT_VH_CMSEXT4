@@ -26,7 +26,7 @@ public class T03S01_PMI_enquiry {
 		cmsMainPage = new PAGE_CMSMainPage(driver);
 		psf = new PAGE_PatientDetailPage_PatientSpecificFunction(driver);
 		pmi = new PAGE_PatientDetailPage_PMI(driver);
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		open_function();
 		check_function();		
 		cmsMainPage.fnNextPatient();

@@ -43,7 +43,7 @@ public class T01S05_discharge_prescription_OPMOE {
 		dp = new PAGE_PatientDetailPage_DischargePrescription(driver);
 		steps_passed = 0;
 		total_steps = 9;
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		open_moe_function();
 		test_check_history();
 		test_new_moe_order();
@@ -83,9 +83,7 @@ public class T01S05_discharge_prescription_OPMOE {
 		if(dp.isExistLeavingPrescriptionPopup()){
 			dp.clickNoForSavePrescritionFirst();
 		}
-		if( shared_functions.isAlertPresent(driver) ) {
-			shared_functions.handleAlert(driver, false);
-		}
+		shared_functions.checkExistAndHandleAlert(driver, false);
 		System.out.println("close_opmoe_without_save - END");
 	}
 	public void test_check_history() throws Exception {
@@ -137,7 +135,7 @@ public class T01S05_discharge_prescription_OPMOE {
 		for(int i=0; i<number_of_drugs; i++){
 			String suffix = "_d"+(i+1);
 			String str = dict.get("new_moe_check"+suffix);
-			Boolean isExistMoe = dp.getMoeByDrugNameNDosage(str).size()>0;
+			Boolean isExistMoe = dp.getMoeByDrugNameNDosage(str)!=null;
 			if(isExistMoe){
 				number_of_record_found = number_of_record_found + 1;	
 			}
@@ -164,7 +162,7 @@ public class T01S05_discharge_prescription_OPMOE {
 		//End If
 		//UnhandledAlertException: Modal dialog present with text: 
 		//Error in timeout-callback: Object doesn't support property or method 'jsPrint': Error in timeout-callback: Object doesn't support property or method 'jsPrint'
-		shared_functions.handleAlert(driver, true);
+		shared_functions.checkExistAndHandleAlert(driver, true);
 		dp.clickHistoryBtn();
 		shared_functions.do_screen_capture_with_filename(driver, "T01S05_3");
 		String hisotry_record_table_innertext = dp.getContentOfPreviousPrescriptionTable();
@@ -184,7 +182,7 @@ public class T01S05_discharge_prescription_OPMOE {
 		String suffix = "_d1"; 
 		String str = dict.get("new_moe_check" + suffix); //PIRITON (CHLORPHENIRAMINE MALEATE) tablet<BR>oral : 4 mg tds for 1 weeks
 		List<WebElement> liMoes = dp.getMoeByDrugNameNDosage(str);		
-		if(liMoes.size()>0){
+		if(liMoes!=null){
 			liMoes.get(0).click();
 		}
 		dp.clickEditBtn();
@@ -193,7 +191,7 @@ public class T01S05_discharge_prescription_OPMOE {
 		dp.clickAcceptBtn();
 		str = dict.get("new_moe_keyword_d1"); //PIRITON
 		List<WebElement> liMoes2 = dp.getMoeByDrugKeyword(str);
-		if(liMoes2.size()>0){
+		if(liMoes2!=null){
 			WebElement eUpdatedMoe = liMoes2.get(0);
 			String strUpdatedMoe = eUpdatedMoe.getText();
 			String strInstruction = dict.get("update_moe_instruction");
@@ -220,7 +218,7 @@ public class T01S05_discharge_prescription_OPMOE {
 			suffix = "_d"+(i+1);
 			str = dict.get("new_moe_check"+suffix); 
 			List<WebElement> liMoes3 = dp.getMoeByDrugNameNDosage(str);
-			if(liMoes3.size()>0){
+			if(liMoes3!=null){
 				number_of_record_found = number_of_record_found + 1;
 			}
 		}
@@ -239,11 +237,9 @@ public class T01S05_discharge_prescription_OPMOE {
 		System.out.println("test_remove_order - START");
 		dp.clickDeleteOrderBtn();
 		dp.confirmDelete();
-		if( shared_functions.isAlertPresent(driver) ) {
-			shared_functions.handleAlert(driver, false);
-		}
+		shared_functions.checkExistAndHandleAlert(driver, false);
 		shared_functions.do_screen_capture_with_filename(driver, "T01S05_6");
-		Boolean isNotExistIframe226Panel = dp.getIframe226Panel().size()==0;
+		Boolean isNotExistIframe226Panel = dp.getIframe226Panel()==null;
 		if(isNotExistIframe226Panel){
 			steps_passed = steps_passed + 1;
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_6", "del moe order - moe function is closed");
@@ -280,7 +276,7 @@ public class T01S05_discharge_prescription_OPMOE {
 			if(!isNull){
 				String v = dict.get(k);
 				String check_drug = v.replace("(w)", dict.get("drugset_duration")).replace("\\","");
-				Boolean b = dp.getMoeByDrugNameNDosage(check_drug).size()>0;
+				Boolean b = dp.getMoeByDrugNameNDosage(check_drug)!=null;
 				if(b){
 					drugs_found = drugs_found + 1;
 				}
@@ -319,7 +315,7 @@ public class T01S05_discharge_prescription_OPMOE {
 				//PANADOL \(PARACETAMOL ALCOHOL FREE\) suspension<BR>oral : 500 mg q4h prn \(100%\) for 1 weeks
 				//THEOPHYLLINE ALCOHOL FREE syrup<BR>oral : 10 mg daily for 1 weeks
 				String check_drug = v.replace("\\","");
-				Boolean b = dp.getMoeByDrugNameNDosage(check_drug).size()>0;
+				Boolean b = dp.getMoeByDrugNameNDosage(check_drug)!=null;
 				if(b){
 					drugs_found = drugs_found + 1;
 					shared_functions.reporter_ReportEvent("micDone","standard_regimen drug check "+i,"found: "+check_drug);
@@ -348,38 +344,38 @@ public class T01S05_discharge_prescription_OPMOE {
 		}
 		public void switchToIframe(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("226Panel");			
+			shared_functions.switchToFrameByString("226Panel");			
 		}
 		//Check exist
 		public Boolean isExistPrescription(){
 			switchToIframe();
 			String xp = "//label[contains(text(),'A prescription already exists for this patient.')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public Boolean isExistFailToRetrievePMSInformation(){
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'Fail to retrieve PMS information')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public Boolean isExistFutureAppointmentDate(){
 			switchToIframe();
 			String xp = "//span[contains(text(),'Future Appointment Date')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public Boolean isExistPreviousPrescription(){
 			switchToIframe();
 			String xp = "//label[contains(text(),'Previous Prescription')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public Boolean checkIfExistImg(){
 			switchToIframe();
 			String css = "img.x-tree-ec-icon.x-tree-elbow-end-plus";
-			List<WebElement> li = driver.findElements(By.cssSelector(css));
-			if(li.size()>0){
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(css));
+			if(li!=null){
 				return true;
 			}
 			return false;
@@ -400,8 +396,8 @@ public class T01S05_discharge_prescription_OPMOE {
 			Boolean b =false;
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'You are leaving this prescription. Save the prescription first?')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
+			if(li!=null){
 				b=true;
 			}
 			return b;
@@ -409,8 +405,8 @@ public class T01S05_discharge_prescription_OPMOE {
 		public Boolean isExistSavePMSDataFailed(){
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'Save pmsData failed')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			Boolean b = li.size()>0;
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
+			Boolean b = li!=null;
 			System.out.println("isExistSavePMSDataFailed:"+b);
 			return b;
 		}
@@ -418,156 +414,84 @@ public class T01S05_discharge_prescription_OPMOE {
 		public void clickOKBtnForSavePMSDataFailed(){
 			switchToIframe();
 			String xp = "//span[contains(text(),'K')]/u[contains(text(),'O')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				System.out.println("clickOKBtnForSavePMSDataFailed");
-				li.get(0).click();				
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void closeFutureAppointmentDate(){
 			switchToIframe();
 			String xp = "//table[@id='faApplyBtn']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();				
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickCancelBtn() throws InterruptedException{
 			System.out.println("clickCancelBtn");
 			switchToIframe();
 			String css = "div#cancelBtn";
-			List<WebElement> li = driver.findElements(By.cssSelector(css));
-			if(li.size()>0){
-				li.get(0).click();
-			}
-			waitForCancelBtnHide();
-		}
-		public void waitForCancelBtnHide() throws InterruptedException{
-			String css = "div#cancelBtn";
-			waitForCssHide(css);
+			shared_functions.clickElementWhenClickable(By.cssSelector(css));
 		}
 		public void clickHistoryBtn() throws InterruptedException{
 			System.out.println("clickHistoryBtn");
 			switchToIframe();
 			String xp = "//div[@id='moeHistoryBtn']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
-			waitForCancelBtn();
-		}
-		public void waitForCancelBtn() throws InterruptedException{
-			String css = "div#cancelBtn div#historyClose";
-			waitForCssDisplay(css);
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickAddBtn() throws InterruptedException{
 			String css = "table#moe-drugSearchBottomButton-table div#Addbutton";
-			List<WebElement> li = driver.findElements(By.cssSelector(css));
-			if(li.size()>0){
-				li.get(0).click();
-			}
-			waitForAddBtnHide();
-		}
-		public void waitForAddBtnHide() throws InterruptedException{
-			String css = "div#Addbutton";
-			waitForCssHide(css);
+			shared_functions.clickElementWhenClickable(By.cssSelector(css));
 		}
 		public void clickSaveBtn() throws InterruptedException{
 			String xp = "//span[contains(text(),'Save and')]//u[contains(text(),'P')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
-			waitForSaveNPrintBtnDisable();
-		}
-		public void waitForSaveNPrintBtnDisable() throws InterruptedException{
-			String css = "div#PIsapBtn>div";
-			waitForCssDisable(css);
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickOkBtn(){
 			switchToIframe();
 			String xp = "//span[contains(text(),'K')]/u[contains(text(),'O')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickDeleteOrderBtn() throws InterruptedException{
 			switchToIframe();
 			String xp = "//span[contains(text(),'Delete')]//u[contains(text(),'O')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){li.get(0).click();}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void confirmDelete() throws InterruptedException{
 			String xp = "//textarea[contains(text(),'Delete the whole prescription')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				String xp2 = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
-				List<WebElement> li2 = driver.findElements(By.xpath(xp2));
-				if(li2.size()>0){
-					li2.get(0).click();
-				}
-			}
-			while(dp.getIframe226Panel().size()!=0){
-				System.out.println("Still in Iframe226Panel");
-			} 
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			String xp2 = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
+			shared_functions.clickElementWhenClickable(By.xpath(xp2));
 		}
 		public void inputStartDateDuration(String str){
 			switchToIframe();
 			String xp = "//legend[contains(text(),'Prescription Duration')]/following-sibling::table//td[contains(text(),'for')]/following-sibling::td[1]//input";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				shared_functions.clickAndType(li.get(0), str);
-			}
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
+			shared_functions.clickAndType(e, str);
 		}
 		public void inputDrugKeyword(String str){
 			System.out.println("inputDrugKeyword:"+str);
 			switchToIframe();
 			String css = "input#moeDrugSearchTriggerText";
-			List<WebElement> li = driver.findElements(By.cssSelector(css));
-			if(li.size()>0){
-				shared_functions.clickAndType(li.get(0), str);
-			}
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(css));
+			shared_functions.clickAndType(e, str);
 		}
 		public void selectDrugName(String str){
 			String xp = "//a[contains(text(),'"+str+"')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
-
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void selectDrugType(String str){
 			String xp = "//div[contains(text(),'"+str+"') and @class='routeNode']";
-			//String xp = "//div[contains(text(),'"+str+"') and contains(@class,'routeNode')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}			
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void inputCommonDosage(String str){
 			String xp = "//div[contains(text(),'"+str+"') and contains(@id,'moe-comDoseContent-')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}			
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickEditBtn() throws InterruptedException{
 			String xp = "//span[contains(text(),'dit')]//u[contains(text(),'E')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
-			waitForAcceptBtnDisplay();
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void inputDuration(String str){
 			System.out.print("inputDuration:");
 			switchToIframe();
 			String css = "div.moe-durationPanel input[class*='moe-ui-textfield']";
-			List<WebElement> li = driver.findElements(By.cssSelector(css));
-			System.out.println(li.size());
-			if(li.size()>0){
-				shared_functions.clickAndType(li.get(0),str);
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(css));
+			shared_functions.clickAndType(e,str);
 				/*
 				WebElement e = li.get(0);
 				System.out.println("e:"+e);
@@ -586,16 +510,13 @@ public class T01S05_discharge_prescription_OPMOE {
 				//System.out.println("e clear");
 				//e.sendKeys(str);
 				//System.out.println("e sendKeys:"+str);				
-			}
 		}
 		public void inputSpecialInstruction(String str){
 			System.out.print("inputSpecialInstruction:");
 			switchToIframe();
 			String css = "textarea#moe-edit-lower-specInstruct";
-			List<WebElement> li = driver.findElements(By.cssSelector(css));
-			System.out.println(li.size());
-			if(li.size()>0){
-				shared_functions.clickAndType(li.get(0),str);
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(css));
+			shared_functions.clickAndType(e,str);
 				/*
 				WebElement e = li.get(0);
 				System.out.println("e:"+e);
@@ -608,220 +529,90 @@ public class T01S05_discharge_prescription_OPMOE {
 				e.sendKeys(Keys.ENTER);
 				System.out.println("e sendKeys ENTER");
 				*/
-			}
 		}
 		public void clickAcceptBtn() throws InterruptedException{
 			System.out.print("clickAcceptBtn size:");
 			switchToIframe();
 			String xp = "//span[contains(text(),'ccept')]//u[contains(text(),'A')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			System.out.println(li.size());
-			if(li.size()>0){
-				WebElement e = li.get(0);
-				e.click();
-				System.out.print("clickAcceptBtn-clicked:"+e);
-			}
-			waitForHistoryBtnEnable();
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickRemoveBtn(){		
 			String xp = "//span[contains(text(),'emove')]//u[contains(text(),'R')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void confirmRemove(){
 			String xp = "//textarea[contains(text(),'Remove the item?')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				xp = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
-				li = driver.findElements(By.xpath(xp));
-				if(li.size()>0){
-					li.get(0).click();
-				}
-			}			
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			String xp2 = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
+			shared_functions.clickElementWhenClickable(By.xpath(xp2));			
 		}
 		public void clickNoForSavePrescritionFirst(){
 			switchToIframe();
 			String xp = "//span[contains(text(),'o')]//u[contains(text(),'N')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickDrugSetBtn() throws InterruptedException{
 			switchToIframe();
 			String xp = "//span[contains(text(),'Dr')]//u[contains(text(),'u')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
-			waitForDrugSetCancelBtnEnable();
-			waitForDrugSetInputEnable();
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void inputDrugSet(String str) throws InterruptedException{
 			switchToIframe();
 			//String str = dict.get("drugset_keywoard");
 			String css = "div#drugsetTextDiv input";
-			List<WebElement> li = driver.findElements(By.cssSelector(css));
-			if(li.size()>0){
-				shared_functions.clickAndType(li.get(0), str);
-			}
-			waitToLoad();
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(css));
+			shared_functions.clickAndType(e, str);
 		}
 		public void inputDrugSetDuration(String str){
 			String xp = "//div[@id='drugsetDurationPanel']//legend[contains(text(),'Prescription Duration')]/following-sibling::table//td[contains(text(),'for')]/following-sibling::td[1]//input";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				shared_functions.clickAndType(li.get(0), str);
-			}
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
+			shared_functions.clickAndType(e, str);
 		}
 		public void clickDrugSetSelectAllBtn(){
 			String xp = "//div[@id='drugsetSelectAllBtn']//span[contains(text(),'elect All')]//u[contains(text(),'S')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
-				li.get(0).click();
-			}
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickDrugSetAddBtn() throws InterruptedException{
 			String xp = "//div[@id='drugsetAddBtn']//span[contains(text(),'dd')]//u[contains(text(),'A')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			System.out.println("clickDrugSetAddBtn:"+li.size());
-			if(li.size()>0){
-				li.get(0).click();
-			}
-			waitForHistoryBtnEnable();
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickStandardRegimenBtn() throws InterruptedException{
 			switchToIframe();
 			String xp = "//span[contains(text(),'tandard Regimen')]//u[contains(text(),'S')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			System.out.println("clickStandardRegimenBtn:"+li.size());
-			if(li.size()>0){
-				li.get(0).click();
-			}
-			waitForDrugSetCancelBtnEnable();
-			waitForStandardRegimenInputEnable();
+			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void inputStandardRegimen(String str) throws InterruptedException{
 			switchToIframe();
 			String css = "div#drugsetTextDiv input";
-			List<WebElement> li = driver.findElements(By.cssSelector(css));
-			System.out.println("inputStandardRegimen:"+li.size());
-			if(li.size()>0){
-				shared_functions.clickAndType(li.get(0), str);
-			}
-			waitToLoad();
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(css));
+			shared_functions.clickAndType(e, str);
 		}
 		
 		public String getContentOfPreviousPrescriptionTable(){
 			switchToIframe();				
 			String xp = "//label[contains(text(),'Previous Prescription')]/ancestor::table[@class='x-table-layout']//table";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 			String textOfPreviousPrescriptionTable = li.get(0).getText().replace("\n","").replace("\r","").replace("  "," ");
 			return textOfPreviousPrescriptionTable;
 		}
 		public List<WebElement> getMoeByDrugNameNDosage(String str){
 			String[] arrStr = str.split("<BR>");
 			String xp = "//td[contains(text(),'"+arrStr[0]+"') or contains(text(),'"+arrStr[1]+"')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 			return li;
 		}
 		public List<WebElement> getIframe226Panel(){
 			driver.switchTo().defaultContent();
 			String css = "iframe[name=226Panel]";
-			List<WebElement> li = driver.findElements(By.cssSelector(css));
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.cssSelector(css));
 			return li;			
 		}
 		public List<WebElement> getMoeByDrugKeyword(String str){
 			String xp = "//td[contains(text(),'"+str+"')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 			return li;
 		}
-		//wait
-		public void waitForHistoryBtnDisplay() throws InterruptedException{
-			String css = "td#historyBtnTD div#moeHistoryBtn";
-			waitForCssDisplay(css);
-		}
-		public void waitForHistoryBtnEnable() throws InterruptedException{
-			String css = "td#historyBtnTD div#moeHistoryBtn";
-			waitForCssEnable(css);
-		}
-		public void waitForSaveNPrintBtnDisplay() throws InterruptedException{
-			String css = "div#PIsapBtn>div";
-			waitForCssDisplay(css);
-		}
 
-		public void waitForAcceptBtnDisplay() throws InterruptedException{
-			String css = "td#moeEditAcceptBtnTd";
-			waitForCssDisplay(css);
-		}
-		public void waitForDrugSetCancelBtnEnable() throws InterruptedException{
-			String css = "div#drugsetCancelBtn div#dsCancelBtn";
-			waitForCssEnable(css);
-		}
-		public void waitForDrugSetInputEnable() throws InterruptedException{
-			String css = "div#drugsetTextDiv input";
-			waitForCssEnable(css);
-		}
-		public void waitForStandardRegimenInputEnable() throws InterruptedException{
-			String css = "div#drugsetTextDiv input";
-			waitForCssEnable(css);
-		}
-		public void waitToLoad() throws InterruptedException{
-			System.out.print("waitToLoad, ");
-			shared_functions.sleepForAWhile(500);
-		}
-		public void waitForCssHide(String css){
-			Boolean bHide = false;
-			while(!bHide){
-				List<WebElement> li = driver.findElements(By.cssSelector(css));
-				if(li.size()>0){
-					bHide = !li.get(0).isDisplayed(); //display, break loop
-				}else{
-					bHide = false;
-				}
-				System.out.println("wait for css["+css+"] to hide:"+bHide);
-			}
-		}
-		public void waitForCssDisplay(String css){
-			Boolean bDisplay = false;
-			while(!bDisplay){
-				List<WebElement> li = driver.findElements(By.cssSelector(css));
-				if(li.size()>0){
-					bDisplay = li.get(0).isDisplayed(); //display, break loop
-				}else{
-					bDisplay = false;
-				}
-				System.out.println("wait for css["+css+"] to display:"+bDisplay);
-			}
-		}
-		public void waitForCssEnable(String css){
-			Boolean bEnable = false;
-			while(!bEnable){
-				List<WebElement> li = driver.findElements(By.cssSelector(css));
-				if(li.size()>0){
-					bEnable = li.get(0).isEnabled(); //enable, break loop
-				}else{
-					bEnable = false;
-				}
-				System.out.println("wait for css["+css+"] to enable:"+bEnable);
-			}
-		}
-		public void waitForCssDisable(String css){
-			Boolean bDisable = false;
-			while(!bDisable){//disable, break loop
-				List<WebElement> li = driver.findElements(By.cssSelector(css));
-				if(li.size()>0){
-					if(li.get(0).getAttribute("disabled") != null){
-						bDisable = li.get(0).getAttribute("disabled").equals("true");
-					}
-				}else{
-					bDisable = false;
-				}
-				System.out.println("wait for css["+css+"] to disable:"+bDisable);
-			}
-		}
 
 	}
 	

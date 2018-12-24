@@ -35,7 +35,7 @@ public class T05S01_bed_assignment {
 		bedAssignment = new PAGE_PatientDetailPage_BedAssignment(driver);
 		bed_no = dict.get("bed_to_assign");
 		case_no = dict.get("bed_assign_case_no");
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		test_open_function();
 		test_assign_bed();
 		cmsMainPage.fnNextPatient();
@@ -47,7 +47,7 @@ public class T05S01_bed_assignment {
 		Boolean have_bed_no = false;		
 		cmsMainPage.fnBedAssignment();
 		shared_functions.do_screen_capture_with_filename(driver, "T05S01_1");
-		for(int i=0; i<cmsMainPage.getPSPRowNum(); i++ ) {
+		for(int i=0; i<cmsMainPage.getNumOfPSPRows(); i++ ) {
 			int colIdxOfBedNum = 0;
 			String strBedNum = cmsMainPage.getPSPLeftColumnElement(i).get(colIdxOfBedNum).getText();
 			if(!strBedNum.isEmpty()) {
@@ -89,14 +89,14 @@ public class T05S01_bed_assignment {
 		System.out.println("test_assign_bed() - closeAssignTeamDoctor");
 		bedAssignment.switchToFrame_AssignTeamDoctor();
 		String strCancelAssignTeamDoctor = "#cancelBtn";
-		List<WebElement> liCancelAssignTeamDoctor = driver.findElements(By.cssSelector(strCancelAssignTeamDoctor));
-		if( liCancelAssignTeamDoctor.size()>0 ) {
+		List<WebElement> liCancelAssignTeamDoctor = shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(strCancelAssignTeamDoctor));
+		if( liCancelAssignTeamDoctor!=null ) {
 			liCancelAssignTeamDoctor.get(0).click();
 		}
 		bedAssignment.switchToFrame_BedAssignment();
 		String strOkBtn = "//span[contains(text(),'K')]//u[contains(text(),'O')]";
-		List<WebElement> liOkBtn = driver.findElements(By.xpath(strOkBtn));
-		if( liOkBtn.size()>0 ) {
+		List<WebElement> liOkBtn = shared_functions.checkAndGetElementsWhenVisible(By.xpath(strOkBtn));
+		if( liOkBtn!=null ) {
 			liOkBtn.get(0).click();
 		}
 		System.out.println("test_assign_bed() - QAG_checkpoint_2 case no# should appear with bed no# assigned correctly");
@@ -131,22 +131,22 @@ public class T05S01_bed_assignment {
 		}
 		public void switchToFrame_PSP() {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("cmsPSPWinPanelCmp");
+			shared_functions.switchToFrameByString("cmsPSPWinPanelCmp");
 		}
 		public void switchToFrame_AssignTeamDoctor() {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("361Panel");
+			shared_functions.switchToFrameByString("361Panel");
 		}
 		public void switchToFrame_BedAssignment() {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("37Panel");
+			shared_functions.switchToFrameByString("37Panel");
 		}
 		public WebElement getBed(String bedNum) {
 			this.switchToFrame_BedAssignment();
-			return driver.findElement(By.cssSelector("#bed"+bedNum+"-inputEl"));
+			return shared_functions.getElementWhenClickable(By.cssSelector("#bed"+bedNum+"-inputEl"));
 		}
 		public void clickSave() {
-			driver.findElement(By.cssSelector("#btnSave-btnInnerEl")).click();
+			shared_functions.getElementWhenClickable(By.cssSelector("#btnSave-btnInnerEl")).click();
 		}
 		public Boolean isSameBrowserTitle(String strBrowserTitle) {
 			Set<String> handles  = driver.getWindowHandles();

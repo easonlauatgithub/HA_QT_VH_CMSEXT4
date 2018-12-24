@@ -11,6 +11,8 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 public class T01S12_IPMOE_Prescription {
@@ -55,7 +57,7 @@ public class T01S12_IPMOE_Prescription {
 		System.out.println("today_ddMMM:"+today_ddMMM);
 		System.out.println("one_hour_later:"+one_hour_later);
 		System.out.println("one_hour_laterhhmm:"+one_hour_laterhhmm);
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		openDrugAdminByPatient();
 		open_ipmoe_function();
 		test_add_drug_item();
@@ -69,11 +71,11 @@ public class T01S12_IPMOE_Prescription {
 		cmsMainPage.fnDrugAdminByPatient();
 		cmsMainPage.selectPatientByCaseNum("HN08000026Z");
 		driver.switchTo().defaultContent();
-		driver.switchTo().frame("431Panel");
+		shared_functions.switchToFrameByString("431Panel");
 		String str = "Acknowledge";
 		String xp = "//span[contains(text(),'"+str+"')]";
-		List<WebElement> li = driver.findElements(By.xpath(xp));
-		if(li.size()>0){
+		List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+		if(li!=null){
 			li.get(0).click();
 		}
 		ip.waitToLoad();
@@ -153,7 +155,7 @@ public class T01S12_IPMOE_Prescription {
 			}else{
 				ip.clickEditBtn();
 				String xp = "//div[contains(@id,'oral-orderDetailRowCt-')]//div[contains(@class,'ipmoe ipmoe-ipEditWin-dosageRow')]//table[contains(@class,'x-table-layout')]//input";
-				List<WebElement> li = driver.findElements(By.xpath(xp));
+				List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 				ip.inputEditDrugFields(li, dict.get("new_ipmoe_dosage" + suffix), dict.get("new_ipmoe_frequency" + suffix), dict.get("new_ipmoe_prn"+suffix), 
 						dict.get("new_ipmoe_route_site" + suffix), dict.get("new_ipmoe_start_date"+suffix), dict.get("new_ipmoe_start_time"+suffix),
 						dict.get("new_ipmoe_end_date"+suffix), dict.get("new_ipmoe_end_time"+suffix), dict.get("new_ipmoe_duration"+suffix),
@@ -186,7 +188,7 @@ public class T01S12_IPMOE_Prescription {
 		shared_functions.right_click(drug_to_modify, 10, 0);
 		ip.selectByTagNText("span", "Modify");
 		String xp = "//div[contains(@id,'oral-orderDetailRowCt-')]//div[contains(@class,'ipmoe ipmoe-ipEditWin-dosageRow')]//table[contains(@class,'x-table-layout')]//input";
-		List<WebElement> li = driver.findElements(By.xpath(xp));
+		List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 		ip.inputModifyDrugFields(li, dict.get("modify_ipmoe_dosage"), dict.get("modify_ipmoe_frequency"), dict.get("modify_ipmoe_prn"), 
 				dict.get("modify_ipmoe_route_site"), dict.get("modify_ipmoe_start_date"), dict.get("modify_ipmoe_start_time"),
 				dict.get("modify_ipmoe_end_date"), dict.get("modify_ipmoe_end_time"), dict.get("modify_ipmoe_duration"),dict.get("modify_ipmoe_dose"));
@@ -218,9 +220,9 @@ public class T01S12_IPMOE_Prescription {
 		}
 		//check existing drugs is null
 		String xp = "//table[contains(@id,'gridview-') and contains(@id,'-table')]//tr";
-		List<WebElement> li = driver.findElements(By.xpath(xp)); 
+		List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp)); 
 		shared_functions.do_screen_capture_with_filename(driver, "T01S12_3");
-		if(li.size()==0){
+		if(li==null){
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_3", "remove ipmoe item - " + number_of_drugs + " drug items removed");
 			steps_passed = steps_passed + 1;
 		}else{
@@ -237,9 +239,15 @@ public class T01S12_IPMOE_Prescription {
 		}
 		public void switchToIframe(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("427Panel");
+			shared_functions.switchToFrameByString("427Panel");
 		}
 		public void waitToLoad() throws InterruptedException{
+			System.out.println("waitToLoad...");
+			String xp = "//*[contains(text(),'Now loading, please wait')]";
+			WebDriverWait w = new WebDriverWait(driver, 60); 
+			w.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(xp)));			
+		}
+/*		public void waitToLoad_TBD() throws InterruptedException{
 			int counter = 0;
 			while(isExistNowLoadingPopUp()){
 				System.out.println("Now loading...");
@@ -251,11 +259,11 @@ public class T01S12_IPMOE_Prescription {
 				}
 			}
 		}
-		public Boolean isExistNowLoadingPopUp() throws InterruptedException{
+		public Boolean isExistNowLoadingPopUp_TBD() throws InterruptedException{
 			Boolean b = false;
 			String xp = "//*[contains(text(),'Now loading, please wait')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			if(li!=null){
 				try{
 					WebElement e = li.get(0);
 					if(e.isDisplayed()){b = true;}else{b =  false;}
@@ -269,48 +277,48 @@ public class T01S12_IPMOE_Prescription {
 			}
 			System.out.println("isExistNowLoadingPopUp:"+b);
 			return b;
-		}
+		}*/
 		public Boolean isExistIpPrescribePage(){
 			driver.switchTo().defaultContent();
 			String xp = "//iframe[@name='427Panel']";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public Boolean isExistNowLoading(){
 			switchToIframe();
 			String xp = "//b[contains(text(),'Now loading, please wait')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public Boolean isExistFailToRetrievePMSInfo(){
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'Fail to retrieve PMS information')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public Boolean isExistPharmacyInfoOfSpecialty(){
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'Pharmacy information of specialty')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public Boolean isExistFailToRetrieveCMSInfo(){
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'Fail to retrieve CMS information')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public Boolean isExistPreviousRx(){
 			switchToIframe();
 			String xp = "//a[contains(text(),'Previous Rx')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			return li.size()>0;
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			return li!=null;
 		}
 		public void inputDrugName(String new_ipmoe_keyword) throws InterruptedException{
 			ip.switchToIframe();
 			String xp = "//input[contains(@name,'textfield-') and contains(@name,'-inputEl')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			if(li!=null){
 				WebElement e = li.get(0);
 				e.click();
 				shared_functions.clearAndSend(e, new_ipmoe_keyword);
@@ -320,8 +328,8 @@ public class T01S12_IPMOE_Prescription {
 		public void clickAddToMarBtn() throws InterruptedException{
 			int idx = 0;
 			String xp = "//span[contains(text(),'Add to MAR')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			if(li!=null){
 				li.get(idx).click();
 				waitToLoad();
 			}			
@@ -329,8 +337,8 @@ public class T01S12_IPMOE_Prescription {
 		public void clickAddToMarBtnAfterEdit() throws InterruptedException{
 			int idx = 1;
 			String xp = "//span[contains(text(),'Add to MAR')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			if(li!=null){
 				li.get(idx).click();
 				waitToLoad();
 			}			
@@ -342,9 +350,9 @@ public class T01S12_IPMOE_Prescription {
 		}
 		public WebElement getWebElementByTagNText(String tag, String str){
 			String xp = "//"+tag+"[contains(text(),'"+str+"')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 			//System.out.println("selectByString["+tag+","+str+"] size:"+li.size());
-			if(li.size()>0){
+			if(li!=null){
 				return li.get(0);
 			}else{
 				System.out.println("getWebElementByTagNText["+tag+","+str+"] is null:"+li.size());
@@ -361,7 +369,7 @@ public class T01S12_IPMOE_Prescription {
 		}
 		public void inputEditDrugFields(List<WebElement> li, String dosage, String frequency, String prn, String route_site, String start_date, String start_time, String end_date, String end_time, String duration, String dose){
 			System.out.println("inputEditDrugFields - dosage:"+dosage+", frequency:"+frequency+", prn:"+prn+", route_site:"+route_site+", start_date:"+start_date+", start_time:"+start_time+", end_date:"+end_date+", end_time:"+end_time+", duration:"+duration+", dose:"+dose);
-			if(li.size()>0){
+			if(li!=null){
 				//Dosage
 				if(dosage!=null){
 					shared_functions.clearAndSend(li.get(0),dosage);	
@@ -411,7 +419,7 @@ public class T01S12_IPMOE_Prescription {
 		}
 		public void inputModifyDrugFields(List<WebElement> li, String dosage, String frequency, String prn, String route_site, String start_date, String start_time, String end_date, String end_time, String duration, String dose) throws InterruptedException{
 			System.out.println("inputModifyDrugFields - dosage:"+dosage+", frequency:"+frequency+", prn:"+prn+", route_site:"+route_site+", start_date:"+start_date+", start_time:"+start_time+", end_date:"+end_date+", end_time:"+end_time+", duration:"+duration+", dose:"+dose);
-			if(li.size()>0){
+			if(li!=null){
 				//Dosage
 				if(dosage!=null){
 					shared_functions.clearAndSend(li.get(0),dosage);	
@@ -463,8 +471,8 @@ public class T01S12_IPMOE_Prescription {
 		public void selectDeleteFromList() throws InterruptedException{
 			System.out.println("selectDeleteFromList");
 			String xp = "//span[contains(text(),'Delete') and contains(@class,'x-menu-item-text x-menu-item-indent')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			if(li!=null){
 				li.get(0).click();
 				waitToLoad();
 			}
@@ -473,8 +481,8 @@ public class T01S12_IPMOE_Prescription {
 			System.out.println("checkIfBeingProcessedByPharmacy");
 			Boolean bProcessing = true;
 			String xp2 = "//textarea[contains(text(),'The order is being processed by pharmacy. It cannot be deleted.')]";
-			List<WebElement> li2 = driver.findElements(By.xpath(xp2));
-			if(li2.size()>0){
+			List<WebElement> li2 = shared_functions.getElementsWhenVisible(By.xpath(xp2));
+			if(li2!=null){
 				bProcessing = true;
 			}else{
 				bProcessing = false;
@@ -484,8 +492,8 @@ public class T01S12_IPMOE_Prescription {
 		public void cannotDelete(){
 			System.out.println("cannotDelete");
 			String xp3 = "//span[contains(text(),'K')]/u[contains(text(),'O')]";
-			List<WebElement> li3 = driver.findElements(By.xpath(xp3));
-			if(li3.size()>0){
+			List<WebElement> li3 = shared_functions.getElementsWhenVisible(By.xpath(xp3));
+			if(li3!=null){
 				li3.get(0).click();
 			}			
 		}
@@ -493,15 +501,15 @@ public class T01S12_IPMOE_Prescription {
 			System.out.println("confirmDelete:"+strDrugToRemove);
 			strDrugToRemove = strDrugToRemove.replace("\\", "");
 			String xp = "//textarea[contains(text(),'"+strDrugToRemove+"')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			if(li!=null){
 				clickDeleteBtn();
 			}			
 		}
 		public void clickDeleteBtn() throws InterruptedException{
 			String xp = "//span[contains(text(),'Delete') and contains(@class,'x-btn-inner x-btn-inner-center')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
-			if(li.size()>0){
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			if(li!=null){
 				li.get(0).click();
 				waitToLoad();
 			}			
@@ -512,13 +520,13 @@ public class T01S12_IPMOE_Prescription {
 			WebElement retval = null;
 			try{
 				String xp = "//table[contains(@id,'gridview-') and contains(@id,'-table')]";
-				List<WebElement> li = driver.findElements(By.xpath(xp));
+				List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp)); 
 				int idxTable = 1;
 				WebElement all_drugs_table = li.get(idxTable);
 				int sizeOfTr = all_drugs_table.findElements(By.tagName("tr")).size();
 				for(int d=0; d<sizeOfTr; d++){
-					String strDateInCMS = shared_functions.getTableText(all_drugs_table,d,1);
-					String strDrugInCMS = shared_functions.getTableText(all_drugs_table,d,2).replace("\n", "");
+					String strDateInCMS = shared_functions.getElementFromTable(all_drugs_table,d,1).getText();
+					String strDrugInCMS = shared_functions.getElementFromTable(all_drugs_table,d,2).getText().replace("\n", "");
 					Boolean b1 = (strDateInCMS.indexOf(today_ddMMM)!=-1);
 					Boolean b2 = (strDrugInCMS.indexOf(mar_description)!=-1);
 					System.out.println("select_today_drug_in_mar today_ddMMM:"+today_ddMMM);
@@ -546,7 +554,7 @@ public class T01S12_IPMOE_Prescription {
 			System.out.println("get_new_drug_panel_description()");
 			String retval = "NOT FOUND";
 			String xp = "//div[contains(@class,'x-panel-body x-panel-body-noheader')]";
-			List<WebElement> li = driver.findElements(By.xpath(xp));
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 			System.out.println("get_new_drug_panel_description size:"+li.size());
 			for(int i=0;i<li.size();i++){
 				WebElement the_panel = li.get(i);

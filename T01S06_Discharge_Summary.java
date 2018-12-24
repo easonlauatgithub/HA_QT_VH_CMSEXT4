@@ -14,6 +14,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 public class T01S06_Discharge_Summary {
@@ -37,7 +38,7 @@ public class T01S06_Discharge_Summary {
 		patientDetailPageDS = new PAGE_PatientDetailPage_DischargeSummary(driver);
 		steps_passed = 0;
 		total_steps = 5;
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 
 		cmsMainPage.fnDischargeSummary();
 		cmsMainPage.selectPatientByCaseNum( dict.get("case_no") );
@@ -98,7 +99,10 @@ public class T01S06_Discharge_Summary {
 		}
 		System.out.println("test_retrieve_all_previous() - verify zoomtext managetext again");
 		shared_functions.do_screen_capture_with_filename(driver, "T01S06_2");
-		Boolean isCorrectZoomText =  shared_functions.isCorrectText(cosultationList.cssZoomText, dict.get("create_ds_zoomtext") );
+		WebElement eZoomText = shared_functions.getElementWhenVisible(By.cssSelector(cosultationList.cssZoomText));
+		String strInCMS = eZoomText.getText();
+		String strInExcel = dict.get("create_ds_zoomtext");
+		Boolean isCorrectZoomText = strInCMS.equals(strInExcel);
 		if(isCorrectZoomText) {
 			steps_passed = steps_passed + 1;
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_2", "retrieve all previous notes - content same as 'create ds'");
@@ -157,6 +161,8 @@ public class T01S06_Discharge_Summary {
 		if(isCorrectZoomText) {
 			steps_passed = steps_passed + 1;
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_3", "add content from template - expected template text found");
+		}else{
+			shared_functions.reporter_ReportEvent("micFail", "QAG_checkpoint_3", "add content from template - expected template text not found");
 		}
 		System.out.println("test_add_ds_from_tmpl() - END");
 	}
@@ -186,75 +192,75 @@ public class T01S06_Discharge_Summary {
 		}
 		public void switchToIframe() {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("320Panel");			
+			shared_functions.switchToFrameByString("320Panel");			
 		}
 		public void handleAutoSavePopUpWindow() {
 			switchToIframe();
-			if( driver.findElements(By.cssSelector("#cmsAutoSaveMainWin")).size()>0 ) {
-				//driver.findElement(By.cssSelector("#cmsAutoSaveMainWinYesBtn-frame1Table")).click();
-				driver.findElement(By.cssSelector("#cmsAutoSaveMainWinNoBtn-frame1Table")).click();
+			if( shared_functions.checkAndGetElementsWhenVisible(By.cssSelector("#cmsAutoSaveMainWin"))!=null ) {
+				//shared_functions.getElementWhenClickable(By.cssSelector("#cmsAutoSaveMainWinYesBtn-frame1Table")).click();
+				shared_functions.getElementWhenClickable(By.cssSelector("#cmsAutoSaveMainWinNoBtn-frame1Table")).click();
 			}
 		}
 		public WebElement getTxtAreaPlain() {
 			switchToIframe();
-			//return driver.findElement(By.cssSelector("#zoomTxtAreaPlain-inputEl"));
-			return driver.findElement(By.cssSelector("textarea[name=zoomTxtAreaPlain-inputEl]"));
+			return shared_functions.getElementWhenClickable(By.cssSelector("textarea[name=zoomTxtAreaPlain-inputEl]"));
 		}
 		public WebElement getTxtAreaPlanOfManagement() {
 			switchToIframe();
-			//return driver.findElement(By.cssSelector("#zoomManagePlanTxtArea-inputEl"));
-			return driver.findElement(By.cssSelector("textarea[name=zoomManagePlanTxtArea-inputEl]"));
+			shared_functions.Hardcode(); //below throws JavascriptException
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector("textarea[name=zoomManagePlanTxtArea-inputEl]"));
+			return e;
 		}
 		public void addRemark(String str) {
 			switchToIframe();
-			driver.findElement(By.cssSelector("#zoomRemarkBtn")).click();
-			driver.findElement(By.cssSelector("#remarkTextArea-inputEl")).sendKeys(str);
-			driver.findElement(By.cssSelector("#remarkSaveBtn")).click();			
+			shared_functions.getElementWhenClickable(By.cssSelector("#zoomRemarkBtn")).click();
+			shared_functions.getElementWhenClickable(By.cssSelector("#remarkTextArea-inputEl")).sendKeys(str);
+			shared_functions.getElementWhenClickable(By.cssSelector("#remarkSaveBtn")).click();			
 		}
 		public void clickSave() {
 			switchToIframe();
-			driver.findElement(By.cssSelector("#zoomSaveBtn")).click(); //Save
+			shared_functions.getElementWhenClickable(By.cssSelector("#zoomSaveBtn")).click(); //Save
 		}
 		public void clickDelete() {
 			switchToIframe();
-			driver.findElement(By.cssSelector("#zoomDelBtn")).click(); //Delete
-			driver.findElements(By.cssSelector(".x-btn.x-unselectable.x-box-item.x-btn-cui-small.x-noicon.x-btn-noicon.x-btn-cui-small-noicon")).get(0).click();
-			driver.findElement(By.cssSelector(".x-btn.x-unselectable.x-box-item.x-btn-cui-small.x-noicon.x-btn-noicon.x-btn-cui-small-noicon .x-frame-mc.x-btn-mc.x-btn-cui-small-mc.x-btn-cui-small-noicon-mc")).click();
+			shared_functions.getElementWhenClickable(By.cssSelector("#zoomDelBtn")).click(); //Delete
+			shared_functions.getElementsWhenVisible(By.cssSelector(".x-btn.x-unselectable.x-box-item.x-btn-cui-small.x-noicon.x-btn-noicon.x-btn-cui-small-noicon")).get(0).click();
+			shared_functions.getElementWhenClickable(By.cssSelector(".x-btn.x-unselectable.x-box-item.x-btn-cui-small.x-noicon.x-btn-noicon.x-btn-cui-small-noicon .x-frame-mc.x-btn-mc.x-btn-cui-small-mc.x-btn-cui-small-noicon-mc")).click();
 		}
 		public void clickPrint() {
 			switchToIframe();
-			driver.findElement(By.cssSelector("#zoomPrintBtn-frame1Table")).click(); //Print	
+			shared_functions.getElementWhenClickable(By.cssSelector("#zoomPrintBtn-frame1Table")).click(); //Print	
 		}
 		public void clicDraftkPrint() {
 			switchToIframe();
-			driver.findElement(By.cssSelector("#zoomDraftPrintBtn-frame1Table")).click(); //DraftPrint	
+			shared_functions.getElementWhenClickable(By.cssSelector("#zoomDraftPrintBtn-frame1Table")).click(); //DraftPrint	
 		}
 		public void clickPreview() {
 			switchToIframe();
-			driver.findElement(By.cssSelector("#zoomPreviewBtn-frame1Table")).click();	//Preview
-			//try {WebElement eCloseInPreview = driver.findElement(By.cssSelector("#dscnviewerPrintBtn+a"));}catch(Exception e){e.printStackTrace();}
+			shared_functions.getElementWhenClickable(By.cssSelector("#zoomPreviewBtn-frame1Table")).click();	//Preview
+			//try {WebElement eCloseInPreview = shared_functions.getElementWhenClickable(By.cssSelector("#dscnviewerPrintBtn+a"));}catch(Exception e){e.printStackTrace();}
 		}
 		public void clickPrintInPreview() {
 			switchToIframe();
-			driver.findElement(By.cssSelector("#dscnviewerPrintBtn-frame1Table")).click(); //Print in Preview
+			shared_functions.getElementWhenClickable(By.cssSelector("#dscnviewerPrintBtn-frame1Table")).click(); //Print in Preview
 		}
 		public void clickCloseInPreview() {
 			switchToIframe();
-			//driver.findElement(By.cssSelector("#dscnviewerPrintBtn+a")).click(); //Close in Preview
-			driver.findElement(By.cssSelector("#pdfviewer_close")).click(); //Close in Preview
+			WebDriverWait w = new WebDriverWait(driver, 30);
+			w.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#pdfviewer_close"))).click();//Close in Preview
 		}
 		public void clickConsultationList() {
 			switchToIframe();
-			driver.findElement(By.cssSelector("#zoomConsultListBtn-frame1Table")).click(); //Close in Preview
+			shared_functions.getElementWhenClickable(By.cssSelector("#zoomConsultListBtn-frame1Table")).click(); //Close in Preview
 		}
 		public void clickZoomInConsultationList() {
 			switchToIframe();
-			driver.findElement(By.cssSelector("table#noteZoomBtn-frame1Table")).click(); //Zoom in Consultation List
+			shared_functions.getElementWhenClickable(By.cssSelector("table#noteZoomBtn-frame1Table")).click(); //Zoom in Consultation List
 		}
 		
 		public void clickTmpl() {
 			switchToIframe();
-			driver.findElement(By.cssSelector("#zoomTmplBtn")).click(); //Tmpl
+			shared_functions.getElementWhenClickable(By.cssSelector("#zoomTmplBtn")).click(); //Tmpl
 		}
 	}
 	class PAGE_NoteTemplate{
@@ -265,19 +271,19 @@ public class T01S06_Discharge_Summary {
 		}
 		public void switchToIframe_Left() {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("320Panel");
-			driver.switchTo().frame("tmplFrame");
-			driver.switchTo().frame("noteTmplMain");
+			shared_functions.switchToFrameByString("320Panel");
+			shared_functions.switchToFrameByString("tmplFrame");
+			shared_functions.switchToFrameByString("noteTmplMain");
 		}
 		public void switchToIframe_Right() {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("320Panel");
-			driver.switchTo().frame("tmplFrame");
-			driver.switchTo().frame("noteTmplDetail");
+			shared_functions.switchToFrameByString("320Panel");
+			shared_functions.switchToFrameByString("tmplFrame");
+			shared_functions.switchToFrameByString("noteTmplDetail");
 		}
 		public void searchFor(String str) {
 			switchToIframe_Left();
-			WebElement eSearch = driver.findElement(By.cssSelector("#searchTextPanel #searchText-bodyEl input"));
+			WebElement eSearch = shared_functions.getElementWhenClickable(By.cssSelector("#searchTextPanel #searchText-bodyEl input"));
 			eSearch.clear();
 			eSearch.sendKeys( str );
 			eSearch.sendKeys(Keys.ENTER);
@@ -286,8 +292,7 @@ public class T01S06_Discharge_Summary {
 			switchToIframe_Left();
 			Boolean bLoading = true;
 			while(bLoading){
-				List<WebElement> li = driver.findElements(By.cssSelector("#tmplListGrid"));
-				if(li.size()>0){
+				if(shared_functions.checkAndGetElementsWhenVisible(By.cssSelector("#tmplListGrid"))!=null){
 					System.out.println("Template list is finished loading");
 					bLoading=false;
 				}else{
@@ -297,16 +302,17 @@ public class T01S06_Discharge_Summary {
 		}
 		public void selectTemplate(int idx) {
 			switchToIframe_Left();
-			if( driver.findElements(By.cssSelector("#tmplListGrid #tmplListGrid-body table tr")).size()>0 ) {
-				WebElement eTemplate = driver.findElements(By.cssSelector("#tmplListGrid #tmplListGrid-body table tr")).get(idx).findElement(By.cssSelector("td"));
+			if( shared_functions.checkAndGetElementsWhenVisible(By.cssSelector("#tmplListGrid #tmplListGrid-body table tr"))!=null ) {
+				List<WebElement> liTemplate=shared_functions.getElementsWhenVisible(By.cssSelector("#tmplListGrid #tmplListGrid-body table tr"));
+				WebElement eTemplate=shared_functions.getElementsInsideParentWebElementWhenVisible(liTemplate.get(idx),By.cssSelector("td")).get(0);
 				eTemplate.click();
 			}
 			switchToIframe_Right();
-			driver.findElement(By.cssSelector("#selectBtn")).click();
+			shared_functions.getElementWhenClickable(By.cssSelector("#selectBtn")).click();
 		}
 		public void inputTemplateContent(String str) {
 			switchToIframe_Right();
-			driver.findElement(By.cssSelector("#tmplContent")).sendKeys( str ); 
+			shared_functions.getElementWhenClickable(By.cssSelector("#tmplContent")).sendKeys( str ); 
 		}
 	}
 	class PAGE_ConsultationList{
@@ -318,18 +324,18 @@ public class T01S06_Discharge_Summary {
 		}
 		public void clickCaseNo(String caseNum) {
 			String strXPathCaseNo = "//div[ contains(text(),'"+caseNum+"') ]";
-			WebElement eXPathCaseNo = driver.findElement(By.xpath( strXPathCaseNo ));
+			WebElement eXPathCaseNo = shared_functions.getElementWhenClickable(By.xpath( strXPathCaseNo ));
 			eXPathCaseNo.click();
 		}
 		public Boolean verifyDesc() {
 			String strXPathDesc = "//textarea[text()='This is the current record on the right-hand side!']";
-			return driver.findElements(By.xpath( strXPathDesc )).size()>0;
+			return shared_functions.checkAndGetElementsWhenVisible(By.xpath( strXPathDesc ))!=null;
 		}
 		public void clickOKBtn() {
 			String strXPathOKBtn = "//span[contains(text(),'K')]//descendant::u[contains(text(),'O')]";
-			Boolean isExistOkBtn = driver.findElements(By.xpath( strXPathOKBtn )).size()>0;
+			Boolean isExistOkBtn = shared_functions.checkAndGetElementsWhenVisible(By.xpath( strXPathOKBtn ))!=null;
 			if( isExistOkBtn ) {
-				driver.findElements(By.xpath( strXPathOKBtn )).get(0).click();
+				shared_functions.getElementsWhenVisible(By.xpath( strXPathOKBtn )).get(0).click();
 			}
 		}
 

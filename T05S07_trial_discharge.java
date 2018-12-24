@@ -32,7 +32,7 @@ public class T05S07_trial_discharge {
 		cmsMainPage = new PAGE_CMSMainPage(driver);
 		psf = new PAGE_PatientDetailPage_PatientSpecificFunction(driver);
 		trialDischarge = new PAGE_PatientDetailPage_TrialDischarge(driver);
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		case_no = dict.get("trial_discharge_case_no");
 		ward = dict.get("ward");
 		test_trial_discharge();
@@ -77,24 +77,24 @@ public class T05S07_trial_discharge {
 		}
 		public void switchToIframe(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("1Panel");
+			shared_functions.switchToFrameByString("1Panel");
 		}
 		public WebElement getSaveBtn() {
 			switchToIframe();
 			String str = "Save";
-			WebElement e = driver.findElement(By.xpath("//span[contains(text(),'"+str+"')]"));
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath("//span[contains(text(),'"+str+"')]"));
 			return e;			
 		}
 		public Boolean checkIfTrialDischargeSuccess() {
 			switchToIframe();
 			String str = "Trial discharge is successful !";
-			Boolean b = driver.findElements(By.xpath("//textarea[contains(text(),'"+str+"')]")).size()>0;
+			Boolean b = shared_functions.getElementsWhenVisible(By.xpath("//textarea[contains(text(),'"+str+"')]"))!=null;
 			return b;
 		}
 		public WebElement getOKBtn() {
 			switchToIframe();
 			String xp = "//span[contains(text(),'K')]//u[contains(text(),'O')]";
-			WebElement e = driver.findElement(By.xpath(xp));
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
 			return e;
 		}
 	}

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -22,8 +23,7 @@ public class PAGE_CMSMainPage {
 	}
 	public void getTopMenu() {
 		driver.switchTo().defaultContent();
-		//li_top_menu = driver.findElements(By.cssSelector("#cmsMenuBar>table>tbody>tr>td")); //NLT
-		li_top_menu = driver.findElements(By.cssSelector("#cmsMenuBar a.x-btn"));
+		li_top_menu = shared_functions.getElementsWhenVisible(By.cssSelector("#cmsMenuBar a.x-btn"));
 	}
 	public void fnNextPatient() throws InterruptedException{
 		String str = "Next Patient";
@@ -31,18 +31,23 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eFile = li_top_menu.get(0);
 		eFile.click();
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 		cancelListOfPrescriptionsModifiedByPharmacy();
-		shared_functions.sleepForAWhile(3000);		
-		//if( shared_functions.isAlertPresent(driver) ) {shared_functions.handleAlert(driver, false);}
+		shared_functions.sleepForAWhile(3000);
 	}
 	public void cancelListOfPrescriptionsModifiedByPharmacy(){
 		driver.switchTo().defaultContent();
-		List<WebElement> liFrame = driver.findElements(By.cssSelector("iframe[name=230ModalIFrame]"));
-		if(liFrame.size()>0){
+		List<WebElement> liFrame = null;
+		try{
+			WebDriverWait w = new WebDriverWait(driver, 5);
+			liFrame = w.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")));
+		}catch(TimeoutException e){
+			e.printStackTrace();
+		}
+		if(liFrame!=null){
 			System.out.println("cancelListOfPrescriptionsModifiedByPharmacy - switch to iframe 230ModalIFrame");
-			driver.switchTo().frame("230ModalIFrame");
-			driver.findElement(By.cssSelector("#pRmkUserCancelBtn")).click();	
+			shared_functions.switchToFrameByString("230ModalIFrame");
+			shared_functions.clickElementWhenClickable(By.cssSelector("#pRmkUserCancelBtn"));	
 		}
 	}
 	public void fnClose() throws InterruptedException {
@@ -51,10 +56,8 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement e = li_top_menu.get(0);
 		e.click();
-		driver.findElement(By.linkText(str)).click();
-		if( shared_functions.isAlertPresent(driver) ) {
-			shared_functions.handleAlert(driver, false);
-		}
+		shared_functions.clickElementWhenClickable(By.linkText(str));
+		shared_functions.checkExistAndHandleAlert(driver, false);
 	}
 	public void fnLogoff(){
 		String str = "Logoff";
@@ -62,8 +65,8 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eFile = li_top_menu.get(0);
 		eFile.click();
-		driver.findElement(By.linkText(str)).click();
-		driver.quit();	   
+		shared_functions.clickElementWhenClickable(By.linkText(str));
+		driver.quit();
 	}
 	public void fnPMI() {
 		String str = "Patient Master Index (PMI)";
@@ -71,7 +74,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eEnquiry = li_top_menu.get(3);
 		eEnquiry.click();
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnDischargeSummary() {
 		String str = "Discharge Summary";
@@ -79,7 +82,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eClinical = li_top_menu.get(1);
 		eClinical.click();		
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnIxRequest() {
 		String str = "Ix Request";
@@ -87,7 +90,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eInvestigation = li_top_menu.get(2);
 		eInvestigation.click();		
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnBedAssignment() {
 		String str = "Bed Assignment";
@@ -95,7 +98,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDT = li_top_menu.get(5);
 		eDT.click();		
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnTransfer() {
 		String str = "Transfer";
@@ -103,7 +106,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDT = li_top_menu.get(5);
 		eDT.click();		
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnSwapBed() {
 		String str = "Swap Bed";
@@ -111,7 +114,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDT = li_top_menu.get(5);
 		eDT.click();		
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnDischarge() {
 		String str = "Discharge";
@@ -119,7 +122,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDT = li_top_menu.get(5);
 		eDT.click();		
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnModificationOfTransfer() {
 		String str = "Modification of Transfer";
@@ -127,7 +130,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDT = li_top_menu.get(5);
 		eDT.click();
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnModificationOfDischarge() {
 		String str = "Modification of Discharge";
@@ -135,7 +138,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDT = li_top_menu.get(5);
 		eDT.click();		
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnTrialDischarge() {
 		String str = "Trial Discharge";
@@ -143,7 +146,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDT = li_top_menu.get(5);
 		eDT.click();		
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnReturnFromTrialDischarge() {
 		String str = "Return from Trial Discharge";
@@ -151,7 +154,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDT = li_top_menu.get(5);
 		eDT.click();		
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnCancelPreviousTransaction() {
 		String str = "Cancellation of Previous Transaction";
@@ -159,7 +162,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDT = li_top_menu.get(5);
 		eDT.click();
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnLetterDocument() {
 		String str = "Letter/Document";
@@ -167,7 +170,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement eDocPrint = li_top_menu.get(7);
 		eDocPrint.click();
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnMoe() {
 		String str = "Discharge Prescription/OP Prescription";
@@ -175,7 +178,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement e = li_top_menu.get(1);
 		e.click();
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnIpPrescribing() {
 		String str = "IP Prescribing";
@@ -183,7 +186,7 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement e = li_top_menu.get(1);
 		e.click();
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public void fnDrugAdminByPatient() {
 		String str = "Drug Admin by Patient";
@@ -191,49 +194,56 @@ public class PAGE_CMSMainPage {
 		getTopMenu();
 		WebElement e = li_top_menu.get(1);
 		e.click();
-		driver.findElement(By.linkText(str)).click();
+		shared_functions.clickElementWhenClickable(By.linkText(str));
 	}
 	public WebElement getRefreshBtn() {
 		driver.switchTo().defaultContent();
-		driver.switchTo().frame("cmsPSPWinPanelCmp");
+		shared_functions.switchToFrameByString("cmsPSPWinPanelCmp");
 		String str = "#pspRefreshBtn-frame1Table";
-		Boolean isExist = driver.findElements(By.cssSelector(str)).size()>0;
-		if(isExist) {
-			WebElement e = driver.findElement(By.cssSelector(str));
-			return driver.findElement(By.cssSelector(str));
+		try{
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
+			return e;
+		}catch(Exception ex){
+			ex.printStackTrace();
 		}
 		return null;
 	}
 	public WebElement getPSPTable(int idxTable) {
 		driver.switchTo().defaultContent();
-		driver.switchTo().frame("cmsPSPWinPanelCmp");
-		List<WebElement> liTable = driver.findElements(By.cssSelector("table.x-grid-table"));
+		shared_functions.switchToFrameByString("cmsPSPWinPanelCmp");
+		List<WebElement> liTable = shared_functions.getElementsWhenPresent(By.cssSelector("table.x-grid-table"));
 		WebElement eTable = liTable.get(idxTable);
 		return eTable;
 	}
-	public List<WebElement> getPSPRowsAtTable(int idxTable) {//0 left 1 right
+	public List<WebElement> getPSPRowsFromTable(int idxTable) {//0 left 1 right
 		WebElement eTable = this.getPSPTable(idxTable);
-		WebElement eTbody = eTable.findElements(By.cssSelector("tbody")).get(0);
-		List<WebElement> liPatientRows = eTbody.findElements(By.cssSelector("tr"));
+		List<WebElement> liTBodies = shared_functions.getElementsInsideParentWebElementWhenVisible(eTable, By.cssSelector("tbody"));
+		WebElement eTbody = liTBodies.get(0);
+		List<WebElement> liPatientRows = shared_functions.getRowsFromTable(eTbody);
 		return liPatientRows;
 	}
-	public int getPSPRowNum() {
-		return this.getPSPRowsAtTable(0).size();
+	public int getNumOfPSPRows() {
+		return this.getPSPRowsFromTable(0).size();
 	}
 	public List<WebElement> getPSPLeftColumnElement(int idxPatient) {
-		WebElement ePatientRow = this.getPSPRowsAtTable(0).get(idxPatient);
-		if(!ePatientRow.isDisplayed()) {
-			ePatientRow.click();
+		System.out.println("getPSPLeftColumnElement");
+		WebElement eRow = this.getPSPRowsFromTable(0).get(idxPatient);
+		if(!eRow.isDisplayed()) {
+			eRow.click();
 		}
-		List<WebElement>  liColumns = ePatientRow.findElements(By.cssSelector("td div font"));
-		//for(WebElement col: liColumns) {System.out.println( col.getText() );}
-		return liColumns;
+		shared_functions.Hardcode(); //cannot use getElementsInsideParentWebElementWhenVisible, getElementsInsideParentWebElementWhenPresent
+		//List<WebElement> liCols = shared_functions.getElementsInsideParentWebElementWhenVisible(eRow, By.cssSelector("td div font"));
+		//List<WebElement> liCols = shared_functions.getElementsInsideParentWebElementWhenPresent(eRow, By.cssSelector("td div font"));
+		List<WebElement> liCols = eRow.findElements(By.cssSelector("td div font"));
+		//DEBUG for(WebElement col: liCols) {System.out.println( col.getText() );}
+		return liCols;
 	}
 	public List<WebElement> getPSPRightColumnElement(int idxPatient) {
-		WebElement ePatientRow = this.getPSPRowsAtTable(1).get(idxPatient);
-		List<WebElement>  liColumns = ePatientRow.findElements(By.cssSelector("td div"));
-		//for(WebElement col: liColumns) {System.out.println( col.getText() );}
-		return liColumns;
+		WebElement eRow = this.getPSPRowsFromTable(1).get(idxPatient);
+		List<WebElement> liCols = shared_functions.getElementsInsideParentWebElementWhenVisible(eRow, By.cssSelector("td div"));
+		//List<WebElement> liCols = eRow.findElements(By.cssSelector("td div"));
+		//DEBUG for(WebElement col: liCols) {System.out.println( col.getText() );}
+		return liCols;
 	}
 	public List<WebElement> getPSPValue(int idxPatient){
 		List<WebElement> liAllColVal = new ArrayList();
@@ -244,10 +254,10 @@ public class PAGE_CMSMainPage {
 	public int getPatientIdxByCaseNum(String caseNum) {
 		int idxOfCol = 1; //CaseNum
 		int idxOfPatientRow = -1;
-		List<WebElement> liPatientRows = this.getPSPRowsAtTable(1);
+		List<WebElement> liPatientRows = this.getPSPRowsFromTable(1);
 		for(int i=0; i<liPatientRows.size(); i++) {
 			WebElement ePatient = liPatientRows.get(i);
-			List<WebElement>  liColumns = ePatient.findElements(By.cssSelector("td div"));
+			List<WebElement>  liColumns = shared_functions.getElementsInsideParentWebElementWhenVisible(ePatient, By.cssSelector("td div"));
 			String episodeNum = liColumns.get(idxOfCol).getText();
 			if(episodeNum.equals(caseNum)) { idxOfPatientRow=i; }
 		}
@@ -276,35 +286,33 @@ public class PAGE_CMSMainPage {
 	}
 	public WebElement getOKBtnInPopUpWindow() {
 		String xp = "//span[contains(text(),'K')]//u[contains(text(),'O')]";
-		WebElement e = driver.findElement(By.xpath(xp));
+		WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
 		return e;
 	}
 	public void selectPatientList(int idx) {
 		System.out.println("PAGE - CMS - Select Patient List");
 		   	driver.switchTo().defaultContent();
-			driver.switchTo().frame("cmsPSPWinPanelCmp");
+			shared_functions.switchToFrameByString("cmsPSPWinPanelCmp");
 			
 			String cssPSP = "#pspMainBtnPanel";
 			String cssDropDownBtn = "#pspMainBtnPanel table.x-field td.x-form-item-body td.x-trigger-cell.x-unselectable";
-			driver.findElement(By.cssSelector(cssPSP+cssDropDownBtn)).click();
-			
+			shared_functions.clickElementWhenClickable(By.cssSelector(cssPSP+cssDropDownBtn));
 			String cssListItems = "div.x-boundlist li.x-boundlist-item";
-			List<WebElement> liItems = driver.findElements(By.cssSelector( cssListItems ));
+			List<WebElement> liItems = shared_functions.getElementsWhenVisible(By.cssSelector( cssListItems ));
 			/*DEBUG
 			System.out.println("liItems:"+liItems.size());
 			for(int i =0; i<liItems.size(); i++ ) {
 				String str = liItems.get(i).getText();
 				System.out.println("List("+i+"):"+str);
 			}*/
-			
 			liItems.get(idx).click(); //SELECT PATIENT LIST 'Normal Patient List'	
 	}
 	public void changeWardForNormalPatientList(String strWard) throws InterruptedException {
 		System.out.println("PAGE - CMS - changeWardForNormalPatientList "+strWard);
 	    driver.switchTo().defaultContent();
-		driver.switchTo().frame("cmsPSPWinPanelCmp");
+		shared_functions.switchToFrameByString("cmsPSPWinPanelCmp");
 		String cssWard = "#cuicombobox-1026-inputEl";
-		WebElement e = driver.findElement(By.cssSelector(cssWard));
+		WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(cssWard)); 
 		try{
 			e.click();
 			e.clear();
@@ -318,49 +326,57 @@ public class PAGE_CMSMainPage {
 		}
 		shared_functions.sleepForAWhile(1000);
 	}
-	public void selectPatient(int idxOfPatient) {
+	/*
+	public void selectPatien_TBD(int idxOfPatient) {
 	    driver.switchTo().defaultContent();
-		driver.switchTo().frame("cmsPSPWinPanelCmp");	   
+		shared_functions.switchToFrameByString("cmsPSPWinPanelCmp");	   
 		System.out.println("PAGE - CMS - Select Patient");
-		int i1 = driver.findElements(By.cssSelector("#pspPatientListPanel0 div.x-box-target>div.x-panel")).get(0).findElements(By.cssSelector("div.x-panel-body tr.x-grid-row")).size();
-		List<WebElement> li_patients = driver.findElements(By.cssSelector("#pspPatientListPanel0 div.x-box-target>div.x-panel")).get(0).findElements(By.cssSelector("div.x-panel-body tr.x-grid-row"));
-		/*DEBUG
-		for(int i =0; i<li_patients.size(); i++ ) {
-			System.out.println( i+":"+li_patients.get(i).findElements(By.cssSelector("td")).get(1).findElement(By.tagName("font")).getText() );
-		} */
+		List<WebElement> li = shared_functions.getElementsWhenVisible(By.cssSelector("#pspPatientListPanel0 div.x-box-target>div.x-panel"));
+		List<WebElement> li_patients = shared_functions.getElementsInsideParentWebElementWhenVisible(li.get(0), By.cssSelector("div.x-panel-body tr.x-grid-row"));
+		int i1 = li_patients.size();
+		//DEBUG
+		//for(int i =0; i<li_patients.size(); i++ ) {
+		//	List<WebElement> li2 = shared_functions.getElementsInsideParentWebElementWhenVisible(li_patients.get(i),By.cssSelector("td"));
+		//	List<WebElement> li3 = shared_functions.getElementsInsideParentWebElementWhenVisible(li2.get(1),By.tagName("font"));
+		//	System.out.println( i+":"+li3.get(0).getText() );
+		//}
 		WebElement ePatient = li_patients.get(idxOfPatient); //Select Patients
-		String patientName = ePatient.findElements(By.cssSelector("td")).get(1).findElement(By.tagName("font")).getText();
+		List<WebElement> li4 = shared_functions.getElementsInsideParentWebElementWhenVisible(ePatient,By.cssSelector("td"));
+		List<WebElement> li5 = shared_functions.getElementsInsideParentWebElementWhenVisible(li4.get(1),By.tagName("font"));
+		String patientName = li5.get(0).getText();
 		System.out.println("Patient Name: "+patientName);
 		ePatient.click();
-		//WebElement eSelectPatient = driver.findElement(By.cssSelector("#topPanel #topUpPanel #pspSelectBtn")); //NLT
-		WebElement eSelectPatient = driver.findElement(By.cssSelector("#pspSelectBtn"));
+		WebElement eSelectPatient = shared_functions.getElementWhenClickable(By.cssSelector("#pspSelectBtn"));
 		JavascriptExecutor js = (JavascriptExecutor) driver; 
 		js.executeScript("arguments[0].scrollIntoView();", eSelectPatient); 
 		eSelectPatient.click(); //Click 'SELECT'
 	}
+	*/
 	public void selectPatientByCaseNum(String patientCaseNum) {
 	    driver.switchTo().defaultContent();
-		driver.switchTo().frame("cmsPSPWinPanelCmp");	   
+		shared_functions.switchToFrameByString("cmsPSPWinPanelCmp");	   
 		System.out.println("PAGE - CMS - Select Patient "+patientCaseNum);
-		WebElement ePatientCaseNumInput = driver.findElement(By.cssSelector("#pspSearchTextField td.x-form-item-body input"));
+		WebElement ePatientCaseNumInput = shared_functions.getElementWhenClickable(By.cssSelector("#pspSearchTextField td.x-form-item-body input"));
 		ePatientCaseNumInput.sendKeys( patientCaseNum );
 		ePatientCaseNumInput.sendKeys( Keys.ENTER );
 	}
 	public void handleSelectPatientSpecialtyPopUpWindow() {
 		driver.switchTo().defaultContent();
-		if( driver.findElements(By.cssSelector("#CMSIpPatSpecWin")).size()>0 ) {
+		if( shared_functions.getElementsWhenVisible(By.cssSelector("#CMSIpPatSpecWin")).size()>0 ) {
 			System.out.println("There is Select Patient Specialty popup window, idx: Nil");
-			driver.findElement(By.cssSelector("#CMSIpPatSpecWin #CMSIpPatSpecCurrBtn button")).click();
+			shared_functions.getElementWhenClickable(By.cssSelector("#CMSIpPatSpecWin #CMSIpPatSpecCurrBtn button")).click();
 		}else {
 			System.out.println("There is no Select Patient Specialty popup window");
 		}
 	}
 	public void handleSelectPatientSpecialtyPopUpWindow(int idx) {
 		driver.switchTo().defaultContent();
-		if( driver.findElements(By.cssSelector("#CMSIpPatSpecWin")).size()>0 ) {
+		if( shared_functions.getElementsWhenVisible(By.cssSelector("#CMSIpPatSpecWin")).size()>0 ) {
 			System.out.println("There is Select Patient Specialty popup window, idx: "+idx);
-				driver.findElements(By.cssSelector("#CMSIpPatSpecWin #ipSpecGrid .x-grid3-scroller .x-grid3-row")).get(idx).findElement(By.cssSelector(".x-grid3-cell-inner.x-grid3-col-specName")).click();
-				driver.findElement(By.cssSelector("#CMSIpPatSpecWin #CMSIpPatSpecBtn button")).click();
+				List<WebElement> li = shared_functions.getElementsWhenVisible(By.cssSelector("#CMSIpPatSpecWin #ipSpecGrid .x-grid3-scroller .x-grid3-row"));
+				List<WebElement> li2 = shared_functions.getElementsInsideParentWebElementWhenVisible(li.get(idx), By.cssSelector(".x-grid3-cell-inner.x-grid3-col-specName"));
+				li2.get(0).click();
+				shared_functions.getElementWhenClickable(By.cssSelector("#CMSIpPatSpecWin #CMSIpPatSpecBtn button")).click();
 		}else {
 			System.out.println("There is no Select Patient Specialty popup window");
 		}
@@ -368,32 +384,23 @@ public class PAGE_CMSMainPage {
 	public void selectSpecialty(String spec, String clinic) {
 		driver.switchTo().defaultContent();
 		String xp = "//div[contains(text(),'"+spec+"')]";
-		List<WebElement> li = driver.findElements(By.xpath(xp));
-		if(li.size()>0){
-			li.get(0).click();
-		}		
+		shared_functions.clickElementWhenClickable(By.xpath(xp));
 		String xp2 = "//div[contains(text(),'"+clinic+"')]";
-		List<WebElement> li2 = driver.findElements(By.xpath(xp2));
-		if(li2.size()>0){
-			li2.get(0).click();
-		}		
+		shared_functions.clickElementWhenClickable(By.xpath(xp2));
 		String xp3 = "//span[@id='CMSOpPatSpecSelectBtn-btnInnerEl']";
-		List<WebElement> li3 = driver.findElements(By.xpath(xp3));
-		if(li3.size()>0){
-			li3.get(0).click();
-		}				
+		shared_functions.clickElementWhenClickable(By.xpath(xp3));
 	}	
 	/*
 	 	public void closeAlertPanel_toBeDelete() {
 		driver.switchTo().defaultContent();
-		Boolean openByDetailBtnOfExistingAlertReminderWindow = (driver.findElements(By.cssSelector("iframe[name=alertWinPanelDetailModalIFrame]")).size()>0);
-		Boolean openByAlertBtn = (driver.findElements(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")).size()>0);
+		Boolean openByDetailBtnOfExistingAlertReminderWindow = (shared_functions.getElementsWhenVisible(By.cssSelector("iframe[name=alertWinPanelDetailModalIFrame]")).size()>0);
+		Boolean openByAlertBtn = (shared_functions.getElementsWhenVisible(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")).size()>0);
 		if( openByDetailBtnOfExistingAlertReminderWindow ) {
-			driver.switchTo().frame("alertWinPanelDetailModalIFrame");				
+			shared_functions.switchToFrameByString("alertWinPanelDetailModalIFrame");				
 		}else if( openByAlertBtn ){
-			driver.switchTo().frame("alertWinPanelModalIFrame");				
+			shared_functions.switchToFrameByString("alertWinPanelModalIFrame");				
 		}
-		WebElement eAlertPanelCloseBtn = driver.findElement(By.cssSelector("#btnCorpAllergyClose"));
+		WebElement eAlertPanelCloseBtn = shared_functions.getElementWhenClickable(By.cssSelector("#btnCorpAllergyClose"));
 		eAlertPanelCloseBtn.click();
 	}
 

@@ -41,7 +41,7 @@ public class T01S03_corp_allergy {
 		steps_passed = 0;
 		total_steps = 23;
 		moe_case_no = dict.get("case_no");
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		
 		test_enquiry_previous_record();
 		test_nkda();
@@ -64,12 +64,12 @@ public class T01S03_corp_allergy {
 		Boolean isExistAlert = false;
 		String strForVerify = dict.get("existing_adv_drug_check").toString();
 		driver.switchTo().defaultContent();
-		driver.switchTo().frame("alertWinPanelModalIFrame");
+		shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
 		List<WebElement> liAlertItem = null;
 		Boolean bToGetAllAlertItem = true;
 		while(bToGetAllAlertItem){
 			try{				
-				liAlertItem = driver.findElements(By.cssSelector("div#divAllergyId table table td:nth-child(2)"));
+				liAlertItem = shared_functions.getElementsWhenVisible(By.cssSelector("div#divAllergyId table table td:nth-child(2)"));
 				bToGetAllAlertItem=false;
 			}catch(Exception e){
 				e.printStackTrace();
@@ -91,7 +91,7 @@ public class T01S03_corp_allergy {
 		}else {
 			shared_functions.reporter_ReportEvent("micFail", "QAG_checkpoint_1", "enquiry previous record - simplified allergy NOT found by auto-prompt");			
 		}
-		alertPanel.closeAlertPanel();
+		alertPanel.closeDetailAlertPanel();
 		System.out.println("QAG_checkpoint_2 test_enquiry_previous_record() - verify Alert button color is red");
 		shared_functions.do_screen_capture_with_filename(driver, "T01S03_2");
 		if( psf.checkAlertBtn("red" ) ) { 
@@ -432,39 +432,51 @@ public class T01S03_corp_allergy {
 			PageFactory.initElements(driver, this);
 			this.driver = driver;
 		}
-		public void switchToSpecificIframeByBtnClicked() {
+		public void switchToIframeDetail(){
 			driver.switchTo().defaultContent();
-			Boolean openByDetailBtnOfExistingAlertReminderWindow = (driver.findElements(By.cssSelector("iframe[name=alertWinPanelDetailModalIFrame]")).size()>0);
-			Boolean openByAlertBtn = (driver.findElements(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")).size()>0);
+			shared_functions.switchToFrameByString("alertWinPanelDetailModalIFrame");				
+		}
+		public void switchToIframe() {
+			driver.switchTo().defaultContent();
+			shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
+		}
+		public void closeDetailAlertPanel(){
+			switchToIframeDetail();
+			WebElement eCloseAlertPanelBtn = shared_functions.getElementWhenClickable(By.cssSelector("#btnCorpAllergyClose"));
+			eCloseAlertPanelBtn.click();
+		}
+		public void closeAlertPanel(){
+			switchToIframe();
+			WebElement eCloseAlertPanelBtn = shared_functions.getElementWhenClickable(By.cssSelector("#btnCorpAllergyClose"));
+			eCloseAlertPanelBtn.click();
+		}
+		/*
+		public void switchToSpecificIframeByBtnClicked_TBD() {
+			driver.switchTo().defaultContent(); 
+			Boolean openByDetailBtnOfExistingAlertReminderWindow = (shared_functions.getElementsWhenVisible(By.cssSelector("iframe[name=alertWinPanelDetailModalIFrame]"))!=null);
+			Boolean openByAlertBtn = (shared_functions.getElementsWhenVisible(By.cssSelector("iframe[name=alertWinPanelModalIFrame]"))!=null);
 			if( openByDetailBtnOfExistingAlertReminderWindow ) {
-				switchToIframeDetail();				
+				switchToIframeDetail();
 			}else if( openByAlertBtn ){
 				switchToIframe();				
 			}
 		}
-		public void switchToIframeDetail() {
-			driver.switchTo().defaultContent();
-			driver.switchTo().frame("alertWinPanelDetailModalIFrame");				
-		}
-		public void switchToIframe() {
-			driver.switchTo().defaultContent();
-			driver.switchTo().frame("alertWinPanelModalIFrame");				
-		}
-		public void closeAlertPanel(){
+		public void closeAlertPanel_TBD(){
 			switchToSpecificIframeByBtnClicked();
-			driver.findElement(By.cssSelector("#btnCorpAllergyClose")).click();
+			WebElement eCloseAlertPanelBtn = shared_functions.getElementWhenClickable(By.cssSelector("#btnCorpAllergyClose"));
+			eCloseAlertPanelBtn.click();
 		}
+		*/
 
 		public void handleSameAlertErrorPopUpWindow(){
-			driver.switchTo().defaultContent();
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			driver.switchTo().frame("cAllergyIFrameFnWin");
-			if( driver.findElements(By.cssSelector("#cuibutton-1034")).size()>0 ) {
-				WebElement eSavingSameAlertError = driver.findElement(By.cssSelector("#cuibutton-1034"));
+			switchToIframe();
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
+			if( shared_functions.getElementsWhenVisible(By.cssSelector("#cuibutton-1034"))!=null ) {
+				WebElement eSavingSameAlertError = shared_functions.getElementWhenClickable(By.cssSelector("#cuibutton-1034"));
 				eSavingSameAlertError.click();
-				WebElement eAllergyInputScreenCancel = driver.findElement(By.cssSelector("#btnAllergyCancel")); 
+				WebElement eAllergyInputScreenCancel = shared_functions.getElementWhenClickable(By.cssSelector("#btnAllergyCancel")); 
 				eAllergyInputScreenCancel.click();
-				WebElement eConfirmAbortChange = driver.findElement(By.cssSelector("#cuibutton-1053")); 
+				WebElement eConfirmAbortChange = shared_functions.getElementWhenClickable(By.cssSelector("#cuibutton-1053")); 
 				eConfirmAbortChange.click();
 				System.out.println("Same Alert Existing");
 			}else {
@@ -473,44 +485,44 @@ public class T01S03_corp_allergy {
 		}
 		public WebElement getChkBoxNKDA() {
 			switchToIframe();
-			return driver.findElement(By.cssSelector("#cbAllergyNKDA"));
+			return shared_functions.getElementWhenClickable(By.cssSelector("#cbAllergyNKDA"));
 		}
 		public WebElement getDateStringNKDA() {
 			switchToIframe();
-			return driver.findElement(By.cssSelector("#divCorpAllergyNKDAReverify font"));
+			return shared_functions.getElementWhenClickable(By.cssSelector("#divCorpAllergyNKDAReverify font"));
 		}
 		public WebElement getBtnReVerifyNKDA(){
 			switchToIframe();
-			return driver.findElement(By.cssSelector("#btnAllergyNkdaVerify"));			
+			return shared_functions.getElementWhenClickable(By.cssSelector("#btnAllergyNkdaVerify"));			
 		}		
 		//Allergen
 		public WebElement getAddAllergyBtn() {
 			switchToIframe();
-			WebElement e = driver.findElement(By.cssSelector("#btnAllergyAdd"));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector("#btnAllergyAdd"));
 			return e;
 		}
 		public WebElement getEditAllergyBtn() {
 			switchToIframe();
-			WebElement e  = driver.findElement(By.cssSelector("#btnAllergyEdit"));
+			WebElement e  = shared_functions.getElementWhenClickable(By.cssSelector("#btnAllergyEdit"));
 			return e;
 		}
 		public WebElement getDeleteAllergyBtn() {
 			switchToIframe();
-			WebElement e  = driver.findElement(By.cssSelector("#btnAllergyDelete"));
+			WebElement e  = shared_functions.getElementWhenClickable(By.cssSelector("#btnAllergyDelete"));
 			return e;
 		}
 		public WebElement getAllergyElement() {
 			switchToIframe();
-			return driver.findElement(By.cssSelector("#gridAllergyRow0allergen_name"));
+			return shared_functions.getElementWhenClickable(By.cssSelector("#gridAllergyRow0allergen_name"));
 		}
 		public Boolean isExistAllergenElement(String strID) {
 			switchToIframe();
-			return driver.findElements(By.cssSelector(strID)).size()>0;
+			return (shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(strID))!=null);
 		}
 		public Boolean isCorrectAllergenElement(String strID, String strCheck) {
 			switchToIframe();
 			if( isExistAllergenElement(strID) ) {
-				Boolean isCorrect = driver.findElement(By.cssSelector(strID)).getText().equals(strCheck);
+				Boolean isCorrect = shared_functions.getElementWhenClickable(By.cssSelector(strID)).getText().equals(strCheck);
 				if(isCorrect) {
 					return true;
 				}
@@ -520,31 +532,31 @@ public class T01S03_corp_allergy {
 		//ADR
 		public WebElement getAddAdrBtn() {
 			switchToIframe();
-			WebElement e = driver.findElement(By.cssSelector("#btnAdrAdd"));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector("#btnAdrAdd"));
 			return e;
 		}
 		public WebElement getEditAdrBtn() {
 			switchToIframe();
-			WebElement e  = driver.findElement(By.cssSelector("#btnAdrEdit"));
+			WebElement e  = shared_functions.getElementWhenClickable(By.cssSelector("#btnAdrEdit"));
 			return e;
 		}
 		public WebElement getDeleteAdrBtn() {
 			switchToIframe();
-			WebElement e  = driver.findElement(By.cssSelector("#btnAdrDelete"));
+			WebElement e  = shared_functions.getElementWhenClickable(By.cssSelector("#btnAdrDelete"));
 			return e;
 		}
 		public WebElement getADRElement() {
 			switchToIframe();
-			return driver.findElement(By.cssSelector( "#gridAdrRow0adr_drug_name" ));
+			return shared_functions.getElementWhenClickable(By.cssSelector( "#gridAdrRow0adr_drug_name" ));
 		}
 		public Boolean isExistADRElement(String strID) {
 			switchToIframe();
-			return driver.findElements(By.cssSelector(strID)).size()>0;
+			return shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(strID))!=null;
 		}
 		public Boolean isCorrectADRElement(String strID, String strCheck) {
 			switchToIframe();
 			if( isExistADRElement(strID) ) {
-				Boolean isCorrect = driver.findElement(By.cssSelector(strID)).getText().equals(strCheck);
+				Boolean isCorrect = shared_functions.getElementWhenClickable(By.cssSelector(strID)).getText().equals(strCheck);
 				if(isCorrect) {
 					return true;
 				}
@@ -554,31 +566,31 @@ public class T01S03_corp_allergy {
 		//Alert
 		public WebElement getAddAlertBtn() {
 			switchToIframe();
-			WebElement e = driver.findElement(By.cssSelector("#btnAlertAdd"));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector("#btnAlertAdd"));
 			return e;
 		}
 		public WebElement getEditAlertBtn() {
 			switchToIframe();
-			WebElement e  = driver.findElement(By.cssSelector("#btnAlertEdit"));
+			WebElement e  = shared_functions.getElementWhenClickable(By.cssSelector("#btnAlertEdit"));
 			return e;
 		}
 		public WebElement getDeleteAlertBtn() {
 			switchToIframe();
-			WebElement e  = driver.findElement(By.cssSelector("#btnAlertDelete"));
+			WebElement e  = shared_functions.getElementWhenClickable(By.cssSelector("#btnAlertDelete"));
 			return e;
 		}
 		public WebElement getAlertElement() {
 			switchToIframe();
-			return driver.findElement(By.cssSelector( "#gridAlertRow0display_alert" ));
+			return shared_functions.getElementWhenClickable(By.cssSelector( "#gridAlertRow0display_alert" ));
 		}
 		public Boolean isExistAlertElement(String strID) {
 			switchToIframe();
-			return driver.findElements(By.cssSelector(strID)).size()>0;
+			return shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(strID))!=null;
 		}
 		public Boolean isCorrectAlertElement(String strID, String strCheck) {
 			switchToIframe();
 			if( isExistAlertElement(strID) ) {
-				Boolean isCorrect = driver.findElement(By.cssSelector(strID)).getText().equals(strCheck);
+				Boolean isCorrect = shared_functions.getElementWhenClickable(By.cssSelector(strID)).getText().equals(strCheck);
 				if(isCorrect) {
 					return true;
 				}
@@ -610,18 +622,18 @@ public class T01S03_corp_allergy {
 		}
 		public void addAllergy() throws InterruptedException {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			driver.switchTo().frame("cAllergyIFrameFnWin");
-			WebElement eAllergyKeywordTextArea = driver.findElement(By.cssSelector("#tfAllergyKeyword"));
+			shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
+			WebElement eAllergyKeywordTextArea = shared_functions.getElementWhenClickable(By.cssSelector("#tfAllergyKeyword"));
 			eAllergyKeywordTextArea.sendKeys( param_TextArea_Allergen );
 			shared_functions.clickBtnByCssWithException(param_List_Allergen);
-			//WebElement eAllergenList = driver.findElement(By.cssSelector( param_List_Allergen ));
+			//WebElement eAllergenList = shared_functions.getElementWhenClickable(By.cssSelector( param_List_Allergen ));
 			//eAllergenList.click();
-			WebElement eClinicalManifestation_Asthma = driver.findElement(By.cssSelector( param_checkChkBx_Allergen ));
+			WebElement eClinicalManifestation_Asthma = shared_functions.getElementWhenClickable(By.cssSelector( param_checkChkBx_Allergen ));
 			eClinicalManifestation_Asthma.click();
-			WebElement eLevelOfCertainty_Certain = driver.findElement(By.cssSelector( param_radioBtn_Allergen ));
+			WebElement eLevelOfCertainty_Certain = shared_functions.getElementWhenClickable(By.cssSelector( param_radioBtn_Allergen ));
 			eLevelOfCertainty_Certain.click();
-			WebElement eAllergyInputScreenAddBtn = driver.findElement(By.cssSelector("#divCorpAllergyAllergenAddBtn #btnAllergyAdd"));
+			WebElement eAllergyInputScreenAddBtn = shared_functions.getElementWhenClickable(By.cssSelector("#divCorpAllergyAllergenAddBtn #btnAllergyAdd"));
 			eAllergyInputScreenAddBtn.click();
 		}
 		public void prepareParamForAddNonDrugAllergy(Map dict) {
@@ -632,17 +644,17 @@ public class T01S03_corp_allergy {
 		}
 		public void addNonDrugAllergy(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			driver.switchTo().frame("cAllergyIFrameFnWin");
-			WebElement eAllergyKeywordTextArea = driver.findElement(By.cssSelector("#tfAllergyKeyword"));
+			shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
+			WebElement eAllergyKeywordTextArea = shared_functions.getElementWhenClickable(By.cssSelector("#tfAllergyKeyword"));
 			eAllergyKeywordTextArea.sendKeys( param_TextArea_Allergen );
-			WebElement eAllergyInputScreenAddBtn = driver.findElement(By.cssSelector("#divCorpAllergyAllergenAddBtn #btnAllergyAdd"));
+			WebElement eAllergyInputScreenAddBtn = shared_functions.getElementWhenClickable(By.cssSelector("#divCorpAllergyAllergenAddBtn #btnAllergyAdd"));
 			eAllergyInputScreenAddBtn.click();
-			WebElement eEnterFreeTextNonDrugAllergy = driver.findElement(By.cssSelector( param_NoAllergenFoundOption_Allergen )); 
+			WebElement eEnterFreeTextNonDrugAllergy = shared_functions.getElementWhenClickable(By.cssSelector( param_NoAllergenFoundOption_Allergen )); 
 			eEnterFreeTextNonDrugAllergy.click();
-			WebElement eClinicalManifestation_Asthma = driver.findElement(By.cssSelector( param_checkChkBx_Allergen ));
+			WebElement eClinicalManifestation_Asthma = shared_functions.getElementWhenClickable(By.cssSelector( param_checkChkBx_Allergen ));
 			eClinicalManifestation_Asthma.click();
-			WebElement eLevelOfCertainty_Certain = driver.findElement(By.cssSelector( param_radioBtn_Allergen ));
+			WebElement eLevelOfCertainty_Certain = shared_functions.getElementWhenClickable(By.cssSelector( param_radioBtn_Allergen ));
 			eLevelOfCertainty_Certain.click();
 			eAllergyInputScreenAddBtn.click();
 		}
@@ -657,14 +669,14 @@ public class T01S03_corp_allergy {
 			param_textAreaAdditionalInformation_Allergen = "FPS edit nondrug";		
 		}
 		public void editAllergy() {
-			driver.switchTo().frame("cAllergyIFrameFnWin");
-			WebElement eClinicalManifestation_Eczema = driver.findElement(By.cssSelector( param_checkChkBx_Allergen )); //Eczema
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
+			WebElement eClinicalManifestation_Eczema = shared_functions.getElementWhenClickable(By.cssSelector( param_checkChkBx_Allergen )); //Eczema
 			eClinicalManifestation_Eczema.click();
-			WebElement eClinicalManifestation_Asthma = driver.findElement(By.cssSelector( param_uncheckChkBx_Allergen ));
+			WebElement eClinicalManifestation_Asthma = shared_functions.getElementWhenClickable(By.cssSelector( param_uncheckChkBx_Allergen ));
 			eClinicalManifestation_Asthma.click();
-			WebElement eAdditionalInformation = driver.findElement(By.cssSelector("#taAllergyAddInfo"));
+			WebElement eAdditionalInformation = shared_functions.getElementWhenClickable(By.cssSelector("#taAllergyAddInfo"));
 			eAdditionalInformation.sendKeys( param_textAreaAdditionalInformation_Allergen );
-			WebElement eAllergyEditSreenAddBtn = driver.findElement(By.cssSelector("#divCorpAllergyAllergenAddBtn #btnAllergyAdd"));
+			WebElement eAllergyEditSreenAddBtn = shared_functions.getElementWhenClickable(By.cssSelector("#divCorpAllergyAllergenAddBtn #btnAllergyAdd"));
 			eAllergyEditSreenAddBtn.click();
 		}
 		public void prepareParamForDeleteAllergy() {
@@ -672,11 +684,11 @@ public class T01S03_corp_allergy {
 			param_DeleteReasonTextArea_Allergen = "FPS testing del allergy";
 		}
 		public void deleteAllergy() {
-			WebElement eDeleteReasonChkBx = driver.findElement(By.cssSelector( param_DeleteReasonChkBx_Allergen ));
+			WebElement eDeleteReasonChkBx = shared_functions.getElementWhenClickable(By.cssSelector( param_DeleteReasonChkBx_Allergen ));
 			eDeleteReasonChkBx.click();
-			WebElement eDeleteReasonTxtArea = driver.findElement(By.cssSelector("#taDelRemark"));
+			WebElement eDeleteReasonTxtArea = shared_functions.getElementWhenClickable(By.cssSelector("#taDelRemark"));
 			eDeleteReasonTxtArea.sendKeys( param_DeleteReasonTextArea_Allergen );
-			WebElement eProceedBtn = driver.findElement(By.cssSelector("#buttonDeleteProceed"));
+			WebElement eProceedBtn = shared_functions.getElementWhenClickable(By.cssSelector("#buttonDeleteProceed"));
 			eProceedBtn.click();
 		}
 	}
@@ -722,18 +734,18 @@ public class T01S03_corp_allergy {
 		}
 		public void addADR() throws InterruptedException {
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			driver.switchTo().frame("cAllergyIFrameFnWin");
-			WebElement eKeywordTextArea = driver.findElement(By.cssSelector(param_KeywordsTextArea_ADR));
+			shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
+			WebElement eKeywordTextArea = shared_functions.getElementWhenClickable(By.cssSelector(param_KeywordsTextArea_ADR));
 			eKeywordTextArea.sendKeys( param_Keywords_ADR );
 			shared_functions.clickBtnByCssWithException(param_KeywordsList_ADR);
-			//WebElement eKeywordList = driver.findElement(By.cssSelector(param_KeywordsList_ADR));
+			//WebElement eKeywordList = shared_functions.getElementWhenClickable(By.cssSelector(param_KeywordsList_ADR));
 			//eKeywordList.click();
-			WebElement eCheckChkBx = driver.findElement(By.cssSelector( param_checkChkBx_ADR ));
+			WebElement eCheckChkBx = shared_functions.getElementWhenClickable(By.cssSelector( param_checkChkBx_ADR ));
 			eCheckChkBx.click();
-			WebElement eLevelRadioBtn = driver.findElement(By.cssSelector( param_clickLevelRadioBtn_ADR ));
+			WebElement eLevelRadioBtn = shared_functions.getElementWhenClickable(By.cssSelector( param_clickLevelRadioBtn_ADR ));
 			eLevelRadioBtn.click();
-			WebElement eSaveBtn = driver.findElement(By.cssSelector( param_saveBtn_ADR ));
+			WebElement eSaveBtn = shared_functions.getElementWhenClickable(By.cssSelector( param_saveBtn_ADR ));
 			eSaveBtn.click();
 		}
 		
@@ -745,14 +757,14 @@ public class T01S03_corp_allergy {
 			param_saveBtn_ADR ="#btnAdrSave";
 		}
 		public void editADR() {	
-			driver.switchTo().frame("cAllergyIFrameFnWin");
-			WebElement eCheckChkBx = driver.findElement(By.cssSelector( param_checkChkBx_ADR )); 
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
+			WebElement eCheckChkBx = shared_functions.getElementWhenClickable(By.cssSelector( param_checkChkBx_ADR )); 
 			eCheckChkBx.click();
-			WebElement eUncheckChkBx = driver.findElement(By.cssSelector( param_uncheckChkBx_ADR ));
+			WebElement eUncheckChkBx = shared_functions.getElementWhenClickable(By.cssSelector( param_uncheckChkBx_ADR ));
 			eUncheckChkBx.click();
-			WebElement eAdditionalInformation = driver.findElement(By.cssSelector( param_AdditionalInformationTextArea_ADR ));
+			WebElement eAdditionalInformation = shared_functions.getElementWhenClickable(By.cssSelector( param_AdditionalInformationTextArea_ADR ));
 			eAdditionalInformation.sendKeys( param_AdditionalInformation_ADR );
-			WebElement eSaveBtn = driver.findElement(By.cssSelector( param_saveBtn_ADR ));
+			WebElement eSaveBtn = shared_functions.getElementWhenClickable(By.cssSelector( param_saveBtn_ADR ));
 			eSaveBtn.click();
 		}
 
@@ -762,11 +774,11 @@ public class T01S03_corp_allergy {
 			param_DeleteReasonTextArea_ADR = "FPS testing del adr drug";
 		}
 		public void deleteADR() {
-			WebElement eDeleteReasonChkBx = driver.findElement(By.cssSelector( param_DeleteReasonChkBx_ADR ));
+			WebElement eDeleteReasonChkBx = shared_functions.getElementWhenClickable(By.cssSelector( param_DeleteReasonChkBx_ADR ));
 			eDeleteReasonChkBx.click();
-			WebElement eDeleteReasonTxtArea = driver.findElement(By.cssSelector("#taDelRemark"));
+			WebElement eDeleteReasonTxtArea = shared_functions.getElementWhenClickable(By.cssSelector("#taDelRemark"));
 			eDeleteReasonTxtArea.sendKeys( param_DeleteReasonTextArea_ADR );
-			WebElement eProceedBtn = driver.findElement(By.cssSelector("#buttonDeleteProceed"));
+			WebElement eProceedBtn = shared_functions.getElementWhenClickable(By.cssSelector("#buttonDeleteProceed"));
 			eProceedBtn.click();
 		}
 	}
@@ -794,17 +806,17 @@ public class T01S03_corp_allergy {
 		public void addAlert(){
 			//PAGE_AlertPanel.eBtnAlertAdd.click();
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			driver.switchTo().frame("cAllergyIFrameFnWin");
-			WebElement eAlertCategoriesList = driver.findElement(By.cssSelector( param_selectAlertCategoriesList_Alert ));
+			shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
+			WebElement eAlertCategoriesList = shared_functions.getElementWhenClickable(By.cssSelector( param_selectAlertCategoriesList_Alert ));
 			eAlertCategoriesList.click();
-			WebElement eKeywordTextArea = driver.findElement(By.cssSelector(param_KeywordsTextArea_Alert));
+			WebElement eKeywordTextArea = shared_functions.getElementWhenClickable(By.cssSelector(param_KeywordsTextArea_Alert));
 			eKeywordTextArea.sendKeys( param_Keywords_Alert );
-			WebElement eCheckChkBx = driver.findElement(By.cssSelector( param_checkChkBx_Alert ));
+			WebElement eCheckChkBx = shared_functions.getElementWhenClickable(By.cssSelector( param_checkChkBx_Alert ));
 			eCheckChkBx.click();
-			WebElement eAdditionalInformationTextArea = driver.findElement(By.cssSelector( param_AdditionalInformationTextArea_Alert ));
+			WebElement eAdditionalInformationTextArea = shared_functions.getElementWhenClickable(By.cssSelector( param_AdditionalInformationTextArea_Alert ));
 			eAdditionalInformationTextArea.sendKeys( param_AdditionalInformation_Alert );		
-			WebElement eSaveBtn = driver.findElement(By.cssSelector( param_saveBtn_Alert ));
+			WebElement eSaveBtn = shared_functions.getElementWhenClickable(By.cssSelector( param_saveBtn_Alert ));
 			eSaveBtn.click();
 		}
 		
@@ -820,17 +832,17 @@ public class T01S03_corp_allergy {
 		public void addClassifiedAlert(){
 			//PAGE_AlertPanel.eBtnAlertAdd.click();
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			driver.switchTo().frame("cAllergyIFrameFnWin");
-			WebElement eAlertCategoriesList = driver.findElement(By.cssSelector( param_selectAlertCategoriesList_Alert ));
+			shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
+			WebElement eAlertCategoriesList = shared_functions.getElementWhenClickable(By.cssSelector( param_selectAlertCategoriesList_Alert ));
 			eAlertCategoriesList.click();
-			WebElement eKeywordTextArea = driver.findElement(By.cssSelector( param_KeywordsTextArea_Alert ));
+			WebElement eKeywordTextArea = shared_functions.getElementWhenClickable(By.cssSelector( param_KeywordsTextArea_Alert ));
 			eKeywordTextArea.sendKeys( param_Keywords_Alert );
-			WebElement eCheckChkBx = driver.findElement(By.cssSelector( param_checkChkBx_Alert ));
+			WebElement eCheckChkBx = shared_functions.getElementWhenClickable(By.cssSelector( param_checkChkBx_Alert ));
 			eCheckChkBx.click();
-			WebElement eAdditionalInformationTextArea = driver.findElement(By.cssSelector( param_AdditionalInformationTextArea_Alert ));
+			WebElement eAdditionalInformationTextArea = shared_functions.getElementWhenClickable(By.cssSelector( param_AdditionalInformationTextArea_Alert ));
 			eAdditionalInformationTextArea.sendKeys( param_AdditionalInformation_Alert );		
-			WebElement eSaveBtn = driver.findElement(By.cssSelector( param_saveBtn_Alert ));
+			WebElement eSaveBtn = shared_functions.getElementWhenClickable(By.cssSelector( param_saveBtn_Alert ));
 			eSaveBtn.click();
 		}
 		
@@ -845,16 +857,16 @@ public class T01S03_corp_allergy {
 		public void addFreeTextAlert() throws InterruptedException {
 			//PAGE_AlertPanel.eBtnAlertAdd.click();
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			driver.switchTo().frame("cAllergyIFrameFnWin");
-			WebElement eKeywordTextArea = driver.findElement(By.cssSelector( param_KeywordsTextArea_Alert ));
+			shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
+			WebElement eKeywordTextArea = shared_functions.getElementWhenClickable(By.cssSelector( param_KeywordsTextArea_Alert ));
 			eKeywordTextArea.sendKeys( param_Keywords_Alert );
 			shared_functions.clickBtnByCssWithException(param_inputFreeTextBtn_Alert);
-			//WebElement eInputFreeTextBtn = driver.findElement(By.cssSelector( param_inputFreeTextBtn_Alert ));
+			//WebElement eInputFreeTextBtn = shared_functions.getElementWhenClickable(By.cssSelector( param_inputFreeTextBtn_Alert ));
 			//eInputFreeTextBtn.click();
-			WebElement eAdditionalInformationTextArea = driver.findElement(By.cssSelector( param_AdditionalInformationTextArea_Alert ));
+			WebElement eAdditionalInformationTextArea = shared_functions.getElementWhenClickable(By.cssSelector( param_AdditionalInformationTextArea_Alert ));
 			eAdditionalInformationTextArea.sendKeys( param_AdditionalInformation_Alert );		
-			WebElement eSaveBtn = driver.findElement(By.cssSelector( param_saveBtn_Alert ));
+			WebElement eSaveBtn = shared_functions.getElementWhenClickable(By.cssSelector( param_saveBtn_Alert ));
 			eSaveBtn.click();
 		}
 		
@@ -864,11 +876,11 @@ public class T01S03_corp_allergy {
 			param_saveBtn_Alert ="#btnAlertAdd";
 		}
 		public void editAlert() {
-			driver.switchTo().frame("cAllergyIFrameFnWin");
+			shared_functions.switchToFrameByString("cAllergyIFrameFnWin");
 			shared_functions.clickBtnByCssWithException(param_AdditionalInformationTextArea_Alert);
-			WebElement eAdditionalInformation = driver.findElement(By.cssSelector( param_AdditionalInformationTextArea_Alert ));
+			WebElement eAdditionalInformation = shared_functions.getElementWhenClickable(By.cssSelector( param_AdditionalInformationTextArea_Alert ));
 			eAdditionalInformation.sendKeys( param_AdditionalInformation_Alert );
-			WebElement eSaveBtn = driver.findElement(By.cssSelector( param_saveBtn_Alert ));
+			WebElement eSaveBtn = shared_functions.getElementWhenClickable(By.cssSelector( param_saveBtn_Alert ));
 			eSaveBtn.click();
 		}
 
@@ -876,7 +888,7 @@ public class T01S03_corp_allergy {
 
 		}
 		public void deleteAlert() {
-			WebElement eConfirmDeleteBtn = driver.findElements(By.cssSelector("a.x-btn-focus.x-btn-cui-small-focus")).get(0);
+			WebElement eConfirmDeleteBtn = shared_functions.getElementsWhenVisible(By.cssSelector("a.x-btn-focus.x-btn-cui-small-focus")).get(0);
 			eConfirmDeleteBtn.click();
 		}
 	}

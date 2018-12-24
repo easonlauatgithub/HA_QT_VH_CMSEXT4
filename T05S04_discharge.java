@@ -44,7 +44,7 @@ public class T05S04_discharge {
 		psf = new PAGE_PatientDetailPage_PatientSpecificFunction(driver);
 		discharge = new PAGE_PatientDetailPage_Discharge(driver);
 		pmi = new PAGE_PatientDetailPage_PMI(driver);
-		driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+		//driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 		test_discharge_normal();
 		test_discharge_death();
 		cmsMainPage.fnNextPatient();
@@ -165,7 +165,7 @@ public class T05S04_discharge {
 			discharge.getLastOfficeFormSaveNPrintBtn().click();
 			shared_functions.do_screen_capture_with_filename(driver, "T05S04_4A_last_office_form");
 			String strWindow = "//span[contains(text(),'Information (1-2100-28-I-261)')]";
-			if(driver.findElements(By.xpath(strWindow)).size()>0) {
+			if(shared_functions.checkAndGetElementsWhenVisible(By.xpath(strWindow))!=null) {
 				shared_functions.reporter_ReportEvent("micFail", "QAG_checkpoint_7", "Last Office Form - Mental Health Ordinance (MHO) status from PsyCIS is not available");
 			}else {
 				shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_7", "Last Office Form - Mental Health Ordinance (MHO) status from PsyCIS is available");
@@ -192,7 +192,7 @@ public class T05S04_discharge {
 		psf.closeExistingAlertReminderWindow();
 		shared_functions.do_screen_capture_with_filename(driver, "T05S04_5");
 		String xp = "//textarea[contains(text(),'Patient has already been recorded dead on "+shared_functions.getDateIn("dd-MMM-yyyy")+".')]";
-		if( driver.findElements(By.xpath(xp)).size()>0 ) {
+		if( shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp))!=null ) {
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_5", "discharge death - 'patient already dead' warning is shown when open function");
 			steps_passed = steps_passed + 1;
 			WebElement eOk = cmsMainPage.getOKBtnInPopUpWindow();
@@ -225,16 +225,16 @@ public class T05S04_discharge {
 		}
 		public void switchToIframeDischarge(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame("79Panel");			
+			shared_functions.switchToFrameByString("79Panel");			
 		}
 		public void clearPreviousDischargeInfo() {
 			switchToIframeDischarge();
 			String strPreviousDischargeInfoPopUpWindow = "Previous discharge information exists, please check carefully.";
 			String xpPreviousDischargeInfoPopUpWindow = "//span[contains(text(),'"+strPreviousDischargeInfoPopUpWindow+"')]";
-			Boolean isExistPreviousDischargeInfo = driver.findElements(By.xpath(xpPreviousDischargeInfoPopUpWindow)).size()>0;
+			Boolean isExistPreviousDischargeInfo = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xpPreviousDischargeInfoPopUpWindow))!=null;
 			if(isExistPreviousDischargeInfo) {
 				String strBtnsOfPopUpWindow = "div.x-window-body div.x-container a.x-btn table.x-table-plain td.x-frame-mc span.x-btn-inner";
-				List<WebElement> liBtnsOfPopUpWindow = driver.findElements(By.cssSelector(strBtnsOfPopUpWindow));
+				List<WebElement> liBtnsOfPopUpWindow = shared_functions.getElementsWhenPresent(By.cssSelector(strBtnsOfPopUpWindow));
 				WebElement eClearAllDetails = liBtnsOfPopUpWindow.get(2);
 				if(eClearAllDetails.isDisplayed()) {
 					eClearAllDetails.click();
@@ -246,43 +246,43 @@ public class T05S04_discharge {
 		public WebElement getDischargeCodeDrpBx() {
 			switchToIframeDischarge();
 			String str = "#id_cbx_discharge_code-inputEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;
 		}
 		public WebElement getCertifiedDeathDate() {
 			switchToIframeDischarge();
 			String str = "#id_pasdf_death_date_parent-inputEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;
 		}
 		public WebElement getCertifiedDeathTime() {
 			switchToIframeDischarge();
 			String str = "#id_tmf_death_time_parent-inputEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;
 		}
 		public WebElement getRemarkTextArea() {
 			switchToIframeDischarge();
 			String str = "#id_txt_remark-inputEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;			
 		}
 		public WebElement getDoctorDrpBx() {
 			switchToIframeDischarge();
 			String str = "#id_cbx_doctor-inputEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;			
 		}
 		public WebElement getSaveBtn() {
 			switchToIframeDischarge();
 			String str = "Save";
-			WebElement e = driver.findElement(By.xpath("//span[contains(text(),'"+str+"')]"));
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath("//span[contains(text(),'"+str+"')]"));
 			return e;			
 		}
 		public WebElement getYesBtn() {
 			switchToIframeDischarge();
 			String xp = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
-			WebElement e = driver.findElement(By.xpath(xp));
+			WebElement e = shared_functions.getElementWhenClickable(By.xpath(xp));
 			return e;
 		}
 		public void handleDivisionTeamChoicePopUpWindow() {
@@ -291,7 +291,7 @@ public class T05S04_discharge {
 			String strWinTitle = "Question / Action (1-103-1-Q-010)";
 			if(checkIfExistsPopUpWindow(strWinTitle)) {
 				String str = "No";
-				WebElement eNo = driver.findElement(By.xpath("//span[contains(text(),'"+str+"')]"));
+				WebElement eNo = shared_functions.getElementWhenClickable(By.xpath("//span[contains(text(),'"+str+"')]"));
 				eNo.click();
 			}
 			System.out.println("handleDivisionTeamChoicePopUpWindow-END");
@@ -301,7 +301,7 @@ public class T05S04_discharge {
 			switchToIframeDischarge();
 			Boolean isExist = false; 
 			String xp = "//span[contains(text(),'"+windowTitle+"')]";
-			if( driver.findElements(By.xpath(xp)).size()>0 ) {
+			if( shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp))!=null ) {
 				isExist=true;
 			}
 			System.out.println("checkIfExistsPopUpWindow-END");
@@ -310,7 +310,7 @@ public class T05S04_discharge {
 		public Boolean checkIfDischargedByCaseNum(String case_no) {
 			switchToIframeDischarge();
 			String str = "The patient  "+case_no+" has been discharged";
-			Boolean b = driver.findElements(By.xpath("//textarea[contains(text(),'"+str+"')]")).size()>0;
+			Boolean b = shared_functions.checkAndGetElementsWhenVisible(By.xpath("//textarea[contains(text(),'"+str+"')]"))!=null;
 			return b;
 		}	
 		public String getHospCode(){
@@ -325,18 +325,18 @@ public class T05S04_discharge {
 		}
 		/*public void switchToIframeLastOfficeForm_toBeDelete(){
 			driver.switchTo().defaultContent();
-			driver.switchTo().frame(8);
+			shared_functions.switchToFrameByString(8);
 		}*/
 		public void switchToIframeLastOfficeForm(){
 			System.out.println("switchToIframeLastOfficeForm");
 			driver.switchTo().defaultContent();
-			int numOfIFrame = driver.findElements(By.cssSelector("iframe")).size();
+			int numOfIFrame = shared_functions.getElementsWhenPresent(By.cssSelector("iframe")).size();
 			for(int i=numOfIFrame-1; i>=0; i--){
 			//for(int i=0; i<numOfIFrame; i++){
 				System.out.println("switchToIframeLastOfficeForm["+i+"]");
-				driver.switchTo().frame(i);					
+				shared_functions.switchToFrameByInt(i);					
 				String str = "#bn_dod_retrieve-btnInnerEl";
-				Boolean isCorrectIframe = driver.findElements(By.cssSelector(str)).size()>0;
+				Boolean isCorrectIframe = shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(str))!=null;
 				if(isCorrectIframe){
 					System.out.println("switchToIframeLastOfficeForm["+i+"] is correct iframe");
 					break;
@@ -349,17 +349,17 @@ public class T05S04_discharge {
 		public WebElement getLastOfficeFormRetrieveBtn() {
 			switchToIframeLastOfficeForm();
 			String str = "#bn_dod_retrieve-btnInnerEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;
 		}
 		public WebElement getLastOfficeFormSaveNPrintBtn() {
 			String str = "#btnSaveAndPrint-btnInnerEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;			
 		}
 		public WebElement getLastOfficeFormCancelBtn() {
 			String str = "#btnClose-btnInnerEl";
-			WebElement e = driver.findElement(By.cssSelector(str));
+			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;			
 		}
 	}

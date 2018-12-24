@@ -5,6 +5,7 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -25,14 +26,22 @@ public class PAGE_PatientDetailPage_PatientSpecificFunction {
 		while(isExistAlertReminderWindow){//exist, Clickkkkkk until close
 			driver.switchTo().defaultContent();
 			//shared_functions.sleepForAWhile(500);
-			isExistAlertReminderWindow = driver.findElements(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")).size()>0;
+			List<WebElement> liExistAlertReminderWindow = null;
+			try {
+				WebDriverWait w = new WebDriverWait(driver, 5);
+				shared_functions.Hardcode(); //below have StaleElementReferenceException
+				liExistAlertReminderWindow = w.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")));
+			}catch(TimeoutException e){
+				e.printStackTrace();
+			}
+			isExistAlertReminderWindow = (liExistAlertReminderWindow!=null);
 System.out.println("PSF-closeExistingAlertReminderWindow-isExistAlertReminderWindow:"+isExistAlertReminderWindow);
 			if(isExistAlertReminderWindow){
 				try {
-					driver.switchTo().frame("alertWinPanelModalIFrame");
+					shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
 					//Get Close Button
-					List<WebElement> liCloseBtn = driver.findElements(By.cssSelector("#btnCorpAllergyClose"));				
-					if(liCloseBtn.size()>0){
+					List<WebElement> liCloseBtn = shared_functions.getElementsWhenVisible(By.cssSelector("#btnCorpAllergyClose"));				
+					if(liCloseBtn!=null){
 						liCloseBtn.get(0).click();//click Close
 					}
 				}catch(Exception e){
@@ -44,18 +53,18 @@ System.out.println("PSF-closeExistingAlertReminderWindow-isExistAlertReminderWin
 	public void closeDeadWarning() {
 		driver.switchTo().defaultContent();
 		String xpDesc = "//textarea[contains(text(), 'Patient has already been recorded dead on')]";
-		if( driver.findElements(By.xpath(xpDesc)).size()!=0 ) {
+		if( shared_functions.getElementsWhenVisible(By.xpath(xpDesc))!=null ) {
 			String xpOk = "//span[contains(text(), 'K')]//u[contains(text(), 'O')]";
-			if( driver.findElements(By.xpath(xpOk)).size()!=0 ) {
-				driver.findElements(By.xpath(xpOk)).get(0).click();
+			if( shared_functions.getElementsWhenVisible(By.xpath(xpOk))!=null ) {
+				shared_functions.getElementsWhenVisible(By.xpath(xpOk)).get(0).click();
 			}
 		}
 	}
 	public WebElement getAlertBtn() {
 		driver.switchTo().defaultContent();
-		driver.switchTo().frame("spioTabPanel");
-		//WebElement eAlertPanel = driver.findElement(By.cssSelector("#spioPanel #alertPanel #alertBtn button")); //NLT
-		WebElement eAlertBtn = driver.findElement(By.cssSelector("#alertBtn")); // #alertBtn-frame1Table
+		shared_functions.switchToFrameByString("spioTabPanel");
+		//WebElement eAlertPanel = shared_functions.getElementWhenClickable(By.cssSelector("#spioPanel #alertPanel #alertBtn button")); //NLT
+		WebElement eAlertBtn = shared_functions.getElementWhenClickable(By.cssSelector("#alertBtn")); // #alertBtn-frame1Table
 		return eAlertBtn;
 	}
 	public Boolean checkAlertBtn(String check_color) {
@@ -77,18 +86,18 @@ System.out.println("PSF-closeExistingAlertReminderWindow-isExistAlertReminderWin
 	}
 	public PAGE_AlertPanel clickAlertBtn() {
 		driver.switchTo().defaultContent();
-		driver.switchTo().frame("spioTabPanel");
-		//WebElement eAlertPanel = driver.findElement(By.cssSelector("#spioPanel #alertPanel #alertBtn button")); //NLT
-		WebElement eAlertPanel = driver.findElement(By.cssSelector("#alertBtn"));
+		shared_functions.switchToFrameByString("spioTabPanel");
+		//WebElement eAlertPanel = shared_functions.getElementWhenClickable(By.cssSelector("#spioPanel #alertPanel #alertBtn button")); //NLT
+		WebElement eAlertPanel = shared_functions.getElementWhenClickable(By.cssSelector("#alertBtn"));
 		eAlertPanel.click();
 		return instanceT01S03_corp_allergy.new PAGE_AlertPanel(driver);
 	}
 	public PAGE_AlertPanel clickDetailBtnOfExistingAlertReminderWindow() {
 		driver.switchTo().defaultContent();
-		if(driver.findElements(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")).size()!=0) {
-			driver.switchTo().frame("alertWinPanelModalIFrame");
-			if( driver.findElements(By.cssSelector("#btnCorpAllergyDetail")).size()!=0 ) {
-				WebElement eAlertDetail = driver.findElement(By.cssSelector("#btnCorpAllergyDetail"));
+		if(shared_functions.getElementsWhenVisible(By.cssSelector("iframe[name=alertWinPanelModalIFrame]"))!=null) {
+			shared_functions.switchToFrameByString("alertWinPanelModalIFrame");
+			if( shared_functions.getElementsWhenVisible(By.cssSelector("#btnCorpAllergyDetail"))!=null ) {
+				WebElement eAlertDetail = shared_functions.getElementWhenClickable(By.cssSelector("#btnCorpAllergyDetail"));
 				eAlertDetail.click();
 			}
 		}
