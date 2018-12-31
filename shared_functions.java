@@ -575,7 +575,7 @@ public class shared_functions {
 		return eCol;
 	}
 	public static List<WebElement> getRowsFromTable(WebElement eTable){
-		shared_functions.Hardcode(); //cannot use getElementsInsideParentWebElementWhenVisible, getElementsInsideParentWebElementWhenPresent
+		shared_functions.Hardcode("cannot use getElementsInsideParentWebElementWhenVisible, getElementsInsideParentWebElementWhenPresent");
 		List<WebElement> liRows = eTable.findElements(By.tagName("tr"));
 		//List<WebElement> liRows = getElementsInsideParentWebElementWhenVisible(eTable, By.tagName("tr"));
 		return liRows;
@@ -636,8 +636,15 @@ public class shared_functions {
 		WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
 		element.click();
 	}
-	public static Boolean checkIfElementInvisible(By locator) {
-		return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+	public static Boolean checkElementInvisible(By locator, long t){
+		WebDriverWait w = new WebDriverWait(driver, t); 
+		Boolean b = w.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+		return b;
+	}
+	public static Boolean checkElementDisable(By locator, long t){
+		WebDriverWait w = new WebDriverWait(driver, t);
+		Boolean b = w.until(ExpectedConditions.attributeToBe(locator,"disabled","true"));
+		return b;
 	}
 	public static List<WebElement> getElementsWhenPresent(By locator) {
 		List<WebElement> li = null;
@@ -716,8 +723,8 @@ public class shared_functions {
 		System.out.println("Will not Thread.sleep:"+s);
 		//Thread.sleep(s);
 	}
-	public static void Hardcode(){
-		System.out.println("Hardcode");
+	public static void Hardcode(String str){
+		System.out.println("Hardcode:"+str);
 	}
 	
 

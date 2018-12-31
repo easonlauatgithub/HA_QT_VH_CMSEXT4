@@ -142,18 +142,21 @@ public class T01S12_IPMOE_Prescription {
 		}
 		for(int i=start_num; i<=number_of_drugs ; i++){
 			String suffix = "_d" + i;
+			System.out.println("test_add_drug_item,suffix:"+suffix+",drugtype:"+dict.get("new_ipmoe_drugtype"+suffix)+",dosage:"+dict.get("new_ipmoe_common_dosage"+suffix));
 			String new_ipmoe_keyword = dict.get("new_ipmoe_keyword" + suffix);
 			ip.inputDrugName(new_ipmoe_keyword);
 			if( new_ipmoe_keyword.equals("AUGMENT") ){
 				ip.selectByTagNText("span","Augmentin");
 			}
+			
 			ip.selectByTagNText("span",dict.get("new_ipmoe_drugtype"+suffix));
-			System.out.println(dict.get("new_ipmoe_drugtype"+suffix)+", dosage:"+dict.get("new_ipmoe_common_dosage"+suffix));
+			
 			if(dict.get("new_ipmoe_common_dosage"+suffix)!=null){
 				ip.selectByTagNText("span",dict.get("new_ipmoe_common_dosage"+suffix));
 				ip.clickAddToMarBtn();
 			}else{
 				ip.clickEditBtn();
+				shared_functions.genPageSourceReport("clickEditBtn");//easontesting
 				String xp = "//div[contains(@id,'oral-orderDetailRowCt-')]//div[contains(@class,'ipmoe ipmoe-ipEditWin-dosageRow')]//table[contains(@class,'x-table-layout')]//input";
 				List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 				ip.inputEditDrugFields(li, dict.get("new_ipmoe_dosage" + suffix), dict.get("new_ipmoe_frequency" + suffix), dict.get("new_ipmoe_prn"+suffix), 
@@ -281,37 +284,37 @@ public class T01S12_IPMOE_Prescription {
 		public Boolean isExistIpPrescribePage(){
 			driver.switchTo().defaultContent();
 			String xp = "//iframe[@name='427Panel']";
-			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
 			return li!=null;
 		}
 		public Boolean isExistNowLoading(){
 			switchToIframe();
 			String xp = "//b[contains(text(),'Now loading, please wait')]";
-			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
 			return li!=null;
 		}
 		public Boolean isExistFailToRetrievePMSInfo(){
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'Fail to retrieve PMS information')]";
-			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
 			return li!=null;
 		}
 		public Boolean isExistPharmacyInfoOfSpecialty(){
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'Pharmacy information of specialty')]";
-			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
 			return li!=null;
 		}
 		public Boolean isExistFailToRetrieveCMSInfo(){
 			switchToIframe();
 			String xp = "//textarea[contains(text(),'Fail to retrieve CMS information')]";
-			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
 			return li!=null;
 		}
 		public Boolean isExistPreviousRx(){
 			switchToIframe();
 			String xp = "//a[contains(text(),'Previous Rx')]";
-			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
 			return li!=null;
 		}
 		public void inputDrugName(String new_ipmoe_keyword) throws InterruptedException{

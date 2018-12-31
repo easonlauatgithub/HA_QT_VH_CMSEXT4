@@ -3,13 +3,14 @@ package suite;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class T01S05_discharge_prescription_OPMOE {
 	WebDriver driver = null;
@@ -55,6 +56,15 @@ public class T01S05_discharge_prescription_OPMOE {
 		test_standard_regimen();
 		cmsMainPage.fnNextPatient();
 		shared_functions.countTestPassed(steps_passed, total_steps);
+	}
+	public void open_moe_function_quick() throws Exception {
+		System.out.println("open_moe_function_quick - START");
+		cmsMainPage.fnMoe();
+		cmsMainPage.selectPatientByCaseNum(moe_case_no);
+		cmsMainPage.selectSpecialty(specialty, subspecialty);
+		psf.closeExistingAlertReminderWindow();
+		dp.clickCancelBtn();
+		System.out.println("open_moe_function_quick - END");
 	}
 	public void open_moe_function() throws Exception {
 		System.out.println("open_moe_function - START");
@@ -216,7 +226,7 @@ public class T01S05_discharge_prescription_OPMOE {
 		int number_of_record_found = 0;
 		for(int i=0; i<number_of_drugs; i++){
 			suffix = "_d"+(i+1);
-			str = dict.get("new_moe_check"+suffix); 
+			str = dict.get("new_moe_check"+suffix);
 			List<WebElement> liMoes3 = dp.getMoeByDrugNameNDosage(str);
 			if(liMoes3!=null){
 				number_of_record_found = number_of_record_found + 1;
@@ -315,8 +325,8 @@ public class T01S05_discharge_prescription_OPMOE {
 				//PANADOL \(PARACETAMOL ALCOHOL FREE\) suspension<BR>oral : 500 mg q4h prn \(100%\) for 1 weeks
 				//THEOPHYLLINE ALCOHOL FREE syrup<BR>oral : 10 mg daily for 1 weeks
 				String check_drug = v.replace("\\","");
-				Boolean b = dp.getMoeByDrugNameNDosage(check_drug)!=null;
-				if(b){
+				List<WebElement> li = dp.getMoeByDrugNameNDosage(check_drug);
+				if(li!=null){
 					drugs_found = drugs_found + 1;
 					shared_functions.reporter_ReportEvent("micDone","standard_regimen drug check "+i,"found: "+check_drug);
 				}
@@ -438,8 +448,19 @@ public class T01S05_discharge_prescription_OPMOE {
 			shared_functions.clickElementWhenClickable(By.cssSelector(css));
 		}
 		public void clickSaveBtn() throws InterruptedException{
+			System.out.println("clickSaveBtn");
 			String xp = "//span[contains(text(),'Save and')]//u[contains(text(),'P')]";
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			//checkSaveBtnDisable();
+		}
+		public void checkSaveBtnDisable() throws InterruptedException{
+			System.out.println("checkSaveBtnDisable");
+			WebDriverWait w = new WebDriverWait(driver, 30);
+			Boolean b1 = w.until(ExpectedConditions.attributeContains(By.cssSelector("#PIsapBtn>div"),"disabled","true"));
+			System.out.println("checkSaveBtnDisable:"+b1);
+			Boolean b2 = w.until(ExpectedConditions.attributeToBe(By.cssSelector("#PIsapBtn>div"),"disabled","true"));
+			System.out.println("checkSaveBtnDisable:"+b2);
+			//shared_functions.checkElementDisable(By.cssSelector("#PIsapBtn>div"),30);
 		}
 		public void clickOkBtn(){
 			switchToIframe();
@@ -483,11 +504,17 @@ public class T01S05_discharge_prescription_OPMOE {
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickEditBtn() throws InterruptedException{
+			System.out.println("clickEditBtn");
 			String xp = "//span[contains(text(),'dit')]//u[contains(text(),'E')]";
-			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			shared_functions.clickElementWhenClickable(By.xpath(xp));			
+			checkEditBtn();
+		}
+		public void checkEditBtn() throws InterruptedException{
+			//System.out.println("checkEditBtn");
+			//check #moe-edit-upper #moe-edit-container #moe-edit-lower
 		}
 		public void inputDuration(String str){
-			System.out.print("inputDuration:");
+			System.out.println("inputDuration:");
 			switchToIframe();
 			String css = "div.moe-durationPanel input[class*='moe-ui-textfield']";
 			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(css));
@@ -512,7 +539,7 @@ public class T01S05_discharge_prescription_OPMOE {
 				//System.out.println("e sendKeys:"+str);				
 		}
 		public void inputSpecialInstruction(String str){
-			System.out.print("inputSpecialInstruction:");
+			System.out.println("inputSpecialInstruction:");
 			switchToIframe();
 			String css = "textarea#moe-edit-lower-specInstruct";
 			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(css));
@@ -531,10 +558,16 @@ public class T01S05_discharge_prescription_OPMOE {
 				*/
 		}
 		public void clickAcceptBtn() throws InterruptedException{
-			System.out.print("clickAcceptBtn size:");
+			System.out.println("clickAcceptBtn");
 			switchToIframe();
 			String xp = "//span[contains(text(),'ccept')]//u[contains(text(),'A')]";
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			checkAcceptBtnInvisible();
+		}
+		public void checkAcceptBtnInvisible() throws InterruptedException{
+			System.out.println("checkAcceptBtnInvisible");
+			Boolean b = shared_functions.checkElementInvisible(By.cssSelector("#moeEditAcceptBtnTd>div"),30);
+			System.out.println("checkAcceptBtnInvisible:"+b);
 		}
 		public void clickRemoveBtn(){		
 			String xp = "//span[contains(text(),'emove')]//u[contains(text(),'R')]";
@@ -580,6 +613,18 @@ public class T01S05_discharge_prescription_OPMOE {
 			switchToIframe();
 			String xp = "//span[contains(text(),'tandard Regimen')]//u[contains(text(),'S')]";
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			checkStandardRegimenAddBtnEnable();
+		}
+		public void checkStandardRegimenAddBtnEnable() throws InterruptedException{
+			System.out.println("checkStandardRegimenAddBtnEnable");
+			WebDriverWait w = new WebDriverWait(driver, 10);
+			String css = "div.x-grid-view.x-fit-item.x-grid-view-default.x-unselectable";
+			List<WebElement> li = shared_functions.getElementsWhenPresent(By.cssSelector(css));
+			int l = li.size();
+			System.out.println("checkStandardRegimenAddBtnEnable,size:"+l);
+			WebElement e = li.get(l-1); //4
+			shared_functions.getElementsInsideParentWebElementWhenVisible(e, By.cssSelector("tr"));
+			//content exist inside li.get(4).tbody, ask FP add id if possible
 		}
 		public void inputStandardRegimen(String str) throws InterruptedException{
 			switchToIframe();
@@ -598,17 +643,19 @@ public class T01S05_discharge_prescription_OPMOE {
 		public List<WebElement> getMoeByDrugNameNDosage(String str){
 			String[] arrStr = str.split("<BR>");
 			String xp = "//td[contains(text(),'"+arrStr[0]+"') or contains(text(),'"+arrStr[1]+"')]";
-			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
+			List<WebElement> li = null;
+			li = shared_functions.checkAndGetElementsWhenVisible(By.xpath(xp));
 			return li;
 		}
 		public List<WebElement> getIframe226Panel(){
 			driver.switchTo().defaultContent();
 			String css = "iframe[name=226Panel]";
-			List<WebElement> li = shared_functions.getElementsWhenVisible(By.cssSelector(css));
+			List<WebElement> li = shared_functions.checkAndGetElementsWhenVisible(By.cssSelector(css));
 			return li;			
 		}
 		public List<WebElement> getMoeByDrugKeyword(String str){
 			String xp = "//td[contains(text(),'"+str+"')]";
+			shared_functions.Hardcode("StaleElementReferenceException below");
 			List<WebElement> li = shared_functions.getElementsWhenVisible(By.xpath(xp));
 			return li;
 		}

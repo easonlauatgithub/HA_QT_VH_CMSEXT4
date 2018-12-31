@@ -10,6 +10,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -69,7 +70,7 @@ public class T00S01_WebLogin_2S4Fremote {
 		Runtime.getRuntime().exec("taskkill /F /IM iexplore.exe");
         try {
         	//driver = new InternetExplorerDriver(options);
-        	URL url = new URL("http://160.77.18.138:4444/wd/hub");
+        	URL url = new URL("http://160.66.133.194:4444/wd/hub");
         	driver = new RemoteWebDriver(url, options);
         	String expectedTitle = "WebDriver";
         	Boolean b = (new WebDriverWait(driver, 10)).until(ExpectedConditions.titleIs(expectedTitle));

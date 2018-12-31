@@ -207,7 +207,7 @@ public class T01S06_Discharge_Summary {
 		}
 		public WebElement getTxtAreaPlanOfManagement() {
 			switchToIframe();
-			shared_functions.Hardcode(); //below throws JavascriptException
+			shared_functions.Hardcode("below throws JavascriptException"); 
 			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector("textarea[name=zoomManagePlanTxtArea-inputEl]"));
 			return e;
 		}

@@ -231,7 +231,7 @@ public class PAGE_CMSMainPage {
 		if(!eRow.isDisplayed()) {
 			eRow.click();
 		}
-		shared_functions.Hardcode(); //cannot use getElementsInsideParentWebElementWhenVisible, getElementsInsideParentWebElementWhenPresent
+		shared_functions.Hardcode("cannot use getElementsInsideParentWebElementWhenVisible, getElementsInsideParentWebElementWhenPresent"); 
 		//List<WebElement> liCols = shared_functions.getElementsInsideParentWebElementWhenVisible(eRow, By.cssSelector("td div font"));
 		//List<WebElement> liCols = shared_functions.getElementsInsideParentWebElementWhenPresent(eRow, By.cssSelector("td div font"));
 		List<WebElement> liCols = eRow.findElements(By.cssSelector("td div font"));

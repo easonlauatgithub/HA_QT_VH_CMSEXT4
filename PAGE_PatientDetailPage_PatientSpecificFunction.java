@@ -23,6 +23,25 @@ public class PAGE_PatientDetailPage_PatientSpecificFunction {
 	}
 	public void closeExistingAlertReminderWindow() throws InterruptedException {
 		Boolean isExistAlertReminderWindow = true;
+		WebDriverWait w = new WebDriverWait(driver, 5);
+		while(isExistAlertReminderWindow){//exist, Clickkkkkk until close
+			driver.switchTo().defaultContent();
+			try{
+				w.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("alertWinPanelModalIFrame"));
+				shared_functions.clickElementWhenClickable(By.cssSelector("#btnCorpAllergyClose")); //click Close Button
+			}catch(TimeoutException ex){
+				ex.printStackTrace();
+				isExistAlertReminderWindow = false;
+			}catch(StaleElementReferenceException ex){
+				ex.printStackTrace();
+				isExistAlertReminderWindow=true;
+			}
+			
+		}
+	}
+	/*
+	public void closeExistingAlertReminderWindow_TBD() throws InterruptedException {
+		Boolean isExistAlertReminderWindow = true;
 		while(isExistAlertReminderWindow){//exist, Clickkkkkk until close
 			driver.switchTo().defaultContent();
 			//shared_functions.sleepForAWhile(500);
@@ -31,8 +50,8 @@ public class PAGE_PatientDetailPage_PatientSpecificFunction {
 				WebDriverWait w = new WebDriverWait(driver, 5);
 				shared_functions.Hardcode(); //below have StaleElementReferenceException
 				liExistAlertReminderWindow = w.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")));
-			}catch(TimeoutException e){
-				e.printStackTrace();
+			}catch(TimeoutException ex){
+				ex.printStackTrace();
 			}
 			isExistAlertReminderWindow = (liExistAlertReminderWindow!=null);
 System.out.println("PSF-closeExistingAlertReminderWindow-isExistAlertReminderWindow:"+isExistAlertReminderWindow);
@@ -48,8 +67,9 @@ System.out.println("PSF-closeExistingAlertReminderWindow-isExistAlertReminderWin
 					e.printStackTrace();
 				}
 			}
+			
 		}
-	}
+	}*/
 	public void closeDeadWarning() {
 		driver.switchTo().defaultContent();
 		String xpDesc = "//textarea[contains(text(), 'Patient has already been recorded dead on')]";
