@@ -204,7 +204,8 @@ public class T07S03_medical_certificate {
 			e.sendKeys(str);
 		}
 		public void inputFor(String str){
-			String xp = "//img[@id='imgddlb3_med_cert_for']";
+			//String xp = "//img[@id='imgddlb3_med_cert_for']";
+			String xp = "//input[@id='ddlb3_med_cert_for']";
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
 			String xp2 = "//td[contains(text(),'"+str+"')]";
 			shared_functions.clickElementWhenClickable(By.xpath(xp2));

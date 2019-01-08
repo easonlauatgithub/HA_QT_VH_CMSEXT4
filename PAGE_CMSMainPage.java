@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -42,7 +43,7 @@ public class PAGE_CMSMainPage {
 			WebDriverWait w = new WebDriverWait(driver, 5);
 			liFrame = w.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("iframe[name=alertWinPanelModalIFrame]")));
 		}catch(TimeoutException e){
-			e.printStackTrace();
+			System.out.println("cancelListOfPrescriptionsModifiedByPharmacy, TimeoutException");
 		}
 		if(liFrame!=null){
 			System.out.println("cancelListOfPrescriptionsModifiedByPharmacy - switch to iframe 230ModalIFrame");
@@ -203,7 +204,7 @@ public class PAGE_CMSMainPage {
 		try{
 			WebElement e = shared_functions.getElementWhenClickable(By.cssSelector(str));
 			return e;
-		}catch(Exception ex){
+		}catch(TimeoutException ex){
 			ex.printStackTrace();
 		}
 		return null;
@@ -258,7 +259,12 @@ public class PAGE_CMSMainPage {
 		for(int i=0; i<liPatientRows.size(); i++) {
 			WebElement ePatient = liPatientRows.get(i);
 			List<WebElement>  liColumns = shared_functions.getElementsInsideParentWebElementWhenVisible(ePatient, By.cssSelector("td div"));
-			String episodeNum = liColumns.get(idxOfCol).getText();
+			String episodeNum = "";
+			try{
+				episodeNum = liColumns.get(idxOfCol).getText();	
+			}catch(StaleElementReferenceException ex){
+				System.out.println("getPatientIdxByCaseNum,StaleElementReferenceException");
+			}
 			if(episodeNum.equals(caseNum)) { idxOfPatientRow=i; }
 		}
 		return idxOfPatientRow;
@@ -320,7 +326,7 @@ public class PAGE_CMSMainPage {
 			e.sendKeys(Keys.chord(Keys.BACK_SPACE,Keys.BACK_SPACE,Keys.BACK_SPACE));
 			e.sendKeys(strWard);
 			e.sendKeys(Keys.ENTER);
-		}catch(Exception ex){
+		}catch(StaleElementReferenceException ex){
 			ex.printStackTrace();
 			changeWardForNormalPatientList(strWard);
 		}

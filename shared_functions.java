@@ -30,6 +30,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
@@ -565,13 +566,13 @@ public class shared_functions {
 		return base64decodedString;
 	}
 	public static WebElement getElementFromTable(WebElement eTable, int rowNum, int colNum){
-		System.out.print("--getElementFromTable["+rowNum+","+colNum+"]:");
+		System.out.println("getElementFromTable["+rowNum+","+colNum+"]:");
 		List<WebElement> liRows = getElementsInsideParentWebElementWhenVisible(eTable, By.tagName("tr"));
 		WebElement eRow = liRows.get(rowNum);
 		List<WebElement> liCols = getElementsInsideParentWebElementWhenVisible(eRow, By.tagName("td"));
 		WebElement eCol = liCols.get(colNum);
-		System.out.print(eCol.getText());
-		System.out.println("--");
+		//System.out.print(eCol.getText());
+		//System.out.println("--");
 		return eCol;
 	}
 	public static List<WebElement> getRowsFromTable(WebElement eTable){
@@ -628,8 +629,14 @@ public class shared_functions {
 		WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
 		return element;
 	}
-	public static WebElement getElementWhenClickable(By locator) {	 
-		WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+	public static WebElement getElementWhenClickable(By locator) {
+		WebElement element = null;
+		try{
+			element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+		}catch(JavascriptException ex){
+			System.out.println("getElementWhenClickable, JavascriptException");
+			element = getElementWhenClickable(locator);
+		}
 		return element;
 	}
 	public static void clickElementWhenClickable(By locator) {
@@ -668,27 +675,21 @@ public class shared_functions {
 		List<WebElement> li = null;
 		try{
 			li = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));	
-		}catch(TimeoutException e){
-			e.printStackTrace();
-		}
+		}catch(TimeoutException e){}
 		return li;
 	}
 	public static List<WebElement> checkAndGetElementsWhenVisible(By locator) {
 		List<WebElement> li = null;
 		try{
 			li = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(locator));	
-		}catch(TimeoutException e){
-			e.printStackTrace();
-		}		
+		}catch(TimeoutException e){}
 		return li;
 	}
 	public static List<WebElement> checkAndGetElementsInsideParentWebElementWhenVisible(WebElement eParent, By childLocator){
 		List<WebElement> liChild = null;
 		try{
 			liChild = wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(eParent, childLocator));	
-		}catch(TimeoutException e){
-			e.printStackTrace();
-		}		
+		}catch(TimeoutException e){}
 		return liChild;
 	}
 	public static void showAllIframe() {

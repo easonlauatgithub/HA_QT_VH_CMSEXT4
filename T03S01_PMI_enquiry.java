@@ -51,6 +51,8 @@ public class T03S01_PMI_enquiry {
 		if( isCorrectBuilding ) {
 			steps_passed = steps_passed + 1	;
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_1", "address building match");
+		}else{
+			shared_functions.reporter_ReportEvent("micFail", "QAG_checkpoint_1", "address building not match");
 		}
 		pmi.collapsePatientAddress();
 		System.out.println("check_function() - Verify Patient Demographic T2400");
@@ -59,9 +61,11 @@ public class T03S01_PMI_enquiry {
 		Set<String> setOfKeys = mapItemsToVerify.keySet();
 		int counterSame = 0;
 		for(String k : setOfKeys ) {
-			String strToVerify = mapItemsToVerify.get(k).getAttribute("value").toString();
+			String strInCMS = mapItemsToVerify.get(k).getAttribute("value").toString();
 			String strInExcel = dict.get( "check_"+k ).toString();
-			if( strToVerify.equals(strInExcel) ) {
+			//System.out.println("PMI_enquiry,check_function,strInCMS["+k+"]:"+strInCMS);
+			//System.out.println("PMI_enquiry,check_function,strInExcel:"+strInExcel);
+			if( strInCMS.equals(strInExcel) ) {
 				counterSame ++;
 			}
 		}
@@ -70,6 +74,8 @@ public class T03S01_PMI_enquiry {
 		if( isSameAllItem ) {
 			steps_passed = steps_passed + 1	;
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_2", "patient demographics match - HKID, chi name, eng name, case no#, dob, ageo, sex");
+		}else{
+			shared_functions.reporter_ReportEvent("micFail", "QAG_checkpoint_2", "patient demographics not match - HKID, chi name, eng name, case no#, dob, ageo, sex");
 		}
 
 		System.out.println("PAGE - PMI(WONG, GUAVA) - Verify NOK T2401");
@@ -83,6 +89,8 @@ public class T03S01_PMI_enquiry {
 		if( isSameNokName && isSameMajorNok ) {
 			steps_passed = steps_passed + 1	;
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_3", "patient nok match - name, major_nok");
+		}else{
+			shared_functions.reporter_ReportEvent("micFail", "QAG_checkpoint_3", "patient nok not match - name, major_nok");
 		}
 		System.out.println("check_function() - END");
 	}

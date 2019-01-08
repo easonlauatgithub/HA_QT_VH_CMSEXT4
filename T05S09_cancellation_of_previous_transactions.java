@@ -130,7 +130,9 @@ public class T05S09_cancellation_of_previous_transactions {
 		shared_functions.do_screen_capture_with_filename(driver, "T05S09_2");
 		if(retval) {
 			String check_case_no = shared_functions.convert_case_no_to_cms_format(case_no);
-			Boolean b = cmsMainPage.getCategoryByCaseNum(check_case_no).equals(dict.get("previous_category"));
+			String strInExcel = dict.get("previous_category"); 
+			String strInCMS = cmsMainPage.getCategoryByCaseNum(check_case_no);
+			Boolean b = strInCMS.equals(strInExcel);
 			if(b) {
 				shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_2", "cancel transfer category - category reverted in PSP");
 				steps_passed = steps_passed + 1;

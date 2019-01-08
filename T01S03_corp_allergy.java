@@ -148,6 +148,8 @@ public class T01S03_corp_allergy {
 		if( BtnReVerifyNKDA.isEnabled() == false ) {
 			steps_passed = steps_passed + 1;
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_5", "re-verify nkda - the re-verify nkda button becomes disable");
+		}else{
+			shared_functions.reporter_ReportEvent("micFail", "QAG_checkpoint_5", "re-verify nkda - the re-verify nkda button did not become disable");
 		}
 		alertPanel.closeAlertPanel();
 		System.out.println("test_nkda() - END");

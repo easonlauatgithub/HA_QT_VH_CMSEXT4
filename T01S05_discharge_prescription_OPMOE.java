@@ -468,11 +468,13 @@ public class T01S05_discharge_prescription_OPMOE {
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void clickDeleteOrderBtn() throws InterruptedException{
+			System.out.println("clickDeleteOrderBtn");
 			switchToIframe();
 			String xp = "//span[contains(text(),'Delete')]//u[contains(text(),'O')]";
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
 		}
 		public void confirmDelete() throws InterruptedException{
+			System.out.println("confirmDelete");
 			String xp = "//textarea[contains(text(),'Delete the whole prescription')]";
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
 			String xp2 = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
@@ -510,8 +512,11 @@ public class T01S05_discharge_prescription_OPMOE {
 			checkEditBtn();
 		}
 		public void checkEditBtn() throws InterruptedException{
-			//System.out.println("checkEditBtn");
-			//check #moe-edit-upper #moe-edit-container #moe-edit-lower
+			System.out.println("checkEditBtn");
+			switchToIframe();
+			String css = "div.moe-durationPanel input[class*='moe-ui-textfield']";
+			WebDriverWait w = new WebDriverWait(driver, 30);
+			w.until(ExpectedConditions.elementToBeClickable(By.cssSelector(css)));
 		}
 		public void inputDuration(String str){
 			System.out.println("inputDuration:");
@@ -588,8 +593,16 @@ public class T01S05_discharge_prescription_OPMOE {
 			switchToIframe();
 			String xp = "//span[contains(text(),'Dr')]//u[contains(text(),'u')]";
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
+			checkDrugSetInputEnable();
+		}
+		public void checkDrugSetInputEnable() throws InterruptedException{
+			System.out.println("checkDrugSetInputEnable");
+			String css = "div#drugsetTextDiv input";
+			List<WebElement> li = shared_functions.getElementsWhenVisible(By.cssSelector(css));
+			System.out.println("checkDrugSetInputEnable, size:"+li.size());
 		}
 		public void inputDrugSet(String str) throws InterruptedException{
+			System.out.println("inputDrugSet:"+str);
 			switchToIframe();
 			//String str = dict.get("drugset_keywoard");
 			String css = "div#drugsetTextDiv input";
@@ -617,7 +630,6 @@ public class T01S05_discharge_prescription_OPMOE {
 		}
 		public void checkStandardRegimenAddBtnEnable() throws InterruptedException{
 			System.out.println("checkStandardRegimenAddBtnEnable");
-			WebDriverWait w = new WebDriverWait(driver, 10);
 			String css = "div.x-grid-view.x-fit-item.x-grid-view-default.x-unselectable";
 			List<WebElement> li = shared_functions.getElementsWhenPresent(By.cssSelector(css));
 			int l = li.size();
