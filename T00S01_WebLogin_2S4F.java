@@ -13,6 +13,8 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.net.URL;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class T00S01_WebLogin_2S4F {
 	Map<String, String> dict = new HashMap<>();
@@ -68,7 +70,7 @@ public class T00S01_WebLogin_2S4F {
 		Runtime.getRuntime().exec("taskkill /F /IM iexplore.exe");
         try {
         	driver = new InternetExplorerDriver(options);
-        	//URL url = new URL("http://160.77.18.138:4444/wd/hub");
+        	//URL url = new URL("http://160.66.133.194:4444/wd/hub");
         	//driver = new RemoteWebDriver(url, options);
         	String expectedTitle = "WebDriver";
         	Boolean b = (new WebDriverWait(driver, 10)).until(ExpectedConditions.titleIs(expectedTitle));
@@ -129,6 +131,7 @@ public class T00S01_WebLogin_2S4F {
 			liOKBtn = w.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(strOKBtn)));	
 		}catch(TimeoutException e){
 			System.out.println("handleIfExistAlertInformation1_6_0_W_010, TimeoutException");
+			e.printStackTrace();
 		}		
 		if(liOKBtn==null) {
 			return false;

@@ -26,30 +26,25 @@ public class PAGE_PatientDetailPage_PatientSpecificFunction {
 		WebDriverWait w = new WebDriverWait(driver, 5);
 		while(isExistAlertReminderWindow){//exist, Clickkkkkk until close
 			driver.switchTo().defaultContent();
-			List<WebElement> li =shared_functions.checkAndGetElementsWhenVisible(By.cssSelector("#alertWinPanelCMSModalWin"));
-			if(li!=null){
-				try{
-					w.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("alertWinPanelModalIFrame"));
-					shared_functions.clickElementWhenClickable(By.cssSelector("#btnCorpAllergyClose")); //click Close Button
-				}catch(TimeoutException ex){
-					System.out.println("closeExistingAlertReminderWindow, TimeoutException");
-					ex.printStackTrace();
-					isExistAlertReminderWindow = false;
-				}catch(StaleElementReferenceException ex){
-					System.out.println("closeExistingAlertReminderWindow, StaleElementReferenceException");
-					ex.printStackTrace();
-					isExistAlertReminderWindow=true;
-				}catch(JavascriptException ex){
-					System.out.println("closeExistingAlertReminderWindow, JavascriptException");
-					ex.printStackTrace();
-					isExistAlertReminderWindow=true;
-				}catch(ElementNotInteractableException ex){
-					System.out.println("closeExistingAlertReminderWindow, ElementNotInteractableException");
-					ex.printStackTrace();
-					isExistAlertReminderWindow=true;				
-				}
+			try{
+				shared_functions.getElementsWhenVisible(By.cssSelector("#alertWinPanelCMSModalWin"));
+				w.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("alertWinPanelModalIFrame"));
+				shared_functions.clickElementWhenClickable(By.cssSelector("#btnCorpAllergyClose")); //click Close Button
+				System.out.println("closeExistingAlertReminderWindow, close btn is clicked");
+			}catch(TimeoutException ex){
+				System.out.println("closeExistingAlertReminderWindow, TimeoutException");
+				isExistAlertReminderWindow = false;
+			}catch(StaleElementReferenceException ex){
+				System.out.println("closeExistingAlertReminderWindow, StaleElementReferenceException");
+				isExistAlertReminderWindow=true;
+			}catch(JavascriptException ex){
+				System.out.println("closeExistingAlertReminderWindow, JavascriptException");
+				isExistAlertReminderWindow=true;
+			}catch(ElementNotInteractableException ex){
+				System.out.println("closeExistingAlertReminderWindow, ElementNotInteractableException");
+				isExistAlertReminderWindow=true;				
 			}
-		}
+		}		
 	}
 	/*
 	public void closeExistingAlertReminderWindow_TBD() throws InterruptedException {

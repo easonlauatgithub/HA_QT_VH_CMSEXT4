@@ -479,6 +479,14 @@ public class T01S05_discharge_prescription_OPMOE {
 			shared_functions.clickElementWhenClickable(By.xpath(xp));
 			String xp2 = "//span[contains(text(),'es')]//u[contains(text(),'Y')]";
 			shared_functions.clickElementWhenClickable(By.xpath(xp2));
+			checkDeleted();
+		}
+		public void checkDeleted(){
+			System.out.println("checkDeleted");
+			driver.switchTo().defaultContent();
+			//String css = "iframe[name=226Panel]";
+			String css = "#CMSPspWin-frame1ML";
+			shared_functions.getElementsWhenVisible(By.cssSelector(css));
 		}
 		public void inputStartDateDuration(String str){
 			switchToIframe();

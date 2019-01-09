@@ -1,6 +1,5 @@
 package suite;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +11,10 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.net.URL;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class T00S01_WebLogin_2S4Fremote {
 	Map<String, String> dict = new HashMap<>();
@@ -130,6 +130,7 @@ public class T00S01_WebLogin_2S4Fremote {
 		try{
 			liOKBtn = w.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(strOKBtn)));	
 		}catch(TimeoutException e){
+			System.out.println("handleIfExistAlertInformation1_6_0_W_010, TimeoutException");
 			e.printStackTrace();
 		}		
 		if(liOKBtn==null) {

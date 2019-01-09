@@ -648,9 +648,9 @@ public class shared_functions {
 		Boolean b = w.until(ExpectedConditions.invisibilityOfElementLocated(locator));
 		return b;
 	}
-	public static Boolean checkElementDisable(By locator, long t){
+	public static Boolean checkElementDisable(WebElement e, long t){
 		WebDriverWait w = new WebDriverWait(driver, t);
-		Boolean b = w.until(ExpectedConditions.attributeToBe(locator,"disabled","true"));
+		Boolean b = w.until(ExpectedConditions.attributeToBe(e,"disabled","true"));
 		return b;
 	}
 	public static List<WebElement> getElementsWhenPresent(By locator) {

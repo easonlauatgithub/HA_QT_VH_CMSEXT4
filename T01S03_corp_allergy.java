@@ -10,6 +10,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class T01S03_corp_allergy {
 	WebDriver driver = null;
@@ -145,7 +147,10 @@ public class T01S03_corp_allergy {
 		WebElement BtnReVerifyNKDA = alertPanel.getBtnReVerifyNKDA();
 		BtnReVerifyNKDA.click();
 		shared_functions.do_screen_capture_with_filename(driver, "T01S03_5");
-		if( BtnReVerifyNKDA.isEnabled() == false ) {
+		Boolean bDisabledReVerifyNKDABtn = shared_functions.checkElementDisable(BtnReVerifyNKDA, 10);
+		System.out.println("bDisabledReVerifyNKDABtn:"+bDisabledReVerifyNKDABtn);
+		//Boolean bEnabledReVerifyNKDABtn = BtnReVerifyNKDA.isEnabled();
+		if( bDisabledReVerifyNKDABtn == true ) {
 			steps_passed = steps_passed + 1;
 			shared_functions.reporter_ReportEvent("micPass", "QAG_checkpoint_5", "re-verify nkda - the re-verify nkda button becomes disable");
 		}else{
