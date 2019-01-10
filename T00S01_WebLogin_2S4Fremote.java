@@ -43,6 +43,7 @@ public class T00S01_WebLogin_2S4Fremote {
 			driver.quit();
 			System.out.println("quitDriverIfExist-driver is quit");
 			shared_functions.sleepForAWhile(1000);
+			Thread.sleep(30000);
 		}
 	}
 	public void initDriver() throws IOException, InterruptedException{

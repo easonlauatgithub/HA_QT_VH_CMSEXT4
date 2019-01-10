@@ -548,49 +548,6 @@ public class T01S12_IPMOE_Prescription {
 			System.out.println("select_today_drug_in_mar["+mar_description+"] END");
 			return retval;
 		}
-		public WebElement select_today_drug_in_mar_easontesting(String mar_description){
-			System.out.println("select_today_drug_in_mar_easontesting["+mar_description+"] START");
-			ip.switchToIframe();
-			WebElement retval = null;
-			try{
-				String xp = "//table[contains(@id,'gridview-') and contains(@id,'-table')]";
-				List<WebElement> li = shared_functions.getElementsWhenPresent(By.xpath(xp));
-				//System.out.println("select_today_drug_in_mar_easontesting, li size:"+li.size());
-				int idxTable = 1;
-				WebElement all_drugs_table = li.get(idxTable);
-				//int sizeOfTr = all_drugs_table.findElements(By.tagName("tr")).size();
-				int sizeOfTr = shared_functions.getElementsInsideParentWebElementWhenVisible(all_drugs_table, By.tagName("tr")).size();
-				System.out.println("select_today_drug_in_mar_easontesting, sizeOfTr:"+sizeOfTr);
-				for(int d=0; d<sizeOfTr; d++){
-					String strDateInCMS = shared_functions.getElementFromTable(all_drugs_table,d,1).getText();
-					String strDrugInCMS = shared_functions.getElementFromTable(all_drugs_table,d,2).getText().replace("\n", "");
-					Boolean b1 = (strDateInCMS.indexOf(today_ddMMM)!=-1);
-					Boolean b2 = (strDrugInCMS.indexOf(mar_description)!=-1);
-					System.out.println("select_today_drug_in_mar_easontesting today_ddMMM:"+today_ddMMM);
-					System.out.println("select_today_drug_in_mar_easontesting strDateInCMS:"+strDateInCMS);
-					System.out.println("select_today_drug_in_mar_easontesting b1:"+b1);
-					System.out.println("select_today_drug_in_mar_easontesting strDrugInCMS:"+strDrugInCMS);
-					System.out.println("select_today_drug_in_mar_easontesting mar_description:"+mar_description);
-					System.out.println("select_today_drug_in_mar_easontesting b2:"+b2);
-					if(b1&&b2){
-						//retval = all_drugs_table.findElements(By.tagName("tr")).get(d).findElements(By.tagName("td")).get(2);
-						List<WebElement> li1 = shared_functions.getElementsInsideParentWebElementWhenVisible(all_drugs_table, By.tagName("tr"));
-						System.out.println("select_today_drug_in_mar_easontesting, li1 size:"+li1.size());
-						List<WebElement> li2 = shared_functions.getElementsInsideParentWebElementWhenVisible(li1.get(d), By.tagName("td"));
-						System.out.println("select_today_drug_in_mar_easontesting, li2 size:"+li2.size());
-						retval = li2.get(2);
-						System.out.println("select_today_drug_in_mar_easontesting retval:"+retval);
-						retval.click();
-					}
-				}
-			}catch(StaleElementReferenceException ex){ 
-				System.out.println("select_today_drug_in_mar_easontesting, StaleElementReferenceException");
-				return select_today_drug_in_mar_easontesting(mar_description);
-			}
-			shared_functions.reporter_ReportEvent("micDone", "select_today_drug_in_mar_easontesting", "selected " + mar_description);
-			System.out.println("select_today_drug_in_mar_easontesting["+mar_description+"] END");
-			return retval;
-		}
 		public String get_new_drug_panel_description(){
 			System.out.println("get_new_drug_panel_description");
 			ip.switchToIframe();
